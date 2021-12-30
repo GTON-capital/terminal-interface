@@ -103,16 +103,15 @@ const messages = {
 
   Governance work is about to begin… in a matter of days.
   `,
-  stake(a: string, h: string[]) {
+  approve(h: string) {
     return `
-    You have succesfully staked your funds!
-    Amount: ${a},
-    Transaction approve: https://testnet.ftmscan.com/tx/${h[0]}
-    Transaction stake: https://testnet.ftmscan.com/tx/${h[1]}`;
+      You have succesfully approved your funds!
+      Transaction approve: https://testnet.ftmscan.com/tx/${h}
+    `;
   },
-  unstake(a: string, h: string) {
+  stake(type: string, a: string, h: string) {
     return `
-    You have succesfully unstaked your funds!
+    You have succesfully ${type} your funds!
     Amount: ${a},
     Transaction stake: https://testnet.ftmscan.com/tx/${h}`;
   },

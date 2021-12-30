@@ -57,7 +57,7 @@ const errorStrings: Record<TerminalErrorCodes, string> = {
   Please provide token name or address. To get list of available tokens - type >help
   `,
   EMPTY_AMOUNT_ARG: `
-  Please provide amount&
+  Please provide amount.
   `,
   PERMISSION_DENIED: `
   Houston, we have a problem! 

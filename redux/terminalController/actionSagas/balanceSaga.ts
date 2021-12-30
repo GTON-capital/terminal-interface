@@ -25,8 +25,9 @@ function* controllerBalanceWorker({ payload }: IUserAction) {
     }
     const userBalance: BigNumber = yield call(balance, address);
     console.log(userBalance.toString());
-    
     const etherBalance = fromWei(userBalance);
+    console.log(etherBalance.toString());
+    
     yield put(loading(false));
     yield put(print({ msg: messages.balance(etherBalance.toString()) }));
     yield put(inputLock(false));
