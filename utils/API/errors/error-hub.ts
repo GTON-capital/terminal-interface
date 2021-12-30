@@ -7,11 +7,11 @@ interface IMetamaskError {
   message: string;
 }
 
-type KnownMetamaskErrors = Extract<TerminalErrorCodes, 'METAMASK_RELOGIN' | 'DENIED_BY_USER'>;
+type KnownMetamaskErrors = Extract<TerminalErrorCodes, 'METAMASK_RELOGIN' | 'DENIED_BY_USER' | 'ALREADY_AIRDROPPED'>;
 
 const MetamaskDictionary: Record<number, KnownMetamaskErrors> = {
   [-32002]: 'METAMASK_RELOGIN',
-  [-32603]: 'DENIED_BY_USER',
+  [-32603]: 'ALREADY_AIRDROPPED',
   4001: 'DENIED_BY_USER',
 };
 
@@ -29,7 +29,6 @@ const processMetamaskError = (e: IMetamaskError): TerminalError => {
   if (terminalCode) {
     return new TerminalError({ code: terminalCode, name: 'Metamask error' });
   }
-  console.log(e);
   return new TerminalError({
     code: 'UNEXPECTED_ERROR',
     name: 'Metamask error',

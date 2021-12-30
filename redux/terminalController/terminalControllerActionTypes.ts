@@ -15,6 +15,8 @@ enum ActionType {
   SWITCH = 'SWITCH',
   FAUCET = 'FAUCET',
   BALANCE = 'BALANCE',
+  STAKE = 'STAKE',
+  UNSTAKE = 'UNSTAKE',
 }
 
 enum SystemActions {

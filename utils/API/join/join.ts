@@ -1,7 +1,5 @@
 import { BigNumber, ethers } from 'ethers';
-import path from 'path';
-import axios from 'axios';
-import { claimsRoute, claimMaxCount } from 'config/config';
+import { claimMaxCount } from 'config/config';
 import { IClaimObject } from 'utils/API/web3/make-claim';
 import countClaims from 'utils/API/mined/mined';
 import { TerminalError } from 'utils/API/errors/TerminalError/TerminalError';
@@ -19,23 +17,6 @@ type ClaimsInfo = Record<string, User>;
 
 const keyFromAddress = (address: string) => address.slice(2, 4);
 const getFilename = (key: string) => `${key}.json`;
-
-const getClaims = async (address: string): Promise<ClaimsInfo> => {
-  const key = keyFromAddress(address);
-  const file = getFilename(key);
-  const filePath = path.join(claimsRoute, file);
-
-  const result = await axios.get<ClaimsInfo>(filePath);
-  return result.data;
-};
-
-const checkPermissions = async (address: string): Promise<User> => {
-  const claims = await getClaims(address);
-  if (!(address in claims)) {
-    throw new TerminalError({ code: 'PERMISSION_DENIED' });
-  }
-  return claims[address];
-};
 
 const isClaimed = async ({ miningAccount }: IClaimObject, { index }: User) => {
   const claimed = await miningAccount.isClaimed(index);
@@ -73,5 +54,5 @@ export type {
   IClaimObject, User, MerkleDistributorInfo, ClaimsInfo,
 };
 export {
-  checkPermissions, isClaimed, claim, waitTransactionEnd, keyFromAddress, getFilename,
+  isClaimed, claim, waitTransactionEnd, keyFromAddress, getFilename,
 };

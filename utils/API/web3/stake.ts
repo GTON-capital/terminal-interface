@@ -39,7 +39,8 @@ export const unstake = async (amount: BigNumber): Promise<string> => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contract = new ethers.Contract(stakingAddress, STAKING_ABI, signer);
-  const tx = await contract.mint(await signer.getAddress(), amount);
+  const share = await contract.balanceToShare(amount);
+  const tx = await contract.burn(await signer.getAddress(), share);
   const receipt = await tx.wait();
   return receipt.transactionHash;
 };

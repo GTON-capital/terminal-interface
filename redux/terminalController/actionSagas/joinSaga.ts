@@ -6,14 +6,13 @@ import messages from 'utils/API/messages/messages';
 import { getTypedError, TerminalError } from 'utils/API/errors/error-hub';
 import connectMetamask from 'utils/API/web3/connect-metamask';
 import {
-  checkPermissions, isClaimed, claim, waitTransactionEnd, User,
+  claim, waitTransactionEnd,
 } from 'utils/API/join/join';
-import makeClaim, { IClaimObject } from 'utils/API/web3/make-claim';
 import { signup } from 'utils/API/signup/signup';
 import { print, inputLock, loading } from 'redux/terminal/terminalAction';
 import { cancelOnDisconnectWeb3 } from 'redux/web3/web3Saga';
 import { playVideo, setVisited, setAllClaimed } from 'redux/terminalApp/terminalAppAction';
-import { setUser, setAddress } from 'redux/web3/web3Action';
+import { setAddress } from 'redux/web3/web3Action';
 import { IState } from 'redux/root/rootReducer';
 import { controllerJoinContinue } from '../actions/terminalControllerUserActions';
 import {
@@ -84,23 +83,17 @@ function* watchControllerIsGary() {
 function* controllerJoinContinueWorker() {
   try {
     yield put(inputLock(true));
-    yield put(controllerGoto('notGary'));
 
     const {
       web3: {
-        claimObject, user, address, web3Connected,
+        address, web3Connected,
       },
     } = (yield select()) as IState;
     if (!web3Connected) throw new TerminalError({ code: 'ACTION_ABORTED' });
     if (!address) throw new TerminalError({ code: 'UNEXPECTED_ERROR', details: 'No address' });
-    const safeClaim: IClaimObject = claimObject || (yield makeClaim({}));
 
     yield put(print({ msg: messages.permissionCheckingStarted }));
-    const safeUser: User = yield call(checkPermissions, address);
     yield put(print({ msg: messages.amountOfMineAccounts }));
-
-    yield call(isClaimed, safeClaim, safeUser);
-    if (!user) yield put(setUser(safeUser));
 
     yield put(controllerGoto('choice'));
     yield put(print({ msg: messages.claim }));

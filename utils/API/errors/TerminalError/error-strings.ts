@@ -21,9 +21,11 @@ type TerminalErrorCodes =
   | 'DISCONNECTED'
   | 'UNEXPECTED_ERROR'
   | 'ACTION_ABORTED'
+  | 'ALREADY_AIRDROPPED'
   | 'NO_MORE_CLAIMS'
   | 'REJECTED'
   | 'ENDPOINT_IS_BUSY'
+  | 'EMPTY_AMOUNT_ARG'
   | 'METAMASK_CORRECT_NETWORK';
 
 const errorStrings: Record<TerminalErrorCodes, string> = {
@@ -45,11 +47,17 @@ const errorStrings: Record<TerminalErrorCodes, string> = {
   METAMASK_RELOGIN: `
   Log in and try again
   `,
+  ALREADY_AIRDROPPED: `
+  You have already airdropped for the last period.
+  `,
   GET_ADDRESS_FAILED: `
   Failed to get your account address
   `,
   EMPTY_ADDRESS_ARG: `
   Please provide token name or address. To get list of available tokens - type >help
+  `,
+  EMPTY_AMOUNT_ARG: `
+  Please provide amount&
   `,
   PERMISSION_DENIED: `
   Houston, we have a problem! 

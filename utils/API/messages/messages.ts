@@ -103,6 +103,12 @@ const messages = {
 
   Governance work is about to begin… in a matter of days.
   `,
+  stake(action: string, a: string, h: string) {
+    return `
+    You have succesfully ${action} your funds!
+    Amount: ${a},
+    Transaction: https://testnet.ftmscan.com/tx/${h}`;
+  },
   accountsMined: (n: number) => `
   Accounts mined: ${n}
   `,

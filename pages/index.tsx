@@ -1,8 +1,6 @@
 import React from 'react';
-import { GetStaticProps } from 'next';
 import dynamic from 'next/dynamic';
 import { isLive } from 'config/config';
-import generateClaims from 'utils/node-scripts/generate-merkle-claims';
 import Layout from 'components/Layout/Layout';
 
 const LiveIndex = dynamic(() => import('screens/index/Live/Live'), {
@@ -27,12 +25,5 @@ function Index() {
     </Layout>
   );
 }
-
-export const getStaticProps: GetStaticProps = async () => {
-  if (isLive) generateClaims();
-  return {
-    props: {},
-  };
-};
 
 export default Index;
