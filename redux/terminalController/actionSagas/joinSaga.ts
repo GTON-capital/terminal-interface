@@ -11,7 +11,7 @@ import {
 import { signup } from 'utils/API/signup/signup';
 import { print, inputLock, loading } from 'redux/terminal/terminalAction';
 import { cancelOnDisconnectWeb3 } from 'redux/web3/web3Saga';
-import { playVideo, setVisited, setAllClaimed } from 'redux/terminalApp/terminalAppAction';
+import { playVideo, setAllClaimed } from 'redux/terminalApp/terminalAppAction';
 import { setAddress } from 'redux/web3/web3Action';
 import { IState } from 'redux/root/rootReducer';
 import { controllerJoinContinue } from '../actions/terminalControllerUserActions';
@@ -33,18 +33,6 @@ function* controllerJoinWorker() {
 
     yield put(setAddress(address));
     yield put(print({ msg: messages.metamaskConnected }));
-    yield put(controllerGoto('isGaryQuestion'));
-
-    const {
-      terminalApp: { visited },
-    } = (yield select()) as IState;
-    if (!visited) {
-      yield put(print({ msg: messages.isGaryQuestion }));
-      yield put(setVisited(true));
-    } else {
-      yield put(controllerJoinContinue([]));
-    }
-
     yield put(inputLock(false));
   } catch (e: any) {
     yield put(controllerGotoRoot());

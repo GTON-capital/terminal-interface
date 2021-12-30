@@ -72,9 +72,7 @@ const errorStrings: Record<TerminalErrorCodes, string> = {
   It’s now time to check the ${Prefix.PREFIX}${RootControllerActions.LINKS} command and join Gearbox socials!
   `,
   DENIED_BY_USER: `
-  Seems like you are NGMI, anon! You skipped financial freedom.
-
-  Type ${Prefix.PREFIX}${OptionalActions.MINE} if you exited by mistake.
+  You canceled the transaction.
   `,
   ACCOUNT_CHANGED: `
   You have just changed your account. All active actions were aborted.

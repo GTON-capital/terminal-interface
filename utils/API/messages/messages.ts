@@ -34,15 +34,8 @@ const messages = {
                       ╚██████╔╝██║  ██║███████╗██║  ██║██║  ██║██████╔╝╚██████╔╝██╔╝ ██╗
                        ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝
                                                             
-                            Welcome to Gearbox Protocol launch ceremony!
+                            Welcome to GTON CAPITAL staking testing!
 
-                            Once these stages are completed, the DAO will 
-                            take over the Credit Account primitive and 
-                            control over the codebase. Read all about 
-                            launch phases on Gearbox Medium and join Discord.
-                       
-                            YOU will be in charge of what Gearbox is to become!
-                     
                             Type ${Prefix.PREFIX}${RootControllerActions.HELP} to see list of available commands
   `,
 
@@ -50,19 +43,18 @@ const messages = {
   Available commands:
 
   ${Prefix.PREFIX}${RootControllerActions.HELP} - this output
-  ${Prefix.PREFIX}${RootControllerActions.STAKE} - stake funds
+  ${Prefix.PREFIX}${RootControllerActions.JOIN} - connect wallet to the terminal
+  ${Prefix.PREFIX}${RootControllerActions.STAKE} <amount> - stake funds
+  ${Prefix.PREFIX}${RootControllerActions.UNSTAKE} <amount> - unstake funds
   ${Prefix.PREFIX}${RootControllerActions.SWITCH} - switch chain to test fantom
-  ${Prefix.PREFIX}${RootControllerActions.BALANCE} <gton | token address>- get actual erc20 token balance
+  ${Prefix.PREFIX}${RootControllerActions.BALANCE} gton | staking - get actual erc20 token balance
   ${Prefix.PREFIX}${RootControllerActions.FAUCET} - receive gton airdrop
   `,
   links: `
-  Links to social media channels of Gearbox:
-
-  Twitter:  https://twitter.com/GearboxProtocol  
-  Discord:  https://discord.com/invite/Gearbox
+  Empty command rn
   `,
   metamaskConnected: `
-  Metamask connected
+  Metamask is connected
   `,
   permissionCheckingStarted: `
   ...the machine is checking if you are in the snapshot...
