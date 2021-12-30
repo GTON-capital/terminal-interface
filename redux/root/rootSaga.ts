@@ -11,6 +11,7 @@ import { watchSetVisited } from 'redux/terminalApp/terminalAppSaga';
 import watchControllerUserCommand from 'redux/terminalController/terminalControllerSaga';
 import watchControllerHelp from 'redux/terminalController/actionSagas/helpSaga';
 import watchControllerLinks from 'redux/terminalController/actionSagas/linksSaga';
+import {watchControllerStake, watchControllerUnstake } from 'redux/terminalController/actionSagas/stakeSaga';
 import watchControllerSwitch from 'redux/terminalController/actionSagas/switchSaga';
 import watchControllerBalance from 'redux/terminalController/actionSagas/balanceSaga';
 import watchControllerFaucet from 'redux/terminalController/actionSagas/faucetSaga';
@@ -52,5 +53,7 @@ export default function* rootSaga() {
     watchControllerSwitch(),
     watchControllerFaucet(),
     watchControllerBalance(),
+    watchControllerStake(),
+    watchControllerUnstake(),
   ]);
 }

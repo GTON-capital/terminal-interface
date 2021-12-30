@@ -56,6 +56,14 @@ const controllerFaucet = (payload: string[]): IUserAction => ({
   type: ActionType.FAUCET,
   payload,
 });
+const controllerStake = (payload: string[]): IUserAction => ({
+  type: ActionType.STAKE,
+  payload,
+});
+const controllerUnstake = (payload: string[]): IUserAction => ({
+  type: ActionType.UNSTAKE,
+  payload,
+});
 
 export type ControllerUserActions = IUserAction;
 export {
@@ -70,4 +78,6 @@ export {
   controllerLinks,
   controllerJoinContinue,
   controllerIsGary,
+  controllerUnstake,
+  controllerStake,
 };

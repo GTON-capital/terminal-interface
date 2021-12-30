@@ -20,7 +20,7 @@ function* controllerUnstakeWorker({ payload }: IUserAction) {
     const amount = toWei(BigNumber.from(arg));
     const txnHash: string = yield call(unstake, amount);
     yield put(loading(false));
-    yield put(print({ msg: messages.stake('unstaked', arg, txnHash) }));
+    yield put(print({ msg: messages.unstake(arg, txnHash) }));
     yield put(inputLock(false));
   } catch (e: any) {
     yield put(controllerGotoRoot());
@@ -40,9 +40,9 @@ function* controllerStakeWorker({ payload }: IUserAction) {
       throw new TerminalError({ code: 'EMPTY_AMOUNT_ARG' });
     }
     const amount = toWei(BigNumber.from(arg));
-    const txnHash: string = yield call(stake, amount);
+    const txnHash: string[] = yield call(stake, amount);
     yield put(loading(false));
-    yield put(print({ msg: messages.stake('unstaked', arg, txnHash) }));
+    yield put(print({ msg: messages.stake(arg, txnHash) }));
     yield put(inputLock(false));
   } catch (e: any) {
     yield put(controllerGotoRoot());

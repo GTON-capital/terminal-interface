@@ -33,6 +33,7 @@ enum RootControllerActions {
   MINED = 'mined',
   LINKS = 'links',
   STAKE = 'stake',
+  UNSTAKE = 'unstake',
   SWITCH = 'switch',
   FAUCET = 'faucet',
   BALANCE = 'balance',
