@@ -5,7 +5,8 @@ jobs:
       - image: cimg/base:2020.01
     steps:
       - checkout
-      - run: service docker start
+      - run: sudo systemctl unmask docker
+      - run: sudo systemctl start docker
       - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
       - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
       # Whatever you want to do
