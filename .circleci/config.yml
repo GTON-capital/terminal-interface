@@ -5,8 +5,7 @@ jobs:
       - image: cimg/base:2020.01
     steps:
       - checkout
-      - attach_workspace:
-          at: ~/project
+      - run: ls -lah
       - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
       - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
       # Whatever you want to do
