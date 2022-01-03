@@ -5,6 +5,7 @@ jobs:
       - image: cimg/base:2020.01
     steps:
       - checkout
+      - run: echo ${DOCKERHUB_USER}
       - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
       - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
       # Whatever you want to do
