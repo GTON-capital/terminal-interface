@@ -3,11 +3,9 @@ jobs:
   build:
     docker:
       - image: cimg/base:2020.01
-        auth:
-          username: ${DOCKERHUB_USER}
-          password: ${DOCKERHUB_PASSWORD}
     steps:
       - checkout
+      - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
       - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
       # Whatever you want to do
       - run: sudo apt-get update && sudo apt-get install -y kubectl
