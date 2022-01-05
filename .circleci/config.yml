@@ -17,7 +17,7 @@ jobs:
     docker:
       - image: cimg/python:3.8
     steps:
-      - kubernetes/install
+      - kubernetes/install-kubectl
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: ${CLUSTER_NAME}
       - run: kubectl rollout restart deployment ${DEPLOYMENT} --namespace=${NAMESPACE}     
