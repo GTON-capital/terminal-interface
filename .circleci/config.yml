@@ -11,10 +11,5 @@ jobs:
       - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
       # Whatever you want to do
       - run: sudo apt-get update && sudo apt-get install -y kubectl
-      - run: kubectl config set-cluster cluster-name --server=${CLUSTER_URL} --insecure-skip-tls-verify=true
-      - run: kubectl config set-context context-name --cluster=cluster-name
-      - run: kubectl config set-credentials ${USER} --token=${TOKEN}
-      - run: kubectl config set-context context-name --user=${USER}
-      - run: kubectl config set-context context-name --namespace=${NAMESPACE}
-      - run: kubectl config use-context context-name
-      - run: kubectl rollout restart deployment ${DEPLOYMENT}
+      - run: echo ${CUBE_CONFIG} >> config.yaml
+      - run: kubectl --kubeconfig=config.yaml rollout restart deployment ${DEPLOYMENT} --namespace=${NAMESPACE}
