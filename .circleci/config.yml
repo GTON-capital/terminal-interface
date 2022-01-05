@@ -15,6 +15,7 @@ jobs:
   clusterDeploy:
     executor: aws-eks/python3
     steps:
+      - checkout
       - kubernetes/install
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: ${CLUSTER_NAME}
