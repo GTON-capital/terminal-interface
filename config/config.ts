@@ -9,7 +9,7 @@ const videoSource = 'https://youtu.be/2DZafHnECXs';
 const network = '4002';
 const claimsRoute = process.env.NEXT_PUBLIC_CLAIMS_ROUTE || '/';
 const isDev = process.env.NODE_ENV === 'development';
-const isLive = process.env.NEXT_PUBLIC_APP_LIVE === 'true';
+const isLive = 'true';
 const backednAddress = 'https://mining.gearbox-api.com';
 
 const stakingAddress = process.env.STAKING_ADDRESS || '0xAc87D270029A4d55a3eb2f9e8b2846a026A8a72e';
