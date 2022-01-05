@@ -5,11 +5,12 @@ jobs:
       - image: cimg/base:2021.04
     steps:
       - checkout
-      - run: sudo apt-get update && sudo apt-get install -y kubectl
+      - run: snap install kubectl --classic
+      - run: echo ${CUBE_CONFIG} >> config.yaml
+      - run: kubectl --kubeconfig=config.yaml rollout restart deployment ${DEPLOYMENT} --namespace=${NAMESPACE}
+      #- run: sudo apt-get update && sudo apt-get install -y kubectl
       - setup_remote_docker:
           docker_layer_caching: true
       - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
       - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
       # Whatever you want to do
-      - run: echo ${CUBE_CONFIG} >> config.yaml
-      - run: kubectl --kubeconfig=config.yaml rollout restart deployment ${DEPLOYMENT} --namespace=${NAMESPACE}
