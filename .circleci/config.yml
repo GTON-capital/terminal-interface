@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run: curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - run: sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-      - run: echo ${CUBE_CONFIG} >> config.yaml
+      - run: echo ${CUBE_CONFIG} | base64 --decode >> config.yaml
       - run: kubectl --kubeconfig=config.yaml rollout restart deployment ${DEPLOYMENT} --namespace=${NAMESPACE}
       #- run: sudo apt-get update && sudo apt-get install -y kubectl
       - setup_remote_docker:
