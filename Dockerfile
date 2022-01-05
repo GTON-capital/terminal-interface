@@ -1,9 +1,8 @@
 # build stage
-FROM node:lts-alpine as build-stage
+FROM node:8.3.0
 WORKDIR /app
-COPY package*.json ./
-RUN npm cache clean --force
-RUN npm install
+COPY ./package*.json .
+RUN npm i
 COPY . .
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
