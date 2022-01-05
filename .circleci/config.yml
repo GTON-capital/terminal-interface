@@ -25,4 +25,6 @@ workflows:
   build-deploy:
     jobs:
       - docker-image-build
-      - cluster-deploy
+      - cluster-deploy:
+          requires: 
+            - docker-image-build
