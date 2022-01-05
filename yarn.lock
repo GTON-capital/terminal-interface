@@ -3038,7 +3038,6 @@
   dependencies:
     "anymatch" "~3.1.1"
     "braces" "~3.0.2"
-    "fsevents" "~2.3.1"
     "glob-parent" "~5.1.0"
     "is-binary-path" "~2.1.0"
     "is-glob" "~4.0.1"
@@ -3054,7 +3053,6 @@
   dependencies:
     "anymatch" "~3.1.1"
     "braces" "~3.0.2"
-    "fsevents" "~2.1.1"
     "glob-parent" "~5.1.0"
     "is-binary-path" "~2.1.0"
     "is-glob" "~4.0.1"
@@ -3358,10 +3356,9 @@
     "shebang-command" "^2.0.0"
     "which" "^2.0.1"
 
-"crt-terminal@^1.0.6":
-  "integrity" "sha512-Fdwi/FaHChV0O1o/AhD2lRruFhAstYRNKgSRDDhGcji1Skt6ceUdpmL8ZIcwvJylJRXRbEpIa9O77aXnaoCnHw=="
-  "resolved" "https://registry.npmjs.org/crt-terminal/-/crt-terminal-1.0.6.tgz"
-  "version" "1.0.6"
+"crt-terminal@git+https://github.com/essserrr/retro-css-shell-demo.git":
+  "resolved" "git+ssh://git@github.com/essserrr/retro-css-shell-demo.git#e216046522f41ef02d93a59dcdbcc2f445dd399f"
+  "version" "1.0.5"
 
 "crypto-browserify@^3.11.0", "crypto-browserify@3.12.0":
   "integrity" "sha512-fz4spIh+znjO2VjL+IdhEpRJ3YN6sMzITSBijk6FK2UvTqruSQW+/cCZTSNsMiZNvUeq0CqurF+dAbyiGOY6Wg=="
@@ -9047,7 +9044,6 @@
     "chokidar" "^3.4.1"
     "graceful-fs" "^4.1.2"
     "neo-async" "^2.5.0"
-    "watchpack-chokidar2" "^2.0.1"
   optionalDependencies:
     "watchpack-chokidar2" "^2.0.1"
 

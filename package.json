@@ -1,5 +1,5 @@
 {
-  "name": "graviton-terminal",
+  "name": "gearbox-terminal",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -15,15 +15,12 @@
   },
   "dependencies": {
     "@diesellabs/gearbox-sdk": "^0.0.223",
-    "@ethersproject/abi": "^5.4.1",
     "@redux-saga/core": "^1.1.3",
     "@types/react-transition-group": "^4.4.2",
     "axios": "^0.24.0",
-    "crt-terminal": "^1.0.6",
+    "crt-terminal": "git+https://github.com/essserrr/retro-css-shell-demo.git",
     "dotenv": "^10.0.0",
-    "ethereumjs-util": "^7.1.0",
     "ethers": "^5.4.6",
-    "fsevents": "^2.3.2",
     "next": "^10.2.3",
     "next-compose-plugins": "^2.2.1",
     "next-redux-wrapper": "^7.0.0-rc.2",
@@ -31,7 +28,6 @@
     "react-content-loader": "^6.0.3",
     "react-device-detect": "^1.15.0",
     "react-dom": "^17.0.2",
-    "react-is": "^17.0.2",
     "react-player": "^2.9.0",
     "react-redux": "^7.2.4",
     "react-transition-group": "^4.4.2",
