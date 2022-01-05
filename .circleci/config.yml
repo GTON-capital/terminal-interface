@@ -1,7 +1,7 @@
 version: 2.0
 orbs:
   aws-eks: circleci/aws-eks@2.1.0
-  kubernetes: circleci/kubernetes@1.0
+  kubernetes: circleci/kubernetes@1.1.0
 jobs:
   docker-image-build:
     docker:
