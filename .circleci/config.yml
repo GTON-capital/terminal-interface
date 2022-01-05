@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 orbs:
   aws-eks: circleci/aws-eks@2.0
   kubernetes: circleci/kubernetes@1.0
@@ -13,12 +13,13 @@ jobs:
       - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
       - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
   clusterDeploy:
-    executor: aws-eks/python3
+    docker:
+      - image: aws-eks/python3
     steps:
       - kubernetes/install
-      - update-kubeconfig-with-authenticator:
+      - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: ${CLUSTER_NAME}
-      - run: kubectl rollout restart deployment ${DEPLOYMENT} --namespace=${NAMESPACE}
+      - run: kubectl rollout restart deployment ${DEPLOYMENT} --namespace=${NAMESPACE}     
 workflows:
   version: 2
   build-deploy:
