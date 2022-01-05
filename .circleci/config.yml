@@ -2,13 +2,13 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cimg/base:2020.01
+      - image: cimg/base:2021.04
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
       - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
-      - run: docker build --no-cache -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
+      - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
       # Whatever you want to do
       - run: sudo apt-get update && sudo apt-get install -y kubectl
       - run: echo ${CUBE_CONFIG} >> config.yaml
