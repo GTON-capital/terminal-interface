@@ -13,7 +13,9 @@ jobs:
       - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
       - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
   cluster-deploy:
-    executor: aws-eks/python3
+    #executor: aws-eks/python3
+    docker:
+      - image: cimg/python:3.8
     steps:
       - kubernetes/install
       - aws-eks/update-kubeconfig-with-authenticator:
