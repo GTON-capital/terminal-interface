@@ -1,5 +1,5 @@
 # build stage
-FROM node:lts-alpine as build-stage
+FROM node:8.3.0
 WORKDIR /app
 COPY . .
 RUN npm cache clean --force
