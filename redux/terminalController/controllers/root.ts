@@ -9,6 +9,7 @@ import {
   controllerUnstake,
   controllerBalance,
   controllerFaucet,
+  controllerAddToken,
   IUserAction,
 } from 'redux/terminalController/actions/terminalControllerUserActions';
 import {
@@ -39,6 +40,7 @@ const root: Controller = {
     [RootControllerActions.SWITCH]: controllerSwitch,
     [RootControllerActions.BALANCE]: controllerBalance,
     [RootControllerActions.FAUCET]: controllerFaucet,
+    [RootControllerActions.ADD_TOKEN]: controllerAddToken,
   },
   children: {
     join,

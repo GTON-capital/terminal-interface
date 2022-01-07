@@ -64,6 +64,10 @@ const controllerUnstake = (payload: string[]): IUserAction => ({
   type: ActionType.UNSTAKE,
   payload,
 });
+const controllerAddToken = (payload: string[]): IUserAction => ({
+  type: ActionType.ADD_TOKEN,
+  payload,
+});
 
 export type ControllerUserActions = IUserAction;
 export {
@@ -80,4 +84,5 @@ export {
   controllerIsGary,
   controllerUnstake,
   controllerStake,
+  controllerAddToken,
 };

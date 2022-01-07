@@ -15,6 +15,7 @@ import { watchControllerStake, watchControllerUnstake } from 'redux/terminalCont
 import watchControllerSwitch from 'redux/terminalController/actionSagas/switchSaga';
 import watchControllerBalance from 'redux/terminalController/actionSagas/balanceSaga';
 import watchControllerFaucet from 'redux/terminalController/actionSagas/faucetSaga';
+import watchControllerAddToken from 'redux/terminalController/actionSagas/addTokenSaga';
 import {
   watchControllerJoin,
   watchControllerJoinContinue,
@@ -55,5 +56,6 @@ export default function* rootSaga() {
     watchControllerBalance(),
     watchControllerStake(),
     watchControllerUnstake(),
+    watchControllerAddToken(),
   ]);
 }

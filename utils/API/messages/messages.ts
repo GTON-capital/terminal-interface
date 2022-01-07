@@ -44,6 +44,7 @@ const messages = {
   ${Prefix.PREFIX}${RootControllerActions.UNSTAKE} <amount> - unstake funds
   ${Prefix.PREFIX}${RootControllerActions.SWITCH} - switch chain to test fantom
   ${Prefix.PREFIX}${RootControllerActions.BALANCE} gton | staking - get actual erc20 token balance
+  ${Prefix.PREFIX}${RootControllerActions.ADD_TOKEN} gton | sgton - add tokens to metamask
   ${Prefix.PREFIX}${RootControllerActions.FAUCET} - receive gton airdrop
   `,
   links: `
@@ -120,6 +121,9 @@ const messages = {
   `,
   isGary: `
   Ok, we assume you were joking. Carry on!
+  `,
+  addToken: `
+  Successfully added token to the MetaMask.
   `,
 };
 

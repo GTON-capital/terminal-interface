@@ -17,6 +17,7 @@ enum ActionType {
   BALANCE = 'BALANCE',
   STAKE = 'STAKE',
   UNSTAKE = 'UNSTAKE',
+  ADD_TOKEN = 'ADD_TOKEN',
 }
 
 enum SystemActions {
@@ -37,6 +38,7 @@ enum RootControllerActions {
   SWITCH = 'switch',
   FAUCET = 'faucet',
   BALANCE = 'balance',
+  ADD_TOKEN = 'add',
 }
 
 enum MineChoiceActions {
