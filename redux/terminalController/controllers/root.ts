@@ -16,13 +16,11 @@ import {
   RootControllerActions,
   OptionalActions,
 } from 'redux/terminalController/terminalControllerActionTypes';
-import join from './join/join';
 
 type UserActions = Record<string, (payload: string[]) => IUserAction>;
 
 type Controller = {
   userActions?: UserActions;
-  children: Record<string, Controller> | null;
 };
 
 const optionalActions: UserActions = {
@@ -41,9 +39,6 @@ const root: Controller = {
     [RootControllerActions.BALANCE]: controllerBalance,
     [RootControllerActions.FAUCET]: controllerFaucet,
     [RootControllerActions.ADD_TOKEN]: controllerAddToken,
-  },
-  children: {
-    join,
   },
 };
 
