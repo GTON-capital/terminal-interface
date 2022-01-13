@@ -6,7 +6,11 @@ export const addressMap: Record<string, string> = {
   staking: stakingAddress,
 };
 const defaultDecimals = BigNumber.from(18);
-export const fromWei = (n: BigNumber, d: BigNumber = defaultDecimals): BigNumber => n.div(d);
-export const toWei = (n: BigNumber, d: BigNumber = defaultDecimals): BigNumber => n.mul(d);
+export const fromWei = (
+  n: BigNumber, d: BigNumber = defaultDecimals,
+): BigNumber => n.div(BigNumber.from(10).pow(d));
+export const toWei = (
+  n: BigNumber, d: BigNumber = defaultDecimals,
+): BigNumber => n.mul(BigNumber.from(10).pow(d));
 
 export default addressMap;
