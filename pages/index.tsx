@@ -14,11 +14,11 @@ function Index() {
   return (
     <Layout
       layoutParams={{
-        title: 'Credit account mining | Gearbox',
+        title: 'Testing | GTON Capital',
         description:
-          'Composable leverage starts with Credit Account Mining. Gear up and join Gearbox DAO!',
-        keyWords: 'Gearbox, crypto, credit account mining',
-        url: 'https://credit-mining.gearbox.finance',
+          'Test the GTON ecosystem via terminal UI.',
+        keyWords: 'GTON, crypto, staking',
+        url: 'https://test.cli.gton.capital/',
       }}
     >
       {isLive ? <LiveIndex /> : <PlaceholderIndex />}
