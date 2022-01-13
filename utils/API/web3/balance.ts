@@ -2,8 +2,10 @@ import { TerminalError } from 'utils/API/errors/TerminalError/TerminalError';
 import {
   network,
 } from 'config/config';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber as OldBigNumber, ethers } from 'ethers';
+import BigNumber from 'bignumber.js';
 import ERC20_ABI from './abi/erc20.json';
+import { migrateBigNumber } from '../balance/balance';
 
 const balance = async (tokenAddress: string): Promise<BigNumber> => {
   if (!window.ethereum || !window.ethereum!.isMetaMask) {
@@ -19,8 +21,8 @@ const balance = async (tokenAddress: string): Promise<BigNumber> => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contract = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
-  const userBalance = await contract.balanceOf(signer.getAddress());
-  return userBalance;
+  const userBalance: OldBigNumber = await contract.balanceOf(signer.getAddress());
+  return migrateBigNumber(userBalance);
 };
 
 export default balance;

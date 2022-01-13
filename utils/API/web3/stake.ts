@@ -3,10 +3,10 @@ import {
   stakingAddress,
   network,
 } from 'config/config';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import STAKING_ABI from './abi/staking.json';
 
-export const stake = async (amount: BigNumber): Promise<string> => {
+export const stake = async (amount: string): Promise<string> => {
   if (!window.ethereum || !window.ethereum!.isMetaMask) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
@@ -25,7 +25,7 @@ export const stake = async (amount: BigNumber): Promise<string> => {
   return receipt.transactionHash;
 };
 
-export const unstake = async (amount: BigNumber): Promise<string> => {
+export const unstake = async (amount: string): Promise<string> => {
   if (!window.ethereum || !window.ethereum!.isMetaMask) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
