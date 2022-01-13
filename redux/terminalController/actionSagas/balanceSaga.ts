@@ -4,14 +4,13 @@ import { fromWei, addressMap } from 'utils/API/balance/balance';
 import { getTypedError, TerminalError } from 'utils/API/errors/error-hub';
 import balance from 'utils/API/web3/balance';
 import { print, inputLock, loading } from 'redux/terminal/terminalAction';
-import { BigNumber } from 'ethers';
+import { BigNumber } from 'bignumber.js';
 import { controllerGotoRoot } from '../actions/terminalControllerActions';
 import { IUserAction } from '../actions/terminalControllerUserActions';
 import { ActionType } from '../terminalControllerActionTypes';
 
 function* controllerBalanceWorker({ payload }: IUserAction) {
   try {
-    yield put(inputLock(true));
     yield put(loading(true));
     const nameOrAddress = payload[0];
     let address;
@@ -26,7 +25,7 @@ function* controllerBalanceWorker({ payload }: IUserAction) {
     const userBalance: BigNumber = yield call(balance, address);
     const etherBalance = fromWei(userBalance);
     yield put(loading(false));
-    yield put(print({ msg: messages.balance(etherBalance.toString()) }));
+    yield put(print({ msg: messages.balance(etherBalance.toFixed(18)) }));
     yield put(inputLock(false));
   } catch (e: any) {
     yield put(controllerGotoRoot());
