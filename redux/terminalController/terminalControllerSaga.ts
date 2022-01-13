@@ -10,11 +10,11 @@ import { SystemActions, ActionType } from './terminalControllerActionTypes';
 const parseCommand = (command: string) => command.replaceAll('>', '');
 
 function* controllerUserCommandWorker({ payload }: IActionCommand) {
+  console.log(payload);
   try {
     const {
       terminalController: { current },
     } = (yield select()) as IState;
-    // can cause bugs (incorrect state check)
     if (!current || !current.userActions) {
       throw new TerminalError({ code: 'COMMAND_NOT_FOUND' });
     }
