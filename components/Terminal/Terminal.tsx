@@ -33,7 +33,7 @@ const Terminal = ({ onCommand, banner, prompt }: ITerminalProps) => {
 
   return (
     <div id="crt">
-      <div id="screen">
+      <div id="screen" style="background: #111111;">
         <div id="wrapper">
           <div id="interlace"></div>
           <div id="scanline"></div>
