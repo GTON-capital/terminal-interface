@@ -11,7 +11,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
-      - run: docker build -t ${CONTAINER_TAG_PROD} . && docker push ${CONTAINER_TAG_PROD}
+      - run: docker build -t ${CONTAINER_TAG} . && docker push ${CONTAINER_TAG}
   cluster-deploy:
     docker:
       - image: cimg/python:3.8
@@ -19,7 +19,7 @@ jobs:
       - kubernetes/install
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: ${CLUSTER_NAME}
-      - run: kubectl rollout restart deployment ${DEPLOYMENT_PROD} --namespace=${NAMESPACE}     
+      - run: kubectl rollout restart deployment ${DEPLOYMENT} --namespace=${NAMESPACE}     
 workflows:
   version: 2
   build-deploy:
