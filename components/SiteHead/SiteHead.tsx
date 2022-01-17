@@ -15,7 +15,7 @@ function SiteHead({
   keyWords,
   url,
   favIcon = '/images/favicon.svg',
-  image = '/images/card.png',
+  image = '/images/card.jpeg',
 }: ISiteHeadProps) {
   return (
     <Head>
