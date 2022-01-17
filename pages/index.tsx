@@ -14,10 +14,10 @@ function Index() {
   return (
     <Layout
       layoutParams={{
-        title: 'Testing | GTON Capital',
+        title: 'CLI UI | GTON Capital (𝔾ℂ)',
         description:
-          'Test the GTON ecosystem via terminal UI.',
-        keyWords: 'GTON, crypto, staking',
+          'An inovative way of USER <-> SC interaction for 𝔾ℂEco products.',
+        keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
         url: 'https://test.cli.gton.capital/',
       }}
     >
