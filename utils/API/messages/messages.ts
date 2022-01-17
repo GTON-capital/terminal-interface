@@ -30,9 +30,19 @@ const messages = {
        ╚██████╔╝   ██║   ╚██████╔╝██║ ╚████║    ╚██████╗██║  ██║██║     ██║   ██║   ██║  ██║███████╗
         ╚═════╝    ╚═╝    ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝
                                                             
-                            Welcome to GTON CAPITAL testing platform!
+                           ⚜️ Welcome to GTON CAPITAL (𝔾ℂ) CLI UI 📺!
 
-                            Type ${Prefix.PREFIX}${RootControllerActions.HELP} to see list of available commands
+            We were inspired by the way how GearBox CA minting ceremony (the biggest bag of @ivangbi 
+              besides $USDC and $LOBS NFT) was organized and decided to fork the ui application, 
+              so that our users can work with smart contracts directly, both on the testnet 
+                and mainnet.
+
+              To get free testnet $FTMs open: https://faucet.fantom.network/
+              To find more info about GC open: https://gton.capital/
+
+                            Type ${Prefix.PREFIX}${RootControllerActions.HELP} to see the list of available commands.
+
+            #WA𝔾MI ⚜️
   `,
 
   helpText: `
