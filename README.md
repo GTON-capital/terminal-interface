@@ -1,4 +1,4 @@
-# ⚜️ GTON Capital (GC) staking CLI
+# ⚜️ GTON Capital (GC) staking 📺CLI
 
 Welcome to staking CLI!
 
