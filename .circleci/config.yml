@@ -10,12 +10,12 @@ jobs:
       container-tag:
         type: string
       prod-config:
-        type: bool
+        type: boolean
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
-      - run: echo << parameters.test-config >> || mv config.test.ts config.ts
+      - run: echo << parameters.prod-config >> || mv config.test.ts config.ts
       - run: docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
       - run: docker build -t << parameters.container-tag >> . && docker push << parameters.container-tag >>
   cluster-deploy:
