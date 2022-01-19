@@ -6,7 +6,7 @@ const distributorInfo: MerkleDistributorInfo = {
 
 const claimMaxCount = 0;
 const videoSource = 'https://youtu.be/2DZafHnECXs';
-const network = '250';
+const network = '4002';
 const claimsRoute = '/';
 const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
@@ -16,12 +16,12 @@ const stakingAddress = '0x722A280a0178c500A1bCCe3a9e519a6b669bf912';
 const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
 const tokenAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
 const fantomTestnet = {
-  chainId: '250',
-  chainIdHex: '0xFA',
-  chainName: 'Fantom Mainnet',
-  rpcUrls: ['https://rpc.fantom.network'],
+  chainId: '4002',
+  chainIdHex: '0xFA2',
+  chainName: 'Fantom Testnet',
+  rpcUrls: ['https://rpc.testnet.fantom.network'],
   nativeCurrency: { name: 'FTM', decimals: 18, symbol: 'FTM' },
-  blockExplorerUrls: ['https://ftmscan.com/'],
+  blockExplorerUrls: ['https://testnet.ftmscan.com/'],
 };
 
 export {
