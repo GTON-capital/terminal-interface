@@ -12,9 +12,9 @@ const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const backednAddress = 'https://mining.gearbox-api.com';
 
-const stakingAddress = '0x722A280a0178c500A1bCCe3a9e519a6b669bf912';
-const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
-const tokenAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
+const stakingAddress = '0xc020EE7e6f1D1C0173a2b00ff9ffAF6Eac079B4c';
+const faucetAddress = '';
+const tokenAddress = '0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4';
 const fantomTestnet = {
   chainId: '250',
   chainIdHex: '0xFA',
