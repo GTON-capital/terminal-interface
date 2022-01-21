@@ -3,11 +3,13 @@ import messages from 'utils/API/messages/messages';
 import { getTypedError, TerminalError } from 'utils/API/errors/error-hub';
 import faucet from 'utils/API/web3/faucet';
 import { print, inputLock, loading } from 'redux/terminal/terminalAction';
+import { isTestnet } from 'config/config';
 import { controllerGotoRoot } from '../actions/terminalControllerActions';
 import { ActionType } from '../terminalControllerActionTypes';
 
 function* controllerFaucetWorker() {
   try {
+    if (!isTestnet) throw Error();
     yield put(inputLock(true));
     yield put(loading(true));
     yield call(faucet);

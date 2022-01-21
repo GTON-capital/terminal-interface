@@ -3,10 +3,19 @@ import { Prefix } from '../../messages/messages';
 
 const notFoundStrings = [
   `
-  Don’t break the gears! Machines are orderly systems, so don’t disrupt the engines. Follow the process by typing ${Prefix.PREFIX}${RootControllerActions.HELP} in the command line below.
+  You really need to ${RootControllerActions.HELP} yourself with getting rich. Type ${Prefix.PREFIX}${RootControllerActions.HELP}.
   `,
   `
-  Anon-kun, did 0xtuba bite you? Stop doing weird stuff and go type ${Prefix.PREFIX}${RootControllerActions.HELP}.
+  HELP! They kidnapped me and made me ask you to type help messages! Please, type ${Prefix.PREFIX}${RootControllerActions.HELP} to save...
+  `,
+  `
+  if you type ${Prefix.PREFIX}${RootControllerActions.HELP} you will be able to see available commands.
+  `,
+  `
+  Maybe we will add your command in future, but now you should use one of the help list. Type ${Prefix.PREFIX}${RootControllerActions.HELP} and see.
+  `,
+  `
+  Don’t break the gears! Machines are orderly systems, so don’t disrupt the engines. Follow the process by typing ${Prefix.PREFIX}${RootControllerActions.HELP} in the command line below.
   `,
   `
   Andre Cronje is an amazing builder, and if you think otherwise - type ${Prefix.PREFIX}${RootControllerActions.HELP}.
@@ -22,9 +31,6 @@ const notFoundStrings = [
   `,
   `
   Ivangbi has a terrible sense of humour, type ${Prefix.PREFIX}${RootControllerActions.HELP} to literally help him with the recovery.
-  `,
-  `
-  Let’s collect NFTs, screw DeFi? Type ${Prefix.PREFIX}${RootControllerActions.HELP} if you want to proceed.
   `,
 ];
 

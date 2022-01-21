@@ -1,3 +1,4 @@
+import { isTestnet } from 'config/config';
 import {
   RootControllerActions,
   OptionalActions,
@@ -38,17 +39,21 @@ const errorStrings: Record<TerminalErrorCodes, string> = {
   METAMASK_NOT_CONNECTED: `
   Failed to connect to Metamask. Try again.
   `,
-  METAMASK_WRONG_NETWORK: `
+  METAMASK_WRONG_NETWORK: isTestnet ? `
   Please switch to Fantom Testnet.
+  ` : `
+  Please switch to Fantom Network.
   `,
-  METAMASK_CORRECT_NETWORK: `
+  METAMASK_CORRECT_NETWORK: isTestnet ? `
   You are currently on Fantom Testnet.
+  ` : `
+  You are currently on Fantom Network.
   `,
   METAMASK_RELOGIN: `
   Log in and try again
   `,
   ALREADY_AIRDROPPED: `
-  You have already airdropped for the last period.
+  Something went wrong
   `,
   GET_ADDRESS_FAILED: `
   Failed to get your account address

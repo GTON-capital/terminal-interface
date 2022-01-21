@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { controllerCommand } from 'redux/terminalController/actions/terminalControllerActions';
 import Terminal from 'components/Terminal/Terminal';
 import messages, { Prompt } from 'utils/API/messages/messages';
+import { isTestnet } from 'config/config';
 
 function TerminalController() {
   const dispatch = useDispatch();
@@ -12,7 +13,7 @@ function TerminalController() {
     dispatch(controllerCommand(c.trim()));
   };
 
-  return <Terminal banner={messages.banner} prompt={Prompt.PROMPT} onCommand={handleCommand} />;
+  return <Terminal banner={messages.banner} prompt={ isTestnet ? Prompt.TESTNET: Prompt.MAINNET} onCommand={handleCommand} />;
 }
 
 export default TerminalController;

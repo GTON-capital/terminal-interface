@@ -11,6 +11,7 @@ const claimsRoute = '/';
 const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const backednAddress = 'https://mining.gearbox-api.com';
+const isTestnet = true;
 
 const stakingAddress = '0x76bf9655e325fe28F14862bCc117173d845CbC82';
 const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
@@ -26,6 +27,7 @@ const fantomTestnet = {
 
 export {
   network,
+  isTestnet,
   fantomTestnet,
   stakingAddress,
   claimsRoute,
