@@ -5,7 +5,7 @@ import {
 } from 'redux/terminalController/terminalControllerActionTypes';
 
 enum Prompt {
-  PROMPT = '/gton/testing $ ',
+  PROMPT = '/gton $ ',
 }
 
 enum Prefix {
@@ -37,7 +37,6 @@ const messages = {
               so that our users can work with smart contracts directly, both on the testnet 
                 and mainnet.
 
-              To get free testnet $FTMs open: https://faucet.fantom.network/
               To find more info about GC open: https://gton.capital/
 
                             Type ${Prefix.PREFIX}${RootControllerActions.HELP} to see the list of available commands.
@@ -55,7 +54,6 @@ const messages = {
   ${Prefix.PREFIX}${RootControllerActions.SWITCH} - switch chain to test fantom
   ${Prefix.PREFIX}${RootControllerActions.BALANCE} gton | staking - get actual erc20 token balance
   ${Prefix.PREFIX}${RootControllerActions.ADD_TOKEN} gton | sgton - add tokens to metamask
-  ${Prefix.PREFIX}${RootControllerActions.FAUCET} - receive gton airdrop
   `,
   links: `
   Empty command rn

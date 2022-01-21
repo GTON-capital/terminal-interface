@@ -18,7 +18,7 @@ function Index() {
         description:
           'An inovative way of USER <-> SC interaction for 𝔾ℂEco products.',
         keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
-        url: 'https://test.cli.gton.capital/',
+        url: 'https://cli.gton.capital/',
       }}
     >
       {isLive ? <LiveIndex /> : <PlaceholderIndex />}
