@@ -11,6 +11,7 @@ const claimsRoute = '/';
 const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const backednAddress = 'https://mining.gearbox-api.com';
+const isProd = true;
 
 const stakingAddress = '0xc020EE7e6f1D1C0173a2b00ff9ffAF6Eac079B4c';
 const faucetAddress = '';
