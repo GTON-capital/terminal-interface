@@ -1,14 +1,14 @@
 {
-  "processors": ["stylelint-processor-styled-components"],
-  "extends": "stylelint-config-standard",
-  "plugins": ["stylelint-order"],
+  "customSyntax": "postcss-scss",
+  "extends": ["stylelint-config-standard", "stylelint-prettier/recommended"],
+  "plugins": ["stylelint-scss", "stylelint-order", "stylelint-prettier"],
   "rules": {
-    "value-keyword-case": null,
-    "declaration-colon-newline-after": null,
+    "selector-class-pattern": "^[a-z][a-zA-Z0-9_-]+$",
+    "prettier/prettier": true,
     "at-rule-no-unknown": [
       true,
       {
-        "ignoreAtRules": ["function", "return"]
+        "ignoreAtRules": ["function", "return", "mixin", "include", "use"]
       }
     ],
     "selector-type-no-unknown": [true, { "ignoreTypes": ["tabs", "tab", "indicator"] }],
