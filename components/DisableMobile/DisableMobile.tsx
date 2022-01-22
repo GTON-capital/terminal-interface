@@ -12,7 +12,7 @@ function DisableMobile({ children }: PropsWithChildren<IDisableMobileProps>) {
           <Styled.DisableWrap>
             <Styled.TextWrap>
               <Styled.Text>
-                GTON Capital terminal is only accessible from desktop only. Apologies for the inconvenience.
+                GTON Capital terminal is accessible from desktop only. Apologies for the inconvenience.
               </Styled.Text>
             </Styled.TextWrap>
           </Styled.DisableWrap>
