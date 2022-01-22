@@ -29,8 +29,12 @@ body {
   background: #FF8C00 ;
   background: rgb(255,140,0, 0.68) !important;
   line-height: 1.25 !important;
-  font-size: 1.3vw !important;
+  font-size: 1.4vw !important;
   font-weight: 600;
   text-shadow: none !important;
 
+}
+
+.link-padding {
+  padding-left: 80px;
 }

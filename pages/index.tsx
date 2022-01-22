@@ -4,10 +4,11 @@ import {
   useEventQueue,
   textLine,
   textWord,
+  anchorWord,
 } from 'crt-terminal';
 import Layout from '../components/Layout/Layout';
 import classes from './index.module.scss';
-
+import { faucetLink, gcLink, isTestnet } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
 import messages from '../Messages/Messages';
 
@@ -26,7 +27,14 @@ export default function Web() {
   const { lock, loading, clear, print, focus } = eventQueue.handlers;
 
   return (
-    <Layout>
+    <Layout
+    layoutParams={{
+      title: 'CLI UI | GTON Capital (𝔾ℂ)',
+      description:
+        'An inovative way of USER <-> SC interaction for 𝔾ℂEco products.',
+      keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
+      url: 'https://test.cli.gton.capital/',
+    }}>
       <main className={classes.mainContainer}>
         <Terminal
           queue={eventQueue}
@@ -73,9 +81,11 @@ export default function Web() {
 
           }
         }
-        prompt={"$ "+CurrentDirectory+"/ "}
+        prompt={"/"+CurrentDirectory+" $ "}
           banner={[
             textLine({ words: [textWord({ characters: messages.banner })] }),
+            textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, href: gcLink })] }),
+            isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }): null,
           ]}
         />
       </main>

@@ -1,5 +1,6 @@
-import { Prefix, Commands, OptionalActions } from '../Messages/Messages';
-import messages from '../Messages/Messages';
+import messages, { Prefix, OptionalActions } from '../Messages/Messages';
+import { isTestnet } from '../config/config';
+
 import notFoundStrings from './notfound-strings';
   
   type TerminalErrorCodes =
@@ -33,10 +34,10 @@ import notFoundStrings from './notfound-strings';
     Failed to connect to Metamask. Try again.
     `,
     METAMASK_WRONG_NETWORK: `
-    Please switch to Fantom Testnet.
+    Please switch to Fantom ${isTestnet? 'Testnet' : ''}.
     `,
     METAMASK_CORRECT_NETWORK: `
-    You are currently on Fantom Testnet.
+    You are currently on Fantom ${isTestnet? 'Testnet' : ''}.
     `,
     METAMASK_RELOGIN: `
     Log in and try again

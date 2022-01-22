@@ -40,15 +40,18 @@ const StakeSlave = async (eventQueue, Amount) =>
         loading(true);
 
         const amount = toWei(new BigNumber(Amount))
+        const userBalance = await balance(tokenAddress);
+        if(amount.gt(userBalance)) throw Error("Insufficient amount")
+
         const firstTxn = await approve(tokenAddress, stakingAddress, amount.toString())
 
         print([textLine({words:[textWord({ characters: messages.approve })]})]);
-        print([textLine({className: classes.customLine,words:[anchorWord({ characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
+        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
         
         const secondTxn = await stake(amount.toString());
 
         print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
-        print([textLine({className: classes.customLine,words:[anchorWord({ characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
+        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
      
         loading(false);
         lock(false);
@@ -69,11 +72,12 @@ const UnStakeSlave = async (eventQueue, Amount) =>
         lock(true);
         loading(true);
         const amount = toWei(new BigNumber(Amount))
-
+        const userBalance = await balance(stakingAddress);
+        if(amount.gt(userBalance)) throw Error("Insufficient amount")
         const TxnHash = await unstake(amount.toString());
 
         print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
-        print([textLine({className: classes.customLine, words:[anchorWord({ characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
+        print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
      
         loading(false);
         lock(false);

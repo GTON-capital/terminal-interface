@@ -1,5 +1,4 @@
-import { anchorWord, textLine, textWord } from 'crt-terminal';
-import { network, isTestnet } from '../config/config';
+import { isTestnet } from '../config/config';
 
 enum Commands 
 {
@@ -51,13 +50,12 @@ const messages = {
          so that our users can work with smart contracts directly, both on the testnet 
            and mainnet.
 
-         ${isTestnet ? 'To get free testnet $FTMs open: https://faucet.fantom.network/' : ''}
-         To find more info about GC open: https://gton.capital/
-
                        Type ${Prefix.PREFIX}${Commands.HELP} to see the list of available commands.
 
        #WA𝔾MI ⚜️
   `,
+  faucet: 'Get free testnet $FTMs',
+  gc: 'Find more info about GC',
 
   helpText: `
   Available commands:
@@ -113,7 +111,7 @@ const messages = {
     `
   ,
   chainSwitch: `
-  Successfully switched to fantom testnet.
+  Successfully switched to Fantom ${isTestnet? 'Testnet' : ''}.
   `,
   faucetDeposit: `
   Succesfully airdropped GTON.
