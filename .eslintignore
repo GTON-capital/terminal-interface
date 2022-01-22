@@ -1,3 +1,5 @@
 node_modules
 .next
 .eslintrc.js
+*.d.ts
+pages

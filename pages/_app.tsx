@@ -1,14 +1,9 @@
 import React from 'react';
-import { AppProps } from 'next/dist/next-server/lib/router/router';
-import dynamic from 'next/dynamic';
-import { isLive } from 'config/config';
-import 'crt-terminal/src/styles.scss';
+import { AppProps } from 'next/app';
+import './_app.css';
 
-const LiveApp = dynamic(() => import('screens/_app/Live/Live'));
-const PlaceholderApp = dynamic(() => import('screens/_app/Placeholder/Placeholder'));
+const App = function App({ Component: AppChildComponent, pageProps }: AppProps) {
+  return <AppChildComponent {...pageProps} />;
+};
 
-function GearboxTerminal(pageProps: AppProps) {
-  return isLive ? <LiveApp {...pageProps} /> : <PlaceholderApp {...pageProps} />;
-}
-
-export default GearboxTerminal;
+export default App;
