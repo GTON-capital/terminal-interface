@@ -7,6 +7,7 @@ import {
   anchorWord,
 } from 'crt-terminal';
 import Layout from '../components/Layout/Layout';
+import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
@@ -36,6 +37,7 @@ export default function Web() {
       url: 'https://test.cli.gton.capital/',
     }}>
       <main className={classes.mainContainer}>
+      <DisableMobile>
         <Terminal
           queue={eventQueue}
           onCommand={(command) =>
@@ -91,6 +93,7 @@ export default function Web() {
             isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }): null,
           ]}
         />
+        </DisableMobile>
       </main>
     </Layout>
   );
