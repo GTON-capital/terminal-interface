@@ -17,7 +17,7 @@ import switchChain from '../WEB3/Switch';
 import balance from '../WEB3/Balance';
 import addToken from '../WEB3/addTokenToMM';
 import tokenMap from '../WEB3/API/addToken';
-import { approve } from '../WEB3/approve';
+import { allowance, approve } from '../WEB3/approve';
 import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import classes from '../../pages/index.module.scss'
@@ -43,11 +43,15 @@ const StakeSlave = async (eventQueue, Amount) =>
         const userBalance = await balance(tokenAddress);
         if(amount.gt(userBalance)) throw Error("Insufficient amount")
 
-        const firstTxn = await approve(tokenAddress, stakingAddress, amount.toString())
+        const userAllowance = await allowance();
+        if(amount.gt(userAllowance)) {
+          const firstTxn = await approve(tokenAddress, stakingAddress, amount.toString())
 
-        print([textLine({words:[textWord({ characters: messages.approve })]})]);
-        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
-        
+          print([textLine({words:[textWord({ characters: messages.approve })]})]);
+          print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
+          
+        }
+
         const secondTxn = await stake(amount.toString());
 
         print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
