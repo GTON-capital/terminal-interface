@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import classes from './layout.module.scss';
-import SiteHead, { ISiteHeadProps } from './SiteHead';
+import SiteHead, { ISiteHeadProps } from '../SiteHead';
 
 type LayoutProps = {
   layoutParams: ISiteHeadProps;
