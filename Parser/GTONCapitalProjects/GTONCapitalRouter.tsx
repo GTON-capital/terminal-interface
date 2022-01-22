@@ -142,7 +142,7 @@ const BalanceSlave = async (eventQueue, TokenName) =>
   {
     lock(true);
     loading(true);
-
+    if(!tokenMap[TokenName]) throw Error("Available tokens are: gton, sgton");
     const Balance = (await balance(tokenMap[TokenName].address));
     const CoinBalance = fromWei(Balance);
     const res = messages.balance(CoinBalance.toFixed(18));

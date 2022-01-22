@@ -59,6 +59,9 @@ export default function Web() {
                   // print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.ogswap })]})]);
                   print([textLine({words:[textWord({ characters: "Project is coming soon " })]})]);
                   break;
+                default:
+                  print([textLine({words:[textWord({ characters: "There is no project with this name " })]})]);
+                  break;
               }
               return;
             }
