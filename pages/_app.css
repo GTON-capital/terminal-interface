@@ -24,14 +24,52 @@ body {
   animation: none !important;
 }
 
-.terminal-module_terminal__4qfYI {
+.terminal-module_terminal__4qfYI  {
+  background: linear-gradient(#888 50%, #000 50%) !important;
+  z-index: 21 !important;
   color: #FFFF00 !important;
-  background: #FF8C00 ;
-  background: rgb(255,140,0, 0.68) !important;
   line-height: 1.25 !important;
   font-size: 1.4vw !important;
   font-weight: 600;
+  margin: 30px;
+  -webkit-box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%), inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
+  box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%), inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
   text-shadow: none !important;
+  border: none !important;
+  border-radius: 1em !important;
+
+}
+.crt-terminal {
+  background: rgb(255,140,0, 0.68) !important;
+}
+.index_mainContainer__DkU7y{
+  -webkit-box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%), inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
+  box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%), inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
+  padding: 20px !important;
+  border: none !important;
+  border-radius: 1em !important;
+  background: #7b8e78 !important;
+  height: 90vh !important;
+}
+.overlay-module_overlay__zbWt1 {
+  z-index: 21;
+  opacity: 0.25;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(50%, #888), color-stop(50%, #000));
+  background: -webkit-linear-gradient(#888 50%, #000 50%);
+  background: linear-gradient(#888 50%, #000 50%);
+  background-size: 100% 4px;
+  background-repeat: repeat-y;
+}
+.screen-effects-module_screenEffects__bNTzl {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 1em;
+  margin: 15px;
+  width: 90vw !important;
+  height: 75vh !important;
+}
+
+.overlay-module_pixels__m5X6w {
+  background: none !important;
 
 }
 
