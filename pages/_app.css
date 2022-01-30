@@ -72,9 +72,9 @@ body {
 .overlay-module_overlay__zbWt1 {
   z-index: 21;
   opacity: 0.25;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(50%, #888), color-stop(50%, #000));
-  background: -webkit-linear-gradient(#888 50%, #000 50%);
-  background: linear-gradient(#888 50%, #000 50%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(100%, #888), color-stop(0%, #000));
+  background: -webkit-linear-gradient(#888 0%, #000 100%);
+  background: linear-gradient(#888 0%, #000 100%);
   background-size: 100% 4px;
   background-repeat: repeat-y;
   overflow: hidden !important;
