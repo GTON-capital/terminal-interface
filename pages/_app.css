@@ -88,7 +88,7 @@ body {
   left: 30px !important;
   top: 30px !important;
   bottom: 30px !important;
-
+  max-height: 900px !important;
   border-radius: 1em !important;
 }
 
