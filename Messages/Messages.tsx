@@ -10,7 +10,8 @@ enum Commands
     SWITCH = "switch",
     BALANCE = "balance",
     ADD_TOKEN = "add token",
-    FAUCET = "faucet"
+    FAUCET = "faucet",
+    HARVEST = "harvest"
 }
 
 enum OptionalActions {
@@ -63,8 +64,9 @@ const messages = {
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
   ${Prefix.PREFIX}${Commands.STAKE} <amount> - stake funds
   ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> - unstake funds
+  ${Prefix.PREFIX}${Commands.HARVEST} <amount> - harvest reward
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to test fantom
-  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest - get actual erc20 token balance
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
 
@@ -102,6 +104,12 @@ const messages = {
     You have succesfully ${type} your funds!
     Amount: ${amount},
     Transaction stake:`;
+   },
+  harvested(amount: string) {
+    return `
+    You have succesfully harvested your reward!
+    Amount: ${amount},
+    Transaction:`;
    },
   accountsMined: (n: number) => `
   Accounts mined: ${n}
