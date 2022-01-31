@@ -32,7 +32,7 @@ body {
 
 .screen-effects-module_screenEffects__bNTzl {
   width: 64em !important;
-  height: 32em !important;
+  height: 82vh !important;
   overflow: hidden !important;
 }
 
@@ -95,7 +95,7 @@ body {
 .printer-word-module_anchorWord__dLnZB {
   text-shadow: none !important;
   line-height: 1.25 !important;
-  font-size: 1.4vw !important;
+  font-size: 18px !important;
   overflow: hidden !important;
 }
 
