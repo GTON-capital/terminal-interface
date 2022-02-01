@@ -16,8 +16,11 @@ const fantomTestnet = {
   blockExplorerUrls: ['https://testnet.ftmscan.com/'],
 };
 const ftmscanUrl = "https://testnet.ftmscan.com/tx/"
-
+const faucetLink = "https://faucet.fantom.network/"
+const gcLink = "https://gton.capital/"
 export {
+  faucetLink,
+  gcLink,
   network,
   ftmscanUrl,
   isTestnet,

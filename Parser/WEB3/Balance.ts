@@ -1,25 +1,17 @@
 import { BigNumber as OldBigNumber, ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
-import { TerminalError } from '../../Errors/ErrorCodes';
 import {
-  network,
+  stakingAddress,
 } from '../../config/config';
+import STAKING_ABI from './ABI/staking.json';
 import ERC20_ABI from './ABI/erc20.json';
 import { migrateBigNumber } from './API/balance';
+import { validate } from './validate';
 
 declare const window: any;
 
 const balance = async (tokenAddress: string): Promise<BigNumber> => {
-  if (!window.ethereum || !window.ethereum!.isMetaMask) {
-    throw new TerminalError({ code: 'NO_METAMASK' });
-  }
-  if (!window.ethereum.request) {
-    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  }
-  const chainId: string = await window.ethereum.request({ method: 'net_version' });
-  if (chainId !== network) {
-    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  }
+  await validate();
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contract = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
@@ -27,4 +19,12 @@ const balance = async (tokenAddress: string): Promise<BigNumber> => {
   return migrateBigNumber(userBalance);
 };
 
+export const userShare = async (): Promise<BigNumber> => {
+  await validate()
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const contract = new ethers.Contract(stakingAddress, STAKING_ABI, signer);
+  const userBalance: OldBigNumber = (await contract.userInfo(signer.getAddress())).amount;
+  return migrateBigNumber(userBalance);
+}
 export default balance;
