@@ -193,7 +193,7 @@ const BalanceSlave = async (eventQueue, TokenName) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: "Please make sure you did 'join' before calling this function" })]})]);
+    print([textLine({words:[textWord({ characters: err.message })]})]);
     loading(false);
     lock(false);
   }
