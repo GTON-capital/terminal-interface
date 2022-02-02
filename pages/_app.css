@@ -30,8 +30,8 @@ body {
 }
 
 .screen-effects-module_screenEffects__bNTzl {
-  width: 64em !important;
-  height: 82vh !important;
+  width: auto !important;
+  height: auto !important;
   overflow: hidden !important;
 }
 
