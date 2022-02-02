@@ -104,8 +104,12 @@ const HarvestSlave = async (eventQueue, Amount) =>
         lock(true);
         loading(true);
         const amount = toWei(new BigNumber(Amount))
-        const reward = await userShare();
-        if(amount.gt(reward)) throw Error("Insufficient amount")
+        const userStake = await userShare();
+        console.log(userStake.toString());
+        
+        const balanceUser = await balance(stakingAddress);
+        console.log(balanceUser.toString());
+        if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
 
         const TxnHash = await harvest(amount.toString());
 
