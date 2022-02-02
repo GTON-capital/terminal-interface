@@ -4,7 +4,6 @@ import { validate } from './validate';
 declare const window: any;
 
 const switchChain = async (): Promise<void> => {
-  await validate();
   const {
     chainIdHex,
     chainName,
