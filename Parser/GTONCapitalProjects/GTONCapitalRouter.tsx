@@ -63,7 +63,6 @@ const StakeSlave = async (eventQueue, Amount) =>
       }
       catch(err)
       {
-        console.log(err);
         print([textLine({words:[textWord({ characters: err.message })]})]);
         loading(false);
         lock(false);
@@ -105,10 +104,8 @@ const HarvestSlave = async (eventQueue, Amount) =>
         loading(true);
         const amount = toWei(new BigNumber(Amount))
         const userStake = await userShare();
-        console.log(userStake.toString());
         
         const balanceUser = await balance(stakingAddress);
-        console.log(balanceUser.toString());
         if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
 
         const TxnHash = await harvest(amount.toString());
