@@ -208,8 +208,9 @@ const AddTokenSlave = async (eventQueue, TokenName) =>
   {
     lock(true);
     loading(true);
-
-    await addToken(tokenMap[TokenName]);
+    const token = tokenMap[TokenName]
+    if(!token) throw Error("Available tokens are: gton, sgton");
+    await addToken(token);
     print([textLine({words:[textWord({ characters: messages.addToken })]})]);
 
     loading(false);
