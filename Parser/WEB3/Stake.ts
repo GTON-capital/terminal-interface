@@ -22,8 +22,7 @@ export const unstake = async (amount: string): Promise<string> => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
   const contract = new ethers.Contract(stakingAddress, STAKING_ABI, signer);
-  const share = await contract.balanceToShare(amount);
-  const tx = await contract.unstake(await signer.getAddress(), share);
+  const tx = await contract.unstake(await signer.getAddress(), amount);
   const receipt = await tx.wait();
   return receipt.transactionHash;
 };
