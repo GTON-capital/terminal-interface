@@ -3,7 +3,7 @@
 // const isLive = 'true';
 // const isTestnet = false;
 
-// const stakingAddress = '0xc020EE7e6f1D1C0173a2b00ff9ffAF6Eac079B4c';
+// const stakingAddress = '0x72AC9b5825cC063834C1A5720726A37432568B8c';
 // const faucetAddress = '';
 // const tokenAddress = '0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4';
 // const fantomTestnet = {
@@ -38,7 +38,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = true;
 
-const stakingAddress = '0x9CE1cEEF8ca181C9afc44Cb7C14111fa9E76CE33';
+const stakingAddress = '0x72AC9b5825cC063834C1A5720726A37432568B8c';
 const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
 const tokenAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
 const fantomTestnet = {

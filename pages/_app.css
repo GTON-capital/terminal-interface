@@ -41,7 +41,7 @@ body {
   z-index: 21 !important;
   color: #FFFF00 !important;
   line-height: 1.25 !important;
-  font-size: 18px !important;
+  font-size: 1.25vw !important;
   font-weight: 600;
   margin: 30px;
   -webkit-box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%), inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
