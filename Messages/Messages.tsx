@@ -9,7 +9,7 @@ enum Commands
     UNSTAKE = "unstake",
     SWITCH = "switch",
     BALANCE = "balance",
-    ADD_TOKEN = "add token",
+    ADD_TOKEN = "add",
     FAUCET = "faucet",
     HARVEST = "harvest"
 }
