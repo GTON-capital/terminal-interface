@@ -1,5 +1,4 @@
-import { anchorWord, textLine, textWord } from 'crt-terminal';
-import { network, isTestnet } from '../config/config';
+import { isTestnet } from '../config/config';
 
 enum Commands 
 {
@@ -11,7 +10,8 @@ enum Commands
     SWITCH = "switch",
     BALANCE = "balance",
     ADD_TOKEN = "add token",
-    FAUCET = "faucet"
+    FAUCET = "faucet",
+    HARVEST = "harvest"
 }
 
 enum OptionalActions {
@@ -51,13 +51,12 @@ const messages = {
          so that our users can work with smart contracts directly, both on the testnet 
            and mainnet.
 
-         ${isTestnet ? 'To get free testnet $FTMs open: https://faucet.fantom.network/' : ''}
-         To find more info about GC open: https://gton.capital/
-
                        Type ${Prefix.PREFIX}${Commands.HELP} to see the list of available commands.
 
        #WA𝔾MI ⚜️
   `,
+  faucet: 'Get free testnet $FTMs',
+  gc: 'Find more info about GC',
 
   helpText: `
   Available commands:
@@ -65,8 +64,9 @@ const messages = {
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
   ${Prefix.PREFIX}${Commands.STAKE} <amount> - stake funds
   ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> - unstake funds
+  ${Prefix.PREFIX}${Commands.HARVEST} <amount> - harvest reward
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to test fantom
-  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest - get actual erc20 token balance
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
 
@@ -105,6 +105,12 @@ const messages = {
     Amount: ${amount},
     Transaction stake:`;
    },
+  harvested(amount: string) {
+    return `
+    You have succesfully harvested your reward!
+    Amount: ${amount},
+    Transaction:`;
+   },
   accountsMined: (n: number) => `
   Accounts mined: ${n}
   `,
@@ -113,7 +119,7 @@ const messages = {
     `
   ,
   chainSwitch: `
-  Successfully switched to fantom testnet.
+  Successfully switched to Fantom ${isTestnet? 'Testnet' : ''}.
   `,
   faucetDeposit: `
   Succesfully airdropped GTON.

@@ -4,10 +4,12 @@ import {
   useEventQueue,
   textLine,
   textWord,
+  anchorWord,
 } from 'crt-terminal';
 import Layout from '../components/Layout/Layout';
+import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';
-
+import { faucetLink, gcLink, isTestnet } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
 import messages from '../Messages/Messages';
 
@@ -26,8 +28,16 @@ export default function Web() {
   const { lock, loading, clear, print, focus } = eventQueue.handlers;
 
   return (
-    <Layout>
+    <Layout
+    layoutParams={{
+      title: 'CLI UI | GTON Capital (𝔾ℂ)',
+      description:
+        'An inovative way of USER <-> SC interaction for 𝔾ℂEco products.',
+      keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
+      url: 'https://test.cli.gton.capital/',
+    }}>
       <main className={classes.mainContainer}>
+      <DisableMobile>
         <Terminal
           queue={eventQueue}
           onCommand={(command) =>
@@ -51,6 +61,9 @@ export default function Web() {
                   // print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.ogswap })]})]);
                   print([textLine({words:[textWord({ characters: "Project is coming soon " })]})]);
                   break;
+                default:
+                  print([textLine({words:[textWord({ characters: "There is no project with this name " })]})]);
+                  break;
               }
               return;
             }
@@ -73,11 +86,14 @@ export default function Web() {
 
           }
         }
-        prompt={"$ "+CurrentDirectory+"/ "}
-          banner={[
-            textLine({ words: [textWord({ characters: messages.banner })] }),
-          ]}
+        prompt={"/"+CurrentDirectory+" $ "}
+        banner={[
+          textLine({ words: [textWord({ characters: messages.banner })] }),
+          textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, href: gcLink })] }),
+          isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }): null,
+        ]}
         />
+        </DisableMobile>
       </main>
     </Layout>
   );

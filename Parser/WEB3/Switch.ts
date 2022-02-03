@@ -1,5 +1,5 @@
-import { TerminalError } from '../../Errors/ErrorCodes';
 import { fantomTestnet } from '../../config/config';
+import { TerminalError } from '../../Errors/ErrorCodes';
 
 declare const window: any;
 
@@ -10,11 +10,6 @@ const switchChain = async (): Promise<void> => {
   if (!window.ethereum.request) {
     throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
   }
-  const chainId: string = await window.ethereum.request({ method: 'net_version' });
-  if (chainId === fantomTestnet.chainId) {
-    throw new TerminalError({ code: 'METAMASK_CORRECT_NETWORK' });
-  }
-
   const {
     chainIdHex,
     chainName,

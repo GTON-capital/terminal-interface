@@ -42,11 +42,22 @@ workflows:
             - docker-image-build
     when:
       equal: [ develop, << pipeline.git.branch >> ]
+  build-deploy-alpha:
+    jobs:
+      - docker-image-build:
+          container-tag: ${CONTAINER_TAG_ALPHA}
+          prod-config: true
+      - cluster-deploy:
+          deployment-name: ${DEPLOYMENT_ALPHA}
+          requires: 
+            - docker-image-build
+    when:
+      equal: [ alpha, << pipeline.git.branch >> ]
   build-deploy-production:
     jobs:
       - docker-image-build:
           container-tag: ${CONTAINER_TAG_PROD}
-          prod-config: true
+          prod-config: false
       - cluster-deploy:
           deployment-name: ${DEPLOYMENT_PROD}
           requires: 
