@@ -26,7 +26,10 @@ body {
 
 .terminal-module_overflowContainer__p2duW {
   margin: 100;
-  max-width: 1200px !important;
+  /* max-width: 1200px !important; */
+}
+.index_mainContainer__DkU7y {
+  max-width: none !important;
 }
 
 .screen-effects-module_screenEffects__bNTzl {
