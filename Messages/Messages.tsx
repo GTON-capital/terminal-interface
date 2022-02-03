@@ -65,7 +65,7 @@ const messages = {
   ${Prefix.PREFIX}${Commands.STAKE} <amount> - stake funds
   ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> - unstake funds
   ${Prefix.PREFIX}${Commands.HARVEST} <amount> - harvest reward
-  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to test fantom
+  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
   ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest - get actual erc20 token balance
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
