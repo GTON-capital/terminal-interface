@@ -44,12 +44,14 @@ const messages = {
       ╚██████╔╝   ██║   ╚██████╔╝██║ ╚████║    ╚██████╗██║  ██║██║     ██║   ██║   ██║  ██║███████╗
        ╚═════╝    ╚═╝    ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝
                                                        
-                      ⚜️ Welcome to GTON CAPITAL (𝔾ℂ) CLI UI 📺!
+                          ⚜️ Welcome to GTON CAPITAL (𝔾ℂ) CLI UI 📺!
 
-       We were inspired by the way how GearBox CA minting ceremony (the biggest bag of @ivangbi 
-         besides $USDC and $LOBS NFT) was organized and decided to fork the ui application, 
-         so that our users can work with smart contracts directly, both on the testnet 
-           and mainnet.
+      This dApp allows to interact with GTON Capital staking smart contracts on Fantom${isTestnet? ' Testnet' : ''}.
+                                    ${isTestnet? 'Mainnet coming soon!' : ''}
+      The old-school console-based user interface was forked from Gearbox protocol. 
+                          
+      Kudos for the inspiration to the intricate brain of ivangbi and the Gearbox team 
+      who came up with the idea of geeky CLI for their launch.
 
                        Type ${Prefix.PREFIX}${Commands.HELP} to see the list of available commands.
 
