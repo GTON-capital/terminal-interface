@@ -34,19 +34,19 @@ import notFoundStrings from './notfound-strings';
     Failed to connect to Metamask. Try again.
     `,
     METAMASK_WRONG_NETWORK: `
-    Please switch to Fantom ${isTestnet? 'Testnet' : ''}.
+    Please switch to Fantom${isTestnet? 'Testnet' : ''}.
     `,
     METAMASK_CORRECT_NETWORK: `
-    You are currently on Fantom ${isTestnet? 'Testnet' : ''}.
+    You are currently on Fantom${isTestnet? 'Testnet' : ''}.
     `,
     METAMASK_RELOGIN: `
-    Log in and try again
+    Log in and try again.
     `,
     GET_ADDRESS_FAILED: `
-    Failed to get your account address
+    Failed to get your account address.
     `,
     EMPTY_ADDRESS_ARG: `
-    Please provide token name or address. To get list of available tokens - type >help
+    Please provide token name or address. To get list of available tokens, type >help.
     `,
     PERMISSION_DENIED: `
     Houston, we have a problem! 
@@ -71,14 +71,14 @@ import notFoundStrings from './notfound-strings';
     You have just disconnected. Please, connect and try again.
     `,
     UNEXPECTED_ERROR: `
-    Unexpected Error
+    Unexpected Error.
     `,
     ACTION_ABORTED: '',
     REJECTED: `
-    Request rejected
+    Request rejected.
     `,
     ENDPOINT_IS_BUSY: `
-    Endpoint is busy
+    Endpoint is busy.
     `,
   };
   
