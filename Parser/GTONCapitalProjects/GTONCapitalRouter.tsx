@@ -271,7 +271,7 @@ async function Parse(eventQueue, command)
 {
   const { print } = eventQueue.handlers;
   const Command = command.split(' ')[0].trim().toLowerCase();
-  const Arg = command.split(' ')[1].trim().toLowerCase();
+  const Arg = command.split(' ')[1] ? command.split(' ')[1].trim().toLowerCase() : "";
 
   try
   {
