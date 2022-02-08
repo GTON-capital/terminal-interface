@@ -29,13 +29,13 @@ export default function Web() {
 
   return (
     <Layout
-    layoutParams={{
-      title: 'CLI UI | GTON Capital (𝔾ℂ)',
-      description:
-        'An inovative way of USER <-> SC interaction for 𝔾ℂEco products.',
-      keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
-      url: 'https://test.cli.gton.capital/',
-    }}>
+      layoutParams={{
+        title: 'CLI UI | GTON Capital (𝔾ℂ)',
+        description:
+          'An inovative way of USER <-> SC interaction for 𝔾ℂEco products.',
+        keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
+        url: 'https://test.cli.gton.capital/',
+      }}>
       <main className={classes.mainContainer}>
       <DisableMobile>
         <Terminal
