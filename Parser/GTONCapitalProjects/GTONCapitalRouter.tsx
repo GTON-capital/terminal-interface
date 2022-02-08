@@ -285,5 +285,5 @@ async function Parse(eventQueue, command)
     print([textLine({words:[textWord({ characters: err.message })]})]);
   }
 }
-
+export { AddTokenSlave, BalanceSlave, SwitchSlave, ConnectMetamaskSlave, HarvestSlave, UnStakeSlave, StakeSlave, GTONRouterMap }
 export default Parse;
