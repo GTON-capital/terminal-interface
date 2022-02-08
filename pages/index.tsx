@@ -87,11 +87,11 @@ export default function Web() {
           }
         }
         prompt={"/"+CurrentDirectory+" $ "}
-          banner={[
-            textLine({ words: [textWord({ characters: messages.banner })] }),
-            textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, href: gcLink })] }),
-            isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }): null,
-          ]}
+        banner={[
+          textLine({ words: [textWord({ characters: messages.banner })] }),
+          textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, href: gcLink })] }),
+          isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }): null,
+        ]}
         />
         </DisableMobile>
       </main>

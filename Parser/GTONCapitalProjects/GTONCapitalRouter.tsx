@@ -14,7 +14,8 @@ import notFoundStrings from '../../Errors/notfound-strings'
 import { stake, unstake } from '../WEB3/Stake';
 import connectMetamask from '../WEB3/ConnectMetamask';
 import switchChain from '../WEB3/Switch';
-import balance from '../WEB3/Balance';
+import {harvest} from '../WEB3/harvest';
+import balance, {userShare} from '../WEB3/Balance';
 import addToken from '../WEB3/addTokenToMM';
 import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
@@ -94,6 +95,35 @@ const UnStakeSlave = async (eventQueue, Amount) =>
       }
 }
 
+const HarvestSlave = async (eventQueue, Amount) => 
+{
+  const { lock, loading, print } = eventQueue.handlers;
+  try
+      {
+        lock(true);
+        loading(true);
+        const amount = toWei(new BigNumber(Amount))
+        const userStake = await userShare();
+        
+        const balanceUser = await balance(stakingAddress);
+        if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
+
+        const TxnHash = await harvest(amount.toString());
+
+        print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
+        print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
+     
+        loading(false);
+        lock(false);
+      }
+      catch(err)
+      {
+        print([textLine({words:[textWord({ characters: err.message })]})]);
+        loading(false);
+        lock(false);
+      }
+}
+
 const ConnectMetamaskSlave = async (eventQueue) =>
 {
   const { lock, loading, print } = eventQueue.handlers;
@@ -146,9 +176,16 @@ const BalanceSlave = async (eventQueue, TokenName) =>
   {
     lock(true);
     loading(true);
-    if(!tokenMap[TokenName]) throw Error("Available tokens are: gton, sgton");
-    const Balance = (await balance(tokenMap[TokenName].address));
-    const CoinBalance = fromWei(Balance);
+    const token = TokenName === "harvest" ? tokenMap.sgton : tokenMap[TokenName]
+    if(!token) throw Error("Available tokens are: gton, sgton, harvest");
+    const Balance = (await balance(token.address));
+    let CoinBalance;
+    if(TokenName === "harvest") {
+      const share = await userShare();
+      CoinBalance = fromWei(Balance.minus(share));
+    } else {
+      CoinBalance = fromWei(Balance);
+    }
     const res = messages.balance(CoinBalance.toFixed(18));
     print([textLine({words:[textWord({ characters: res })]})]);
 
@@ -171,8 +208,9 @@ const AddTokenSlave = async (eventQueue, TokenName) =>
   {
     lock(true);
     loading(true);
-
-    await addToken(tokenMap[TokenName]);
+    const token = tokenMap[TokenName]
+    if(!token) throw Error("Available tokens are: gton, sgton");
+    await addToken(token);
     print([textLine({words:[textWord({ characters: messages.addToken })]})]);
 
     loading(false);
@@ -218,19 +256,28 @@ const GTONRouterMap =
   "switch": SwitchSlave,
   "balance": BalanceSlave,
   "add": AddTokenSlave,
-  "faucet": FaucetSlave
+  "faucet": FaucetSlave,
+  "harvest": HarvestSlave
 }
+
+const ArgsFunctions = 
+[
+  "stake",
+  "unstake",
+  "harvest",
+]
 
 async function Parse(eventQueue, command)
 {
   const { print } = eventQueue.handlers;
   const Command = command.split(' ')[0].trim().toLowerCase();
-  const Arg = command.split(' ')[1];
+  const Arg = command.split(' ')[1] ? command.split(' ')[1].trim().toLowerCase() : "";
 
   try
   {
     // Handle incorrect command
     if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)])
+    if(ArgsFunctions.includes(Command) && Arg == null) throw Error("You should provide args for calling this function. e.g stake 1")
     GTONRouterMap[Command](eventQueue, Arg);
   }
   catch(err)
