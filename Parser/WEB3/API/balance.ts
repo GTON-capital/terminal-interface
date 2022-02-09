@@ -7,6 +7,7 @@ export const addressMap: Record<string, string> = {
   staking: stakingAddress,
 };
 const defaultDecimals = new BigNumber(18);
+const defaultDecimalsOld = OldBigNumber.from(18);
 
 export const fromWei = (
   n: BigNumber, d: BigNumber = defaultDecimals,
@@ -15,6 +16,14 @@ export const fromWei = (
 export const toWei = (
   n: BigNumber, d: BigNumber = defaultDecimals,
 ): BigNumber => n.multipliedBy(new BigNumber(10).pow(d));
+
+export const fromWeiOld = (
+  n: OldBigNumber, d: OldBigNumber = defaultDecimalsOld,
+): OldBigNumber => n.div(OldBigNumber.from(10).pow(d));
+
+export const toWeiOld = (
+  n: OldBigNumber, d: OldBigNumber = defaultDecimalsOld,
+): OldBigNumber => n.mul(OldBigNumber.from(10).pow(d));
 
 export const migrateBigNumber = (n: OldBigNumber): BigNumber => new BigNumber(n.toString());
 
