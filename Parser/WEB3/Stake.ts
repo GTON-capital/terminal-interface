@@ -1,4 +1,6 @@
-import { ethers } from 'ethers';
+import { AbiItem } from 'web3-utils'
+import Web3 from 'web3';
+import BigNumber from 'bignumber.js';
 import STAKING_ABI from './ABI/staking.json';
 import {
   stakingAddress,
@@ -7,22 +9,22 @@ import { validate } from './validate';
 
 declare const window: any;
 
-export const stake = async (amount: string): Promise<string> => {
+export const stake = async (amount: BigNumber): Promise<string> => {
   await validate();
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contract = new ethers.Contract(stakingAddress, STAKING_ABI, signer);
-  const tx = await contract.stake(amount, await signer.getAddress());
-  const receipt = await tx.wait();
-  return receipt.transactionHash;
+  const web3 = new Web3(window.ethereum);
+  const signer = (await web3.eth.getAccounts())[0]
+  const contract = new web3.eth.Contract(STAKING_ABI as AbiItem[], stakingAddress);
+  const txn = await contract.methods.stake(amount, signer)
+    .send({ from: signer })
+  return txn.transactionHash;
 };
 
-export const unstake = async (amount: string): Promise<string> => {
+export const unstake = async (amount: BigNumber): Promise<string> => {
   await validate();
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contract = new ethers.Contract(stakingAddress, STAKING_ABI, signer);
-  const tx = await contract.unstake(await signer.getAddress(), amount);
-  const receipt = await tx.wait();
-  return receipt.transactionHash;
+  const web3 = new Web3(window.ethereum);
+  const signer = (await web3.eth.getAccounts())[0]
+  const contract = new web3.eth.Contract(STAKING_ABI as AbiItem[], stakingAddress);
+  const txn = await contract.methods.unstake(signer, amount)
+  .send({ from: signer })
+  return txn.transactionHash;
 };

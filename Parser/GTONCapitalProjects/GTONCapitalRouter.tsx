@@ -46,14 +46,14 @@ const StakeSlave = async (eventQueue, Amount) =>
 
         const userAllowance = await allowance();
         if(amount.gt(userAllowance)) {
-          const firstTxn = await approve(tokenAddress, stakingAddress, amount.toString())
+          const firstTxn = await approve(tokenAddress, stakingAddress, amount)
 
           print([textLine({words:[textWord({ characters: messages.approve })]})]);
           print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
           
         }
 
-        const secondTxn = await stake(amount.toString());
+        const secondTxn = await stake(amount);
 
         print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
         print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
@@ -79,7 +79,7 @@ const UnStakeSlave = async (eventQueue, Amount) =>
         const amount = toWei(new BigNumber(Amount))
         const userBalance = await balance(stakingAddress);
         if(amount.gt(userBalance)) throw Error("Insufficient amount")
-        const TxnHash = await unstake(amount.toString());
+        const TxnHash = await unstake(amount);
 
         print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
         print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
@@ -108,7 +108,7 @@ const HarvestSlave = async (eventQueue, Amount) =>
         const balanceUser = await balance(stakingAddress);
         if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
 
-        const TxnHash = await harvest(amount.toString());
+        const TxnHash = await harvest(amount);
 
         print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
         print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
