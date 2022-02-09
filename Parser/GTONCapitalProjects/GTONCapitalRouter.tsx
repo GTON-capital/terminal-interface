@@ -183,6 +183,8 @@ const BalanceSlave = async (eventQueue, TokenName) =>
     if(TokenName === "harvest") {
       const share = await userShare();
       CoinBalance = fromWei(Balance.minus(share));
+    } else if(TokenName === "sgton") {
+      CoinBalance = fromWei(await userShare())
     } else {
       CoinBalance = fromWei(Balance);
     }
