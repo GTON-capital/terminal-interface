@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Terminal,
   useEventQueue,
@@ -12,6 +12,7 @@ import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
 import messages from '../Messages/Messages';
+import { ParseJoin, ParseSwitch, ParseStake } from '../Parser/PresetParser'
 
 const Projects =
 {
@@ -21,11 +22,34 @@ const Projects =
 }
 
 var CurrentDirectory = Projects.staking;
+var Preset = false
 
 export default function Web() {
 
   const eventQueue = useEventQueue();
   const { lock, loading, clear, print, focus } = eventQueue.handlers;
+
+  useEffect(() => 
+  {
+    async function load() 
+    {
+        Preset = true;
+        if(await ParseJoin(eventQueue, window.location.search) == true)
+        {
+          if(await ParseSwitch(eventQueue, window.location.search) == true)
+          {
+            if(await ParseStake(eventQueue, window.location.search) == true)
+            {
+              console.log("nice")
+            }
+          }
+        }
+    }
+    if(window.location.search != "" && !Preset)
+    {
+      load();
+    }
+  })
 
   return (
     <Layout

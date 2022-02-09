@@ -1,11 +1,18 @@
-import { AddTokenSlave, BalanceSlave, SwitchSlave, ConnectMetamaskSlave, HarvestSlave, UnStakeSlave, StakeSlave, GTONRouterMap } from "./GTONCapitalProjects/GTONCapitalRouter"
+import Parse from "./GTONCapitalProjects/GTONCapitalRouter"
 
-const ParsePreset = (eventQueue, Search: string): void =>
+function ParseJoin (eventQueue, Search)
 {
-    for (var Command in Search.replace("?", "").split('&'))
-    {
-        GTONRouterMap[Command](eventQueue, Command); 
-    }
+    var bool = Parse(eventQueue, "join")
+    return bool;
 }
-
-export { ParsePreset }
+function ParseSwitch (eventQueue, Search)
+{
+    var bool = Parse(eventQueue, "switch")
+    return bool;
+}
+function ParseStake (eventQueue, Search)
+{
+    var bool = Parse(eventQueue, Search.replace("?", "").replace("=", " ").split('&').toString())
+    return bool;
+}
+export { ParseJoin, ParseSwitch, ParseStake }
