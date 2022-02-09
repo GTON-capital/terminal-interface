@@ -12,7 +12,7 @@ import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
 import messages from '../Messages/Messages';
-import { ParseJoin, ParseSwitch, ParseStake } from '../Parser/PresetParser'
+import { ParseJoin, ParseSwitch, ParseStake, ParseUnstake } from '../Parser/PresetParser'
 
 const Projects =
 {
@@ -34,13 +34,29 @@ export default function Web() {
     async function load() 
     {
         Preset = true;
-        if(await ParseJoin(eventQueue, window.location.search) == true)
+        if(window.location.search.includes("stake"))
         {
-          if(await ParseSwitch(eventQueue, window.location.search) == true)
+          if(await ParseJoin(eventQueue) == true)
           {
-            if(await ParseStake(eventQueue, window.location.search) == true)
+            if(await ParseSwitch(eventQueue) == true)
             {
-              console.log("nice")
+              if(await ParseStake(eventQueue, window.location.search) == true)
+              {
+                console.log("nice")
+              }
+            }
+          }
+        }
+        else if(window.location.search.includes("unstake"))
+        {
+          if(await ParseJoin(eventQueue) == true)
+          {
+            if(await ParseSwitch(eventQueue) == true)
+            {
+              if(await ParseUnstake(eventQueue, window.location.search) == true)
+              {
+                console.log("nice")
+              }
             }
           }
         }
