@@ -1,10 +1,15 @@
 import { fantomTestnet } from '../../config/config';
-import { validate } from './validate';
+import { TerminalError } from '../../Errors/ErrorCodes';
 
 declare const window: any;
 
 const switchChain = async (): Promise<void> => {
-  await validate();
+  if (!window.ethereum || !window.ethereum!.isMetaMask) {
+    throw new TerminalError({ code: 'NO_METAMASK' });
+  }
+  if (!window.ethereum.request) {
+    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
+  }
   const {
     chainIdHex,
     chainName,

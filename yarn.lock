@@ -6063,6 +6063,19 @@
     "web3-core-subscriptions" "1.6.1"
     "web3-net" "1.6.1"
 
+"web3-utils@^1.7.0":
+  "integrity" "sha512-O8Tl4Ky40Sp6pe89Olk2FsaUkgHyb5QAXuaKo38ms3CxZZ4d3rPGfjP9DNKGm5+IUgAZBNpF1VmlSmNCqfDI1w=="
+  "resolved" "https://registry.npmjs.org/web3-utils/-/web3-utils-1.7.0.tgz"
+  "version" "1.7.0"
+  dependencies:
+    "bn.js" "^4.11.9"
+    "ethereum-bloom-filters" "^1.0.6"
+    "ethereumjs-util" "^7.1.0"
+    "ethjs-unit" "0.1.6"
+    "number-to-bn" "1.7.0"
+    "randombytes" "^2.1.0"
+    "utf8" "3.0.0"
+
 "web3-utils@1.6.1":
   "integrity" "sha512-RidGKv5kOkcerI6jQqDFDoTllQQqV+rPhTzZHhmbqtFObbYpU93uc+yG1LHivRTQhA6llIx67iudc/vzisgO+w=="
   "resolved" "https://registry.npmjs.org/web3-utils/-/web3-utils-1.6.1.tgz"

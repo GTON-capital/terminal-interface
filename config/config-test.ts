@@ -4,7 +4,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = true;
 
-const stakingAddress = '0x76bf9655e325fe28F14862bCc117173d845CbC82';
+const stakingAddress = '0x314650ac2876c6B6f354499362Df8B4DC95E4750';
 const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
 const tokenAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
 const fantomTestnet = {

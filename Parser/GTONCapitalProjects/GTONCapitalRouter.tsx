@@ -46,14 +46,14 @@ const StakeSlave = async (eventQueue, Amount) =>
 
         const userAllowance = await allowance();
         if(amount.gt(userAllowance)) {
-          const firstTxn = await approve(tokenAddress, stakingAddress, amount.toString())
+          const firstTxn = await approve(tokenAddress, stakingAddress, amount)
 
           print([textLine({words:[textWord({ characters: messages.approve })]})]);
           print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
           
         }
 
-        const secondTxn = await stake(amount.toString());
+        const secondTxn = await stake(amount);
 
         print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
         print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
@@ -63,7 +63,6 @@ const StakeSlave = async (eventQueue, Amount) =>
       }
       catch(err)
       {
-        console.log(err);
         print([textLine({words:[textWord({ characters: err.message })]})]);
         loading(false);
         lock(false);
@@ -80,7 +79,7 @@ const UnStakeSlave = async (eventQueue, Amount) =>
         const amount = toWei(new BigNumber(Amount))
         const userBalance = await balance(stakingAddress);
         if(amount.gt(userBalance)) throw Error("Insufficient amount")
-        const TxnHash = await unstake(amount.toString());
+        const TxnHash = await unstake(amount);
 
         print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
         print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
@@ -104,10 +103,12 @@ const HarvestSlave = async (eventQueue, Amount) =>
         lock(true);
         loading(true);
         const amount = toWei(new BigNumber(Amount))
-        const reward = await userShare();
-        if(amount.gt(reward)) throw Error("Insufficient amount")
+        const userStake = await userShare();
+        
+        const balanceUser = await balance(stakingAddress);
+        if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
 
-        const TxnHash = await harvest(amount.toString());
+        const TxnHash = await harvest(amount);
 
         print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
         print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
@@ -182,6 +183,8 @@ const BalanceSlave = async (eventQueue, TokenName) =>
     if(TokenName === "harvest") {
       const share = await userShare();
       CoinBalance = fromWei(Balance.minus(share));
+    } else if(TokenName === "sgton") {
+      CoinBalance = fromWei(await userShare())
     } else {
       CoinBalance = fromWei(Balance);
     }
@@ -207,8 +210,9 @@ const AddTokenSlave = async (eventQueue, TokenName) =>
   {
     lock(true);
     loading(true);
-
-    await addToken(tokenMap[TokenName]);
+    const token = tokenMap[TokenName]
+    if(!token) throw Error("Available tokens are: gton, sgton");
+    await addToken(token);
     print([textLine({words:[textWord({ characters: messages.addToken })]})]);
 
     loading(false);
@@ -258,17 +262,27 @@ const GTONRouterMap =
   "harvest": HarvestSlave
 }
 
+const ArgsFunctions = 
+[
+  "stake",
+  "unstake",
+  "harvest",
+]
+
 async function Parse(eventQueue, command)
 {
   const { print } = eventQueue.handlers;
-  const Command = command.split(' ')[0].trim().toLowerCase();
-  const Arg = command.split(' ')[1];
+  const Command = command.toString().split(' ')[0].trim().toLowerCase();
+  const Arg = command.toString().split(' ')[1] ? command.split(' ')[1].trim().toLowerCase() : "";
 
   try
   {
     // Handle incorrect command
     if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)])
-    GTONRouterMap[Command](eventQueue, Arg);
+    if(ArgsFunctions.includes(Command) && Arg == "") throw Error("You should provide args for calling this function. e.g stake 1")
+    await GTONRouterMap[Command](eventQueue, Arg);
+
+    return true;
   }
   catch(err)
   {
@@ -276,4 +290,5 @@ async function Parse(eventQueue, command)
   }
 }
 
+export { AddTokenSlave, BalanceSlave, SwitchSlave, ConnectMetamaskSlave, HarvestSlave, UnStakeSlave, StakeSlave, GTONRouterMap }
 export default Parse;
