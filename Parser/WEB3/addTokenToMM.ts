@@ -5,7 +5,7 @@ declare const window: any;
 
 async function addToken (token: Token): Promise<void> {
   await validate();
-  await ethereum.request({
+  await window.ethereum.request({
     method: 'wallet_watchAsset',
     params: {
       type: 'ERC20',

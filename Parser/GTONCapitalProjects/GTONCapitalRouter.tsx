@@ -183,6 +183,8 @@ const BalanceSlave = async (eventQueue, TokenName) =>
     if(TokenName === "harvest") {
       const share = await userShare();
       CoinBalance = fromWei(Balance.minus(share));
+    } else if(TokenName === "sgton") {
+      CoinBalance = fromWei(await userShare())
     } else {
       CoinBalance = fromWei(Balance);
     }
@@ -270,15 +272,17 @@ const ArgsFunctions =
 async function Parse(eventQueue, command)
 {
   const { print } = eventQueue.handlers;
-  const Command = command.split(' ')[0].trim().toLowerCase();
-  const Arg = command.split(' ')[1] ? command.split(' ')[1].trim().toLowerCase() : "";
+  const Command = command.toString().split(' ')[0].trim().toLowerCase();
+  const Arg = command.toString().split(' ')[1] ? command.split(' ')[1].trim().toLowerCase() : "";
 
   try
   {
     // Handle incorrect command
     if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)])
-    if(ArgsFunctions.includes(Command) && Arg == null) throw Error("You should provide args for calling this function. e.g stake 1")
-    GTONRouterMap[Command](eventQueue, Arg);
+    if(ArgsFunctions.includes(Command) && Arg == "") throw Error("You should provide args for calling this function. e.g stake 1")
+    await GTONRouterMap[Command](eventQueue, Arg);
+
+    return true;
   }
   catch(err)
   {
