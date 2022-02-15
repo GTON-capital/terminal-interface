@@ -22,6 +22,14 @@ import { allowance, approve } from '../WEB3/approve';
 import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import classes from '../../pages/index.module.scss'
+import { ChainId, Fetcher, WETH, Route, Trade, TokenAmount, TradeType } from '@pancakeswap-libs/sdk';
+const ethers = require('ethers');  
+
+const url = 'https://rpc.ftm.tools';
+const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
+
+const chainId = ChainId.MAINNET;
+const gtonAddress = '0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4'
 
 // Func Router 
 
@@ -268,6 +276,19 @@ const FaucetSlave = async (eventQueue) =>
   }
 }
 
+const BuySlave = async (eventQueue) =>
+{
+  const gton = await Fetcher.fetchTokenData(chainId, gtonAddress, customHttpProvider);
+	const ftm = WETH[chainId];
+	const pair = await Fetcher.fetchPairData(ftm, gton, customHttpProvider);
+	const route = new Route([pair], ftm);
+	const trade = new Trade(route, new TokenAmount(ftm, '100000000000000000'), TradeType.EXACT_INPUT);
+	console.log("Mid Price gton --> ftm:", route.midPrice.toSignificant(6));
+	console.log("Mid Price ftm --> gton:", route.midPrice.invert().toSignificant(6));
+	console.log("-".repeat(45));
+	console.log("Execution Price gton --> ftm:", trade.executionPrice.toSignificant(6));
+	console.log("Mid Price after trade gton --> ftm:", trade.nextMidPrice.toSignificant(6));
+}
 
 const GTONRouterMap =
 {
@@ -279,7 +300,8 @@ const GTONRouterMap =
   "balance": BalanceSlave,
   "add": AddTokenSlave,
   "faucet": FaucetSlave,
-  "harvest": HarvestSlave
+  "harvest": HarvestSlave,
+  "buy": BuySlave,
 }
 
 const ArgsFunctions = 
