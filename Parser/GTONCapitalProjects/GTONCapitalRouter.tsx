@@ -176,10 +176,30 @@ const BalanceSlave = async (eventQueue, TokenName) =>
   {
     lock(true);
     loading(true);
+
+    if(TokenName == "")
+    {
+      const token = tokenMap['sgton']
+      const Balance = (await balance(token.address));
+
+      const harvest = fromWei(Balance.minus(await userShare()));
+      const share = fromWei(await userShare())
+      const gton = fromWei(await balance(tokenMap['gton'].address))
+
+      print([textLine({words:[textWord({ characters: "Harvest: " + harvest.toFixed(18).replace(/0*$/,"") })]})]);
+      print([textLine({words:[textWord({ characters: "SGTON:   " + share.toFixed(18).replace(/0*$/,"") })]})]);
+      print([textLine({words:[textWord({ characters: "GTON:    " + gton.toFixed(18).replace(/0*$/,"") })]})]);
+
+      loading(false);
+      lock(false);
+      return
+    }
+
     const token = TokenName === "harvest" ? tokenMap.sgton : tokenMap[TokenName]
     if(!token) throw Error("Available tokens are: gton, sgton, harvest");
     const Balance = (await balance(token.address));
     let CoinBalance;
+
     if(TokenName === "harvest") {
       const share = await userShare();
       CoinBalance = fromWei(Balance.minus(share));
