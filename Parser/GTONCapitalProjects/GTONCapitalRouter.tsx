@@ -23,6 +23,7 @@ import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import classes from '../../pages/index.module.scss'
 import { ChainId, Fetcher, WETH, Route, Trade, TokenAmount, TradeType } from '@pancakeswap-libs/sdk';
+import buy from '../WEB3/buyGTON';
 const ethers = require('ethers');  
 
 const url = 'https://rpc.ftm.tools';
@@ -282,12 +283,8 @@ const BuySlave = async (eventQueue) =>
 	const ftm = WETH[chainId];
 	const pair = await Fetcher.fetchPairData(ftm, gton, customHttpProvider);
 	const route = new Route([pair], ftm);
-	const trade = new Trade(route, new TokenAmount(ftm, '100000000000000000'), TradeType.EXACT_INPUT);
-	console.log("Mid Price gton --> ftm:", route.midPrice.toSignificant(6));
-	console.log("Mid Price ftm --> gton:", route.midPrice.invert().toSignificant(6));
-	console.log("-".repeat(45));
-	console.log("Execution Price gton --> ftm:", trade.executionPrice.toSignificant(6));
-	console.log("Mid Price after trade gton --> ftm:", trade.nextMidPrice.toSignificant(6));
+
+  await buy(1, +route.midPrice.toSignificant(6));
 }
 
 const GTONRouterMap =
