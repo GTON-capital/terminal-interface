@@ -277,14 +277,38 @@ const FaucetSlave = async (eventQueue) =>
   }
 }
 
-const BuySlave = async (eventQueue) =>
+const BuySlave = async (eventQueue, GTONAmount) =>
 {
-  const gton = await Fetcher.fetchTokenData(chainId, gtonAddress, customHttpProvider);
-	const ftm = WETH[chainId];
-	const pair = await Fetcher.fetchPairData(ftm, gton, customHttpProvider);
-	const route = new Route([pair], ftm);
+  const { lock, loading, print } = eventQueue.handlers;
 
-  await buy(1, +route.midPrice.toSignificant(6));
+  try 
+  {
+    loading(true);
+    lock(true);
+
+    const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
+    const FTM = WETH[chainId];
+    const pair = await Fetcher.fetchPairData(GTON, FTM, customHttpProvider);
+    const route = new Route([pair], FTM);
+    const price = ( +route.midPrice.invert().toSignificant(6) * +GTONAmount)
+    console.log(price.toString());
+
+    const tx = await buy(+GTONAmount, price.toString());
+
+    print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
+    print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
+    print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
+    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+tx })]})]);
+
+    loading(false);
+    lock(false);
+  }
+  catch (err) 
+  {
+    print([textLine({words:[textWord({ characters: err.message })]})]);
+    loading(false);
+    lock(false);
+  }
 }
 
 const GTONRouterMap =
