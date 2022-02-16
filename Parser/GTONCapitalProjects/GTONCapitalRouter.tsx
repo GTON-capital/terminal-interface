@@ -330,6 +330,7 @@ const ArgsFunctions =
   "stake",
   "unstake",
   "harvest",
+  "buy"
 ]
 
 async function Parse(eventQueue, command)
