@@ -44,38 +44,61 @@ const StakeSlave = async (eventQueue, Amount) =>
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
-      {
+  {
+    lock(true);
+    loading(true);
 
-        lock(true);
-        loading(true);
+    if(Amount == 'all')
+    {
+      const gton = fromWei(await balance(tokenMap['gton'].address))
+      const amount = toWei(new BigNumber(gton))
+      const userBalance = await balance(tokenAddress);
+      if(amount.gt(userBalance)) throw Error("Insufficient amount")
 
-        const amount = toWei(new BigNumber(Amount))
-        const userBalance = await balance(tokenAddress);
-        if(amount.gt(userBalance)) throw Error("Insufficient amount")
+      const userAllowance = await allowance();
+      if(amount.gt(userAllowance)) {
+        const firstTxn = await approve(tokenAddress, stakingAddress, amount)
 
-        const userAllowance = await allowance();
-        if(amount.gt(userAllowance)) {
-          const firstTxn = await approve(tokenAddress, stakingAddress, amount)
-
-          print([textLine({words:[textWord({ characters: messages.approve })]})]);
-          print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
-          
-        }
-
-        const secondTxn = await stake(amount);
-
-        print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
-        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
-     
-        loading(false);
-        lock(false);
+        print([textLine({words:[textWord({ characters: messages.approve })]})]);
+        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
+        
       }
-      catch(err)
-      {
-        print([textLine({words:[textWord({ characters: err.message })]})]);
-        loading(false);
-        lock(false);
+
+      const secondTxn = await stake(amount);
+
+      print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
+      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
+    }
+    else
+    {
+      const amount = toWei(new BigNumber(Amount))
+      const userBalance = await balance(tokenAddress);
+      if(amount.gt(userBalance)) throw Error("Insufficient amount")
+
+      const userAllowance = await allowance();
+      if(amount.gt(userAllowance)) {
+        const firstTxn = await approve(tokenAddress, stakingAddress, amount)
+
+        print([textLine({words:[textWord({ characters: messages.approve })]})]);
+        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
+        
       }
+
+      const secondTxn = await stake(amount);
+
+      print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
+      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
+    }
+  
+    loading(false);
+    lock(false);
+  }
+  catch(err)
+  {
+    print([textLine({words:[textWord({ characters: err.message })]})]);
+    loading(false);
+    lock(false);
+  }
 }
 
 const UnStakeSlave = async (eventQueue, Amount) => 
