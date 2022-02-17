@@ -277,7 +277,7 @@ const FaucetSlave = async (eventQueue) =>
   }
 }
 
-const BuySlave = async (eventQueue, GTONAmount) =>
+const BuySlave = async (eventQueue, Args) =>
 {
   const { lock, loading, print } = eventQueue.handlers;
 
@@ -286,19 +286,46 @@ const BuySlave = async (eventQueue, GTONAmount) =>
     loading(true);
     lock(true);
 
-    const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
-    const FTM = WETH[chainId];
-    const pair = await Fetcher.fetchPairData(GTON, FTM, customHttpProvider);
-    const route = new Route([pair], FTM);
-    const price = ( +route.midPrice.invert().toSignificant(6) * +GTONAmount)
-    console.log(price.toString());
+    const Token1 = Args.split(' ')[0]; // GTON
+    const Token2 = Args.split(' ')[3]; // FTM, USDC, etc
 
-    const tx = await buy(+GTONAmount, price.toString());
+    console.log(Token1)
 
-    print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
-    print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
-    print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+tx })]})]);
+    switch (Token2)
+    {
+      case 'FTM':
+      {
+        const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
+        const Token = WETH[chainId];
+        const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
+        const route = new Route([pair], Token);
+        const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
+        console.log(price.toString());
+
+        const tx = await buy(+Token1, price.toString());
+
+        print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
+        print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
+        print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
+        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+tx })]})]);
+      }
+      default:
+      {
+        const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
+        const Token = WETH[chainId];
+        const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
+        const route = new Route([pair], Token);
+        const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
+        console.log(price.toString());
+
+        const tx = await buy(+Token1, price.toString());
+
+        print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
+        print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
+        print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
+        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+tx })]})]);
+      }
+    }
 
     loading(false);
     lock(false);
@@ -337,13 +364,14 @@ async function Parse(eventQueue, command)
 {
   const { print } = eventQueue.handlers;
   const Command = command.split(' ')[0].trim().toLowerCase();
-  const Arg = command.split(' ')[1] ? command.split(' ')[1].trim().toLowerCase() : "";
+  // split was replaced by substring because of the buy command, which assumes two parameters
+  const Arg = command.substring(command.indexOf(' ')).replace(' ', '');
 
   try
   {
     // Handle incorrect command
-    if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)])
-    if(ArgsFunctions.includes(Command) && Arg == "") throw Error("You should provide args for calling this function. e.g stake 1")
+    if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
+    if(ArgsFunctions.includes(Command) && Arg == "") throw Error("You should provide args for calling this function. e.g stake 1");
     GTONRouterMap[Command](eventQueue, Arg);
   }
   catch(err)
