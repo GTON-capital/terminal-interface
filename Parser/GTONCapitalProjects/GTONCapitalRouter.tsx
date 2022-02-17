@@ -118,7 +118,7 @@ const UnStakeSlave = async (eventQueue, Amount) =>
       const TxnHash = await unstake(amount);
 
       print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
-      print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
+      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
     }
     else 
     {
@@ -128,7 +128,7 @@ const UnStakeSlave = async (eventQueue, Amount) =>
       const TxnHash = await unstake(amount);
 
       print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
-      print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
+      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
     }
   
     loading(false);
@@ -146,29 +146,49 @@ const HarvestSlave = async (eventQueue, Amount) =>
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
-      {
-        lock(true);
-        loading(true);
-        const amount = toWei(new BigNumber(Amount))
-        const userStake = await userShare();
-        
-        const balanceUser = await balance(stakingAddress);
-        if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
+  {
+    lock(true);
+    loading(true);
 
-        const TxnHash = await harvest(amount);
+    if(Amount == 'all')
+    {
+      const token = tokenMap['sgton']
+      const Balance = (await balance(token.address));
+      const harvestamount = fromWei(Balance.minus(await userShare()));
+      const amount = toWei(new BigNumber(harvestamount))
+      const userStake = await userShare();
+      
+      const balanceUser = await balance(stakingAddress);
+      if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
 
-        print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
-        print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
-     
-        loading(false);
-        lock(false);
-      }
-      catch(err)
-      {
-        print([textLine({words:[textWord({ characters: err.message })]})]);
-        loading(false);
-        lock(false);
-      }
+      const TxnHash = await harvest(amount);
+
+      print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
+      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
+    }
+    else
+    {
+      const amount = toWei(new BigNumber(Amount))
+      const userStake = await userShare();
+      
+      const balanceUser = await balance(stakingAddress);
+      if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
+
+      const TxnHash = await harvest(amount);
+
+      print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
+      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
+    }
+  
+    loading(false);
+    lock(false);
+  }
+  catch(err)
+  {
+    print([textLine({words:[textWord({ characters: err.message })]})]);
+    loading(false);
+    lock(false);
+  }
 }
 
 const ConnectMetamaskSlave = async (eventQueue) =>
@@ -327,38 +347,35 @@ const BuySlave = async (eventQueue, Args) =>
     const Token1 = Args.split(' ')[0]; // GTON
     const Token2 = Args.split(' ')[3]; // FTM, USDC, etc
 
-    switch (Token2)
+    if(Token2 == 'ftm')
     {
-      case 'FTM':
-      {
-        const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
-        const Token = WETH[chainId];
-        const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
-        const route = new Route([pair], Token);
-        const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
+      const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
+      const Token = WETH[chainId];
+      const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
+      const route = new Route([pair], Token);
+      const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
 
-        const tx = await buy(+Token1, price.toString());
+      const tx = await buy(+Token1, price.toString());
 
-        print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
-        print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
-        print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
-        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+tx })]})]);
-      }
-      default:
-      {
-        const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
-        const Token = WETH[chainId];
-        const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
-        const route = new Route([pair], Token);
-        const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
+      print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
+      print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
+      print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
+      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+tx, '_blank');} })]})]);
+    }
+    else
+    {
+      const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
+      const Token = WETH[chainId];
+      const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
+      const route = new Route([pair], Token);
+      const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
 
-        const tx = await buy(+Token1, price.toString());
+      const tx = await buy(+Token1, price.toString());
 
-        print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
-        print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
-        print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
-        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+tx })]})]);
-      }
+      print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
+      print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
+      print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
+      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+tx, '_blank');} })]})]);
     }
 
     loading(false);
