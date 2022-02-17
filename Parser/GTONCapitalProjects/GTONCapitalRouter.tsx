@@ -82,26 +82,42 @@ const UnStakeSlave = async (eventQueue, Amount) =>
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
-      {
-        lock(true);
-        loading(true);
-        const amount = toWei(new BigNumber(Amount))
-        const userBalance = await balance(stakingAddress);
-        if(amount.gt(userBalance)) throw Error("Insufficient amount")
-        const TxnHash = await unstake(amount);
+  {
+    lock(true);
+    loading(true);
 
-        print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
-        print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
-     
-        loading(false);
-        lock(false);
-      }
-      catch(err)
-      {
-        print([textLine({words:[textWord({ characters: err.message })]})]);
-        loading(false);
-        lock(false);
-      }
+    if(Amount === "all")
+    {
+      const AmountToUnstake = fromWei(await userShare());
+      const amount = toWei(AmountToUnstake)
+      console.log(amount.toFixed(0))
+      const userBalance = await balance(stakingAddress);
+      if(amount.gt(userBalance)) throw Error("Insufficient amount")
+      const TxnHash = await unstake(amount);
+
+      print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
+      print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
+    }
+    else 
+    {
+      const amount = toWei(new BigNumber(Amount))
+      const userBalance = await balance(stakingAddress);
+      if(amount.gt(userBalance)) throw Error("Insufficient amount")
+      const TxnHash = await unstake(amount);
+
+      print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
+      print([textLine({className: classes.customLine, words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+TxnHash })]})]);
+    }
+  
+    loading(false);
+    lock(false);
+  }
+  catch(err)
+  {
+    print([textLine({words:[textWord({ characters: err.message })]})]);
+    loading(false);
+    lock(false);
+  }
 }
 
 const HarvestSlave = async (eventQueue, Amount) => 
