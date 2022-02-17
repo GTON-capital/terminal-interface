@@ -34,13 +34,13 @@ const gtonAddress = '0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4'
 
 // Func Router 
 
-const HelpSlave = (eventQueue) =>
+const HelpWorker = (eventQueue) =>
 {
   const { print } = eventQueue.handlers;
   print([textLine({words:[textWord({ characters: messages.helpText })]})]);
 }
 
-const StakeSlave = async (eventQueue, Amount) => 
+const StakeWorker = async (eventQueue, Amount) => 
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
@@ -89,7 +89,7 @@ const StakeSlave = async (eventQueue, Amount) =>
   }
 }
 
-const UnStakeSlave = async (eventQueue, Amount) => 
+const UnStakeWorker = async (eventQueue, Amount) => 
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
@@ -128,7 +128,7 @@ const UnStakeSlave = async (eventQueue, Amount) =>
   }
 }
 
-const HarvestSlave = async (eventQueue, Amount) => 
+const HarvestWorker = async (eventQueue, Amount) => 
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
@@ -177,7 +177,7 @@ const HarvestSlave = async (eventQueue, Amount) =>
   }
 }
 
-const ConnectMetamaskSlave = async (eventQueue) =>
+const ConnectMetamaskWorker = async (eventQueue) =>
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
@@ -199,7 +199,7 @@ const ConnectMetamaskSlave = async (eventQueue) =>
   }
 }
 
-const SwitchSlave = async (eventQueue) =>
+const SwitchWorker = async (eventQueue) =>
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
@@ -221,7 +221,7 @@ const SwitchSlave = async (eventQueue) =>
   }
 }
 
-const BalanceSlave = async (eventQueue, TokenName) => 
+const BalanceWorker = async (eventQueue, TokenName) => 
 {
   const { lock, loading, print } = eventQueue.handlers;
 
@@ -275,7 +275,7 @@ const BalanceSlave = async (eventQueue, TokenName) =>
   }
 }
 
-const AddTokenSlave = async (eventQueue, TokenName) =>
+const AddTokenWorker = async (eventQueue, TokenName) =>
 {
   const { lock, loading, print } = eventQueue.handlers;
 
@@ -299,7 +299,7 @@ const AddTokenSlave = async (eventQueue, TokenName) =>
   }
 }
 
-const FaucetSlave = async (eventQueue) => 
+const FaucetWorker = async (eventQueue) => 
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
@@ -321,7 +321,7 @@ const FaucetSlave = async (eventQueue) =>
   }
 }
 
-const BuySlave = async (eventQueue, Args) =>
+const BuyWorker = async (eventQueue, Args) =>
 {
   const { lock, loading, print } = eventQueue.handlers;
 
@@ -377,16 +377,16 @@ const BuySlave = async (eventQueue, Args) =>
 
 const GTONRouterMap =
 {
-  "help": HelpSlave,
-  "join": ConnectMetamaskSlave,
-  "stake": StakeSlave,
-  "unstake": UnStakeSlave,
-  "switch": SwitchSlave,
-  "balance": BalanceSlave,
-  "add": AddTokenSlave,
-  "faucet": FaucetSlave,
-  "harvest": HarvestSlave,
-  "buy": BuySlave,
+  "help": HelpWorker,
+  "join": ConnectMetamaskWorker,
+  "stake": StakeWorker,
+  "unstake": UnStakeWorker,
+  "switch": SwitchWorker,
+  "balance": BalanceWorker,
+  "add": AddTokenWorker,
+  "faucet": FaucetWorker,
+  "harvest": HarvestWorker,
+  "buy": BuyWorker,
 }
 
 const ArgsFunctions = 
@@ -417,5 +417,5 @@ async function Parse(eventQueue, command)
   }
 }
 
-export { AddTokenSlave, BalanceSlave, SwitchSlave, ConnectMetamaskSlave, HarvestSlave, UnStakeSlave, StakeSlave, GTONRouterMap }
+export { AddTokenWorker, BalanceWorker, SwitchWorker, ConnectMetamaskWorker, HarvestWorker, UnStakeWorker, StakeWorker, GTONRouterMap }
 export default Parse;
