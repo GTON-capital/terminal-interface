@@ -22,7 +22,7 @@ import { allowance, approve } from '../WEB3/approve';
 import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import classes from '../../pages/index.module.scss'
-import { ChainId, Fetcher, WETH, Route, Trade, TokenAmount, TradeType } from '@pancakeswap-libs/sdk';
+import { ChainId, Fetcher, WETH, Route, Trade, TokenAmount, TradeType } from 'spiritswap-sdk';
 import buy from '../WEB3/buyGTON';
 const ethers = require('ethers');  
 
@@ -48,47 +48,35 @@ const StakeSlave = async (eventQueue, Amount) =>
     lock(true);
     loading(true);
 
+    var gton, amount, userBalance;
+
     if(Amount == 'all')
     {
-      const gton = fromWei(await balance(tokenMap['gton'].address))
-      const amount = toWei(new BigNumber(gton))
-      const userBalance = await balance(tokenAddress);
-      if(amount.gt(userBalance)) throw Error("Insufficient amount")
-
-      const userAllowance = await allowance();
-      if(amount.gt(userAllowance)) {
-        const firstTxn = await approve(tokenAddress, stakingAddress, amount)
-
-        print([textLine({words:[textWord({ characters: messages.approve })]})]);
-        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
-        
-      }
-
-      const secondTxn = await stake(amount);
-
-      print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
+      gton = fromWei(await balance(tokenMap['gton'].address))
+      amount = toWei(new BigNumber(gton))
+      userBalance = await balance(tokenAddress);
     }
     else
     {
-      const amount = toWei(new BigNumber(Amount))
-      const userBalance = await balance(tokenAddress);
-      if(amount.gt(userBalance)) throw Error("Insufficient amount")
-
-      const userAllowance = await allowance();
-      if(amount.gt(userAllowance)) {
-        const firstTxn = await approve(tokenAddress, stakingAddress, amount)
-
-        print([textLine({words:[textWord({ characters: messages.approve })]})]);
-        print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
-        
-      }
-
-      const secondTxn = await stake(amount);
-
-      print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
+      amount = toWei(new BigNumber(Amount))
+      userBalance = await balance(tokenAddress);
     }
+
+    if(amount.gt(userBalance)) throw Error("Insufficient amount")
+
+    const userAllowance = await allowance();
+    if(amount.gt(userAllowance)) {
+      const firstTxn = await approve(tokenAddress, stakingAddress, amount)
+
+      print([textLine({words:[textWord({ characters: messages.approve })]})]);
+      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
+      
+    }
+
+    const secondTxn = await stake(amount);
+
+    print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
+    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
   
     loading(false);
     lock(false);
@@ -109,27 +97,25 @@ const UnStakeSlave = async (eventQueue, Amount) =>
     lock(true);
     loading(true);
 
+    var amount, userBalance, TxnHash;
+
     if(Amount === "all")
     {
       const AmountToUnstake = fromWei(await userShare());
-      const amount = toWei(AmountToUnstake)
-      const userBalance = await balance(stakingAddress);
-      if(amount.gt(userBalance)) throw Error("Insufficient amount")
-      const TxnHash = await unstake(amount);
-
-      print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
+      amount = toWei(AmountToUnstake)
+      userBalance = await balance(stakingAddress);
     }
     else 
     {
-      const amount = toWei(new BigNumber(Amount))
-      const userBalance = await balance(stakingAddress);
-      if(amount.gt(userBalance)) throw Error("Insufficient amount")
-      const TxnHash = await unstake(amount);
-
-      print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
+      amount = toWei(new BigNumber(Amount))
+      userBalance = await balance(stakingAddress);
     }
+
+    if(amount.gt(userBalance)) throw Error("Insufficient amount")
+    TxnHash = await unstake(amount);
+
+    print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
+    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
   
     loading(false);
     lock(false);

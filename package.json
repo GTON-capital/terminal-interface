@@ -27,7 +27,7 @@
     "stylelint": "stylelint \"**/*.scss\" --fix"
   },
   "dependencies": {
-    "@pancakeswap-libs/sdk": "github:Layer3Org/spiritswap-sdk",
+    "spiritswap-sdk": "github:Layer3Org/spiritswap-sdk",
     "@uniswap/sdk": "^3.0.3",
     "bignumber.js": "^9.0.2",
     "crt-terminal": "^1.0.0",
