@@ -113,7 +113,6 @@ const UnStakeSlave = async (eventQueue, Amount) =>
     {
       const AmountToUnstake = fromWei(await userShare());
       const amount = toWei(AmountToUnstake)
-      console.log(amount.toFixed(0))
       const userBalance = await balance(stakingAddress);
       if(amount.gt(userBalance)) throw Error("Insufficient amount")
       const TxnHash = await unstake(amount);
@@ -328,8 +327,6 @@ const BuySlave = async (eventQueue, Args) =>
     const Token1 = Args.split(' ')[0]; // GTON
     const Token2 = Args.split(' ')[3]; // FTM, USDC, etc
 
-    console.log(Token1)
-
     switch (Token2)
     {
       case 'FTM':
@@ -339,7 +336,6 @@ const BuySlave = async (eventQueue, Args) =>
         const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
         const route = new Route([pair], Token);
         const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
-        console.log(price.toString());
 
         const tx = await buy(+Token1, price.toString());
 
@@ -355,7 +351,6 @@ const BuySlave = async (eventQueue, Args) =>
         const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
         const route = new Route([pair], Token);
         const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
-        console.log(price.toString());
 
         const tx = await buy(+Token1, price.toString());
 
