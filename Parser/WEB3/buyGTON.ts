@@ -15,6 +15,10 @@ declare const window: any;
 const buy = async (amount, gtonftmprice): Promise<string> => {
   await validate();
   await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+  const CurrentUnixTime = Math.round((new Date()).getTime() / 1000);
+  const Deadline = CurrentUnixTime + 1200; // Current time + 20 minutes
+
   const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
   const signer = provider.getSigner(0);
   const contract = new ethers.Contract(spiritswaprouteraddress, SpiritSwapRouterABI, signer);
@@ -24,7 +28,7 @@ const buy = async (amount, gtonftmprice): Promise<string> => {
   const tx = await contract.swapExactETHForTokens(amount, 
                                                 path, 
                                                 signer.getAddress(), 
-                                                '1649976686', { value: gtonftmprice.toString(), })
+                                                Deadline, { value: gtonftmprice.toString(), })
   const receipt = await tx.wait();
   return receipt.transactionHash;
 };
