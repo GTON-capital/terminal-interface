@@ -9,7 +9,7 @@ const FTMGTONSwapPath = ['0x39575ceC00dBa1408Baf761A3e093322A6Ce3b94', '0xc4d0a7
 const stakingAddress = '0x314650ac2876c6B6f354499362Df8B4DC95E4750';
 const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
 const tokenAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
-const fantomMainnet = {
+const fantomNet = {
   chainId: '4002',
   chainIdHex: '0xFA2',
   chainName: 'Fantom Testnet',
@@ -28,7 +28,7 @@ export {
   network,
   ftmscanUrl,
   isTestnet,
-  fantomMainnet,
+  fantomNet,
   stakingAddress,
   faucetAddress,
   tokenAddress,
