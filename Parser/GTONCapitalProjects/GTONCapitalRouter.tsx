@@ -50,9 +50,7 @@ const StakeWorker = async (eventQueue, Amount) =>
 
     if(Amount == 'all')
     {
-      gton = fromWei(await balance(tokenMap['gton'].address))
-      amount = toWei(new BigNumber(gton))
-      userBalance = await balance(tokenAddress);
+      userBalance = await balance(tokenMap['gton'].address);
     }
     else
     {
@@ -99,9 +97,7 @@ const UnStakeWorker = async (eventQueue, Amount) =>
 
     if(Amount === "all")
     {
-      const AmountToUnstake = fromWei(await userShare());
-      amount = toWei(AmountToUnstake)
-      userBalance = await balance(stakingAddress);
+      userBalance = await balance(await (await userShare()).toString());
     }
     else 
     {
