@@ -21,17 +21,14 @@ import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
-import classes from '../../pages/index.module.scss'
 import { ChainId, Fetcher, WETH, Route, Trade, TokenAmount, TradeType } from 'spiritswap-sdk';
 import buy from '../WEB3/buyGTON';
-import { isBigNumber } from 'web3-utils';
 const ethers = require('ethers');  
 
 const url = 'https://rpc.ftm.tools';
 const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 
 const chainId = ChainId.MAINNET;
-const gtonAddress = '0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4'
 
 // Func Router 
 
@@ -149,7 +146,7 @@ const HarvestWorker = async (eventQueue, Amount) =>
     {
       amount = toWei(new BigNumber(Amount))
     }
-    
+
     userStake = await userShare();
     balanceUser = await balance(stakingAddress);
     if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")

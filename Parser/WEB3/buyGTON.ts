@@ -1,14 +1,11 @@
 import { ethers, utils } from 'ethers';
-import BigNumber from 'bignumber.js';
-import { fromWei, toWei } from 'web3-utils';
 import {
-  tokenAddress,
-  spiritswaprouteraddress,
+  SpiritSwapRouterAddress,
+  FTMGTONSwapPath as path,
 } from '../../config/config';
 import SpiritSwapRouterABI from './ABI/SpiritSwapRouter.json';
 import { validate } from './validate';
 
-const path = [ '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83', '0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4' ];
 // WFTM -> GTON
 
 declare const window: any;
@@ -22,7 +19,7 @@ const buy = async (amount, gtonftmprice): Promise<string> => {
 
   const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
   const signer = provider.getSigner(0);
-  const contract = new ethers.Contract(spiritswaprouteraddress, SpiritSwapRouterABI, signer);
+  const contract = new ethers.Contract(SpiritSwapRouterAddress, SpiritSwapRouterABI, signer);
 
   gtonftmprice =  ethers.utils.parseUnits(gtonftmprice.toString(), 18)
   amount =        ethers.utils.parseUnits(amount.toString(), 18)
