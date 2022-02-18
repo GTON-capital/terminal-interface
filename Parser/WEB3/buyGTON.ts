@@ -1,4 +1,4 @@
-import { ethers, utils } from 'ethers';
+import { ethers } from 'ethers';
 import {
   SpiritSwapRouterAddress,
   FTMGTONSwapPath as path,
@@ -12,7 +12,6 @@ declare const window: any;
 
 const buy = async (amount, gtonftmprice): Promise<string> => {
   await validate();
-  await window.ethereum.request({ method: 'eth_requestAccounts' });
 
   const CurrentUnixTime = Math.round((new Date()).getTime() / 1000);
   const Deadline = CurrentUnixTime + 1200; // Current time + 20 minutes

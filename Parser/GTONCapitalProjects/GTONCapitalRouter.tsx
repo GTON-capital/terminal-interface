@@ -21,11 +21,12 @@ import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
-import { ChainId, Fetcher, WETH, Route, Trade, TokenAmount, TradeType } from 'spiritswap-sdk';
+import { ChainId, Fetcher, WETH, Route } from 'spiritswap-sdk';
 import buy from '../WEB3/buyGTON';
+import { fantomMainnet } from '../../config/config';
 const ethers = require('ethers');  
 
-const url = 'https://rpc.ftm.tools';
+const url = fantomMainnet.rpcUrls;
 const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 
 const chainId = ChainId.MAINNET;
@@ -134,9 +135,7 @@ const HarvestWorker = async (eventQueue, Amount) =>
 
     if(Amount == 'all')
     {
-      const Balance = (await balance(tokenMap['sgton'].address));
-      const harvestamount = fromWei(Balance.minus(await userShare()));
-      amount = toWei(new BigNumber(harvestamount))
+      amount = toWei(new BigNumber(tokenMap['sgton'].address))
     }
     else
     {
@@ -316,8 +315,10 @@ const BuyWorker = async (eventQueue, Args) =>
     loading(true);
     lock(true);
 
-    const Token1 = Args.split(' ')[0]; // GTON amount
-    const Token2 = Args.split(' ')[3]; // FTM, USDC, etc
+    const tmpARGS = Args.split(' ');
+
+    const Token1 = tmpARGS[0]; // GTON amount
+    const Token2 = tmpARGS[3]; // FTM, USDC, etc
 
     const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
     const FTM = WETH[chainId];
@@ -326,16 +327,20 @@ const BuyWorker = async (eventQueue, Args) =>
 
     switch (Token2) // Find pairs on spirit
     {
-      case 'ftm':
-      {
-        const Token = WETH[chainId];
-        const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
-        route = new Route([pair], Token);
-      }
-      default: // By default, buy for native FTM
+      case 'ftm': // By default, buy for native FTM
       {
         const pair = await Fetcher.fetchPairData(GTON, FTM, customHttpProvider);
         route = new Route([pair], FTM);
+
+        loading(false);
+        lock(false);
+      }
+      default: 
+      {
+        print([textLine({words:[textWord({ characters: 'Sorry ' + Token2 + ' not found' })]})]);
+
+        loading(false);
+        lock(false);
       }
     }
     price = (+route.midPrice.invert().toSignificant(6) * +Token1)
@@ -391,7 +396,7 @@ async function Parse(eventQueue, command)
     // Handle incorrect command
     if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
     if(ArgsFunctions.includes(Command) && Arg == "") throw Error("You should provide args for calling this function. e.g stake 1");
-    GTONRouterMap[Command](eventQueue, Arg);
+    GTONRouterMap[Command](eventQueue, Arg.toLowerCase());
   }
   catch(err)
   {
