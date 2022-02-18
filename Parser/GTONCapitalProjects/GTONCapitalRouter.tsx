@@ -9,6 +9,7 @@ import {
   tokenAddress,
   stakingAddress,
   ftmscanUrl,
+  fantomMainnet,
 } from '../../config/config';
 import notFoundStrings from '../../Errors/notfound-strings'
 import { stake, unstake } from '../WEB3/Stake';
@@ -23,10 +24,9 @@ import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import { ChainId, Fetcher, WETH, Route } from 'spiritswap-sdk';
 import buy from '../WEB3/buyGTON';
-import { fantomMainnet } from '../../config/config';
 const ethers = require('ethers');  
 
-const url = fantomMainnet.rpcUrls;
+const url = fantomMainnet.rpcUrls[0];
 const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 
 const chainId = ChainId.MAINNET;
