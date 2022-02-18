@@ -46,7 +46,7 @@ const StakeWorker = async (eventQueue, Amount) =>
     lock(true);
     loading(true);
 
-    var gton, amount, userBalance;
+    let gton, amount, userBalance;
 
     if(Amount == 'all')
     {
@@ -95,7 +95,7 @@ const UnStakeWorker = async (eventQueue, Amount) =>
     lock(true);
     loading(true);
 
-    var amount, userBalance, TxnHash;
+    let amount, userBalance, TxnHash;
 
     if(Amount === "all")
     {
@@ -134,7 +134,7 @@ const HarvestWorker = async (eventQueue, Amount) =>
     lock(true);
     loading(true);
 
-    var TxnHash, amount, balanceUser, userStake
+    let TxnHash, amount, balanceUser, userStake
 
     if(Amount == 'all')
     {
@@ -326,7 +326,7 @@ const BuyWorker = async (eventQueue, Args) =>
     const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
     const FTM = WETH[chainId];
 
-    var tx, price, route;
+    let tx, price, route;
 
     switch (Token2) // Find pairs on spirit
     {

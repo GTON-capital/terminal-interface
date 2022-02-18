@@ -2,7 +2,7 @@ import { AddTokenWorker, BalanceWorker, SwitchWorker, ConnectMetamaskWorker, Har
 
 const ParsePreset = (eventQueue, Search: string): void =>
 {
-    for (var Command in Search.replace("?", "").split('&'))
+    for (let Command in Search.replace("?", "").split('&'))
     {
         GTONRouterMap[Command](eventQueue, Command); 
     }
