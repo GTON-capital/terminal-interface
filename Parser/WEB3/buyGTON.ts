@@ -1,4 +1,5 @@
 import { ethers, utils } from 'ethers';
+import BigNumber from 'bignumber.js';
 import { fromWei, toWei } from 'web3-utils';
 import {
   tokenAddress,
@@ -23,12 +24,14 @@ const buy = async (amount, gtonftmprice): Promise<string> => {
   const signer = provider.getSigner(0);
   const contract = new ethers.Contract(spiritswaprouteraddress, SpiritSwapRouterABI, signer);
 
-  gtonftmprice = toWei(gtonftmprice.toString());
+  gtonftmprice =  ethers.utils.parseUnits(gtonftmprice.toString(), 18)
+  amount =        ethers.utils.parseUnits(amount.toString(), 18)
   
   const tx = await contract.swapExactETHForTokens(amount, 
                                                 path, 
                                                 signer.getAddress(), 
                                                 Deadline, { value: gtonftmprice.toString(), })
+  console.log(tx)
   const receipt = await tx.wait();
   return receipt.transactionHash;
 };

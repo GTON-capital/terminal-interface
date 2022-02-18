@@ -24,6 +24,7 @@ import { fromWei, toWei } from '../WEB3/API/balance';
 import classes from '../../pages/index.module.scss'
 import { ChainId, Fetcher, WETH, Route, Trade, TokenAmount, TradeType } from 'spiritswap-sdk';
 import buy from '../WEB3/buyGTON';
+import { isBigNumber } from 'web3-utils';
 const ethers = require('ethers');  
 
 const url = 'https://rpc.ftm.tools';
@@ -330,39 +331,35 @@ const BuyWorker = async (eventQueue, Args) =>
     loading(true);
     lock(true);
 
-    const Token1 = Args.split(' ')[0]; // GTON
+    const Token1 = Args.split(' ')[0]; // GTON amount
     const Token2 = Args.split(' ')[3]; // FTM, USDC, etc
 
-    if(Token2 == 'ftm')
+    const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
+    const FTM = WETH[chainId];
+
+    var tx, price, route;
+
+    switch (Token2)
     {
-      const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
-      const Token = WETH[chainId];
-      const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
-      const route = new Route([pair], Token);
-      const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
-
-      const tx = await buy(+Token1, price.toString());
-
-      print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
-      print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
-      print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+tx, '_blank');} })]})]);
+      case 'ftm':
+      {
+        const Token = WETH[chainId];
+        const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
+        route = new Route([pair], Token);
+      }
+      default: // By default, buy for native FTM
+      {
+        const pair = await Fetcher.fetchPairData(GTON, FTM, customHttpProvider);
+        route = new Route([pair], FTM);
+      }
     }
-    else
-    {
-      const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
-      const Token = WETH[chainId];
-      const pair = await Fetcher.fetchPairData(GTON, Token, customHttpProvider);
-      const route = new Route([pair], Token);
-      const price = ( +route.midPrice.invert().toSignificant(6) * +Token1)
+    price = (+route.midPrice.invert().toSignificant(6) * +Token1)
+    tx = await buy(+Token1, price.toFixed(2));
 
-      const tx = await buy(+Token1, price.toString());
-
-      print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
-      print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
-      print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+tx, '_blank');} })]})]);
-    }
+    print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
+    print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
+    print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
+    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+tx, '_blank');} })]})]);
 
     loading(false);
     lock(false);
