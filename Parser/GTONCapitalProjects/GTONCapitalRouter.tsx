@@ -137,35 +137,27 @@ const HarvestWorker = async (eventQueue, Amount) =>
     lock(true);
     loading(true);
 
+    var TxnHash, amount, balanceUser, userStake
+
     if(Amount == 'all')
     {
-      const token = tokenMap['sgton']
-      const Balance = (await balance(token.address));
+      const Balance = (await balance(tokenMap['sgton'].address));
       const harvestamount = fromWei(Balance.minus(await userShare()));
-      const amount = toWei(new BigNumber(harvestamount))
-      const userStake = await userShare();
-      
-      const balanceUser = await balance(stakingAddress);
-      if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
-
-      const TxnHash = await harvest(amount);
-
-      print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
+      amount = toWei(new BigNumber(harvestamount))
     }
     else
     {
-      const amount = toWei(new BigNumber(Amount))
-      const userStake = await userShare();
-      
-      const balanceUser = await balance(stakingAddress);
-      if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
-
-      const TxnHash = await harvest(amount);
-
-      print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
+      amount = toWei(new BigNumber(Amount))
     }
+    
+    userStake = await userShare();
+    balanceUser = await balance(stakingAddress);
+    if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
+
+    TxnHash = await harvest(amount);
+
+    print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
+    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
   
     loading(false);
     lock(false);
@@ -339,7 +331,7 @@ const BuyWorker = async (eventQueue, Args) =>
 
     var tx, price, route;
 
-    switch (Token2)
+    switch (Token2) // Find pairs on spirit
     {
       case 'ftm':
       {
