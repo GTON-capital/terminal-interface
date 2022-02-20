@@ -3,11 +3,11 @@ const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = true;
 
-const WFTMAddress = "0x684ef2e18b9e1aefeeaf82bef1cfe37f3f07f162";
+const WFTMAddress = "0xd0011de099e514c2094a510dd0109f91bf8791fa";
 const GTONAddress = "0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d";
 
-const spiritswaprouteraddress = '0x5B1769426C7AAf156d44A7fd542394B3b26dD134';
-const spiritswappooladdress = '0x5B1769426C7AAf156d44A7fd542394B3b26dD134';
+const spiritswaprouteraddress = '0x3c4925b50e337aecc2cf4b9e4767b43dcfbad286';
+const spiritswappooladdress = '0x131ee332febf8d2aa5f18f0d2c444e99411462e5';
 const FTMGTONSwapPath = ['0x684ef2e18b9e1aefeeaf82bef1cfe37f3f07f162', '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d']
 
 const stakingAddress = '0x314650ac2876c6B6f354499362Df8B4DC95E4750';
