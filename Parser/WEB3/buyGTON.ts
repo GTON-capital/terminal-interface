@@ -24,10 +24,10 @@ const buy = async (amount, gtonftmprice): Promise<string> =>
   gtonftmprice =  ethers.utils.parseUnits(gtonftmprice.toString(), 18);
   amount =        ethers.utils.parseUnits(amount.toString(), 18);
 
-  const tx = await contract.swapExactETHForTokens(amount, 
+  const tx = await contract.swapExactETHForTokens(amount.toString(), 
                                                 path, 
                                                 signer.getAddress(), 
-                                                Deadline, { value: gtonftmprice, })
+                                                Deadline, { value: gtonftmprice.toString(), })
   console.log(tx)
   const receipt = await tx.wait();
   return receipt.transactionHash;
