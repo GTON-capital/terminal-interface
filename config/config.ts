@@ -3,8 +3,13 @@ const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = false;
 
-const SpiritSwapRouterAddress = '0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52';
-const FTMGTONSwapPath = ['0x39575ceC00dBa1408Baf761A3e093322A6Ce3b94', '0xc4d0a76ba5909c8e764b67acf7360f843fbacb2d']
+const WFTMAddress = '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83';
+const GTONAddress = '0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4';
+
+const spiritswaprouteraddress = '0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52';
+const spiritswappooladdress = '0x25f5b3840d414a21c4fc46d21699e54d48f75fdd';
+const FTMGTONSwapPath = ['0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', '0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4']
+
 const stakingAddress = '0xB0dAAb4eb0C23aFFaA5c9943d6f361b51479ac48';
 const faucetAddress = '';
 const tokenAddress = '0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4';
@@ -21,13 +26,16 @@ const faucetLink = "https://faucet.fantom.network/"
 const gcLink = "https://gton.capital/"
 
 export {
+  WFTMAddress,
+  GTONAddress,
+  spiritswappooladdress,
   FTMGTONSwapPath,
   network,
   gcLink,
   faucetLink,
   ftmscanUrl,
   isTestnet,
-  SpiritSwapRouterAddress,
+  spiritswaprouteraddress,
   fantomNet,
   stakingAddress,
   faucetAddress,

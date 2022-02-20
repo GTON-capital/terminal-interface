@@ -10,6 +10,10 @@ import {
   stakingAddress,
   ftmscanUrl,
   fantomNet,
+  network,
+  WFTMAddress,
+  GTONAddress,
+  spiritswappooladdress,
 } from '../../config/config';
 import notFoundStrings from '../../Errors/notfound-strings'
 import { stake, unstake } from '../WEB3/Stake';
@@ -24,6 +28,7 @@ import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import { ChainId, Fetcher, WETH, Route } from 'spiritswap-sdk';
 import buy from '../WEB3/buyGTON';
+import erc20 from '../WEB3/ABI/erc20.json';
 const ethers = require('ethers');  
 
 const url = fantomNet.rpcUrls[0];
@@ -318,22 +323,29 @@ const BuyWorker = async (eventQueue, Args) =>
     const tmpARGS = Args.split(' ');
 
     const Token1 = tmpARGS[0]; // GTON amount
-    const Token2 = tmpARGS[3]; // FTM, USDC, etc
+    const Token2 = tmpARGS[2]; // FTM, USDC, etc
 
-    const GTON = await Fetcher.fetchTokenData(chainId, tokenAddress, customHttpProvider);
-    const FTM = WETH[chainId];
-
-    let tx, price, route;
+    let tx, price;
 
     switch (Token2) // Find pairs on spirit
     {
       case 'ftm': // By default, buy for native FTM
       {
-        const pair = await Fetcher.fetchPairData(GTON, FTM, customHttpProvider);
-        route = new Route([pair], FTM);
+        // Get tokens contract, for executing balanceOf, so we can calculate price later
+        const WFTMContract = await new ethers.Contract(WFTMAddress, erc20, customHttpProvider); 
+        const GTONContract = await new ethers.Contract(GTONAddress, erc20, customHttpProvider);
 
-        loading(false);
-        lock(false);
+        let wftmPoolValue : BigNumber = await WFTMContract.balanceOf(spiritswappooladdress);
+        let gtonPoolValue : BigNumber = await GTONContract.balanceOf(spiritswappooladdress);
+
+        wftmPoolValue = ethers.utils.formatEther(wftmPoolValue.toString()).toString()
+        gtonPoolValue = ethers.utils.formatEther(gtonPoolValue.toString()).toString()
+
+        const gton = (+gtonPoolValue - +Token1);
+        const wftm = (+wftmPoolValue + +Token1);
+
+        price = ((+wftm / +gton) * +Token1);
+        break;
       }
       default: 
       {
@@ -343,8 +355,7 @@ const BuyWorker = async (eventQueue, Args) =>
         lock(false);
       }
     }
-    price = (+route.midPrice.invert().toSignificant(6) * +Token1)
-    tx = await buy(+Token1, price.toFixed(2));
+    tx = await buy(+Token1, price.toFixed(18));
 
     print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
     print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
