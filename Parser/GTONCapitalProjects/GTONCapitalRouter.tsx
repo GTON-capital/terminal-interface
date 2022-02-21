@@ -85,7 +85,7 @@ const StakeWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Something went wrong please try again later" })]})]);
     loading(false);
     lock(false);
   }
@@ -122,7 +122,7 @@ const UnStakeWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Something went wrong please try again later" })]})]);
     loading(false);
     lock(false);
   }
@@ -161,7 +161,7 @@ const HarvestWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Something went wrong, please try again later" })]})]);
     loading(false);
     lock(false);
   }
@@ -183,7 +183,7 @@ const ConnectMetamaskWorker = async (eventQueue) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Error while connecting metamask, please try again" })]})]);
     loading(false);
     lock(false);
   }
@@ -205,7 +205,7 @@ const SwitchWorker = async (eventQueue) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Error while switching chain, make sure metamask are connected." })]})]);
     loading(false);
     lock(false);
   }
@@ -259,7 +259,7 @@ const BalanceWorker = async (eventQueue, TokenName) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Something went wrong, please try again" })]})]);
     loading(false);
     lock(false);
   }
@@ -283,7 +283,7 @@ const AddTokenWorker = async (eventQueue, TokenName) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Error while add tokent to metamask" })]})]);
     loading(false);
     lock(false);
   }
@@ -305,7 +305,7 @@ const FaucetWorker = async (eventQueue) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "" })]})]);
     loading(false);
     lock(false);
   }
@@ -413,7 +413,7 @@ async function Parse(eventQueue, command)
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "" })]})]);
   }
 }
 
