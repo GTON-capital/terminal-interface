@@ -46,7 +46,7 @@ workflows:
     jobs:
       - docker-image-build:
           container-tag: ${CONTAINER_TAG_ALPHA}
-          prod-config: false
+          prod-config: true
       - cluster-deploy:
           deployment-name: ${DEPLOYMENT_ALPHA}
           requires: 
