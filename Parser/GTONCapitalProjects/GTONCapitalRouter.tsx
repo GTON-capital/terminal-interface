@@ -325,7 +325,7 @@ const BuyWorker = async (eventQueue, Args) =>
     const Token1 = tmpARGS[0]; // GTON amount
     const Token2 = tmpARGS[2]; // FTM, USDC, etc
 
-    let tx, price;
+    let tx, price, TradePrice;
 
     switch (Token2) // Find pairs on spirit
     {
@@ -338,13 +338,15 @@ const BuyWorker = async (eventQueue, Args) =>
         let wftmPoolValue : BigNumber = await WFTMContract.balanceOf(spiritswappooladdress);
         let gtonPoolValue : BigNumber = await GTONContract.balanceOf(spiritswappooladdress);
 
-        wftmPoolValue = ethers.utils.formatEther(wftmPoolValue.toString()).toString()
-        gtonPoolValue = ethers.utils.formatEther(gtonPoolValue.toString()).toString()
+        const wftm = ethers.utils.formatEther(wftmPoolValue.toString()).toString()
+        const gton = ethers.utils.formatEther(gtonPoolValue.toString()).toString()
 
-        const gton = (+gtonPoolValue - +Token1);
-        const wftm = (+wftmPoolValue + +Token1);
+        const priceRN = (+wftm / +gton);                        // price right now
+        const ExecFTM = +wftm + (+priceRN * +Token1);           // how much ftm be in the pool
+        const ExecGTON = +gton - +Token1;                       // how much gton be in the pool
 
-        price = ((+wftm / +gton) * +Token1);
+        TradePrice = ExecFTM / ExecGTON;
+        TradePrice = TradePrice + (TradePrice * 0.003) // slippage
         break;
       }
       default: 
@@ -355,7 +357,7 @@ const BuyWorker = async (eventQueue, Args) =>
         lock(false);
       }
     }
-    tx = await buy(+Token1, price.toFixed(18));
+    tx = await buy(+Token1, TradePrice);
 
     print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
     print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
@@ -367,7 +369,7 @@ const BuyWorker = async (eventQueue, Args) =>
   }
   catch (err) 
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Something went wrong, please try again later." })]})]);
     loading(false);
     lock(false);
   }

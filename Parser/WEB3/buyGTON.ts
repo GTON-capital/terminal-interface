@@ -18,12 +18,11 @@ const buy = async (amount, gtonftmprice): Promise<string> =>
   const signer = provider.getSigner(0);
   const contract = new ethers.Contract(spiritswaprouteraddress, SpiritSwapRouterABI, signer);
 
-  // Rounding up to be sure that the transaction will pass
-  gtonftmprice = Math.ceil(gtonftmprice * 100)/100;
+  gtonftmprice = gtonftmprice * amount;
 
   gtonftmprice =  ethers.utils.parseUnits(gtonftmprice.toString(), 18);
   amount =        ethers.utils.parseUnits(amount.toString(), 18);
-
+  
   const tx = await contract.swapExactETHForTokens(amount.toString(), 
                                                 path, 
                                                 signer.getAddress(), 
