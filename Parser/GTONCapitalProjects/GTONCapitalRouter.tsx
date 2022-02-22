@@ -79,8 +79,7 @@ const StakeWorker = async (eventQueue, Amount) =>
     if(Amount == 'all')
     {
       userBalance = await balance(tokenMap['gton'].address);
-      amount =      await balance(tokenMap['gton'].address);
-      console.log(userBalance.toString());
+      amount =      userBalance;
     }
     else
     {
@@ -135,7 +134,8 @@ const UnStakeWorker = async (eventQueue, Amount) =>
 
     if(Amount === "all")
     {
-      userBalance = await balance(await (await userShare()).toString());
+      userBalance = await userShare();
+      amount = userBalance;
     }
     else 
     {
