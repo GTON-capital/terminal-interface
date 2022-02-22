@@ -10,7 +10,6 @@ import {
   stakingAddress,
   ftmscanUrl,
   fantomNet,
-  network,
   WFTMAddress,
   GTONAddress,
   spiritswappooladdress,
@@ -26,7 +25,6 @@ import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
-import { ChainId, Fetcher, WETH, Route } from 'spiritswap-sdk';
 import buy from '../WEB3/buyGTON';
 import erc20 from '../WEB3/ABI/erc20.json';
 const ethers = require('ethers');  
@@ -34,7 +32,29 @@ const ethers = require('ethers');
 const url = fantomNet.rpcUrls[0];
 const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 
-const chainId = ChainId.MAINNET;
+enum ErrorCodes 
+{
+  INVALID_ARGUMENT = "INVALID_ARGUMENT",
+  USER_DECLINED_TRANSACTION = 3,
+  NOT_ENOUGHT_FUNDS = -32000
+}
+
+const ErrorHandler = (eventQueue, Code, Operation) =>
+{
+  const { print } = eventQueue.handlers;
+  if(Code == ErrorCodes.INVALID_ARGUMENT) 
+  {
+    print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: " + Operation + " 20, or " + Operation + " all" })]})]);
+  }
+  if(Code == ErrorCodes.USER_DECLINED_TRANSACTION) 
+  {
+    print([textLine({words:[textWord({ characters: "User declined transaction" })]})]);
+  }
+  if(Code == ErrorCodes.NOT_ENOUGHT_FUNDS) 
+  {
+    print([textLine({words:[textWord({ characters: "You don't have enough funds to buy that many GTON" })]})]);
+  }
+}
 
 // Func Router 
 
@@ -52,19 +72,21 @@ const StakeWorker = async (eventQueue, Amount) =>
     lock(true);
     loading(true);
 
-    let gton, amount, userBalance;
+    if(Amount == 0) throw new Error('You cant stake less than 0 $GTON');
+
+    let amount, userBalance;
 
     if(Amount == 'all')
     {
       userBalance = await balance(tokenMap['gton'].address);
+      amount =      userBalance;
     }
     else
     {
       amount = toWei(new BigNumber(Amount))
       userBalance = await balance(tokenAddress);
+      if(amount.gt(userBalance)) throw Error("Insufficient amount")
     }
-
-    if(amount.gt(userBalance)) throw Error("Insufficient amount")
 
     const userAllowance = await allowance();
     if(amount.gt(userAllowance)) {
@@ -85,7 +107,15 @@ const StakeWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    if (err.code in ErrorCodes)
+    {
+      ErrorHandler(eventQueue, err.code, "stake");
+    }
+    else
+    {
+      print([textLine({words:[textWord({ characters: err.message })]})]);
+    }
+    
     loading(false);
     lock(false);
   }
@@ -96,6 +126,7 @@ const UnStakeWorker = async (eventQueue, Amount) =>
   const { lock, loading, print } = eventQueue.handlers;
   try
   {
+    if(Amount == 0) throw new Error('You cant unstake less than 0 $GTON');
     lock(true);
     loading(true);
 
@@ -103,7 +134,8 @@ const UnStakeWorker = async (eventQueue, Amount) =>
 
     if(Amount === "all")
     {
-      userBalance = await balance(await (await userShare()).toString());
+      userBalance = await userShare();
+      amount = userBalance;
     }
     else 
     {
@@ -122,7 +154,14 @@ const UnStakeWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    if (err.code in ErrorCodes)
+    {
+      ErrorHandler(eventQueue, err.code, "unstake");
+    }
+    else
+    {
+      print([textLine({words:[textWord({ characters: err.message })]})]);
+    }
     loading(false);
     lock(false);
   }
@@ -136,20 +175,24 @@ const HarvestWorker = async (eventQueue, Amount) =>
     lock(true);
     loading(true);
 
+    if(Amount == 0) throw new Error('You cant harvest less than 0 $GTON')
+
     let TxnHash, amount, balanceUser, userStake
 
     if(Amount == 'all')
     {
-      amount = toWei(new BigNumber(tokenMap['sgton'].address))
+      const token = tokenMap['sgton']
+      const Balance = (await balance(token.address));
+
+      amount = toWei(Balance.minus(await userShare()))
     }
     else
     {
       amount = toWei(new BigNumber(Amount))
+      userStake = await userShare();
+      balanceUser = await balance(stakingAddress);
+      if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
     }
-
-    userStake = await userShare();
-    balanceUser = await balance(stakingAddress);
-    if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
 
     TxnHash = await harvest(amount);
 
@@ -161,7 +204,14 @@ const HarvestWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    if (err.code in ErrorCodes)
+    {
+      ErrorHandler(eventQueue, err.code, "harvest");
+    }
+    else
+    {
+      print([textLine({words:[textWord({ characters: err.message })]})]);
+    }
     loading(false);
     lock(false);
   }
@@ -183,7 +233,7 @@ const ConnectMetamaskWorker = async (eventQueue) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Error while connecting metamask, please try again" })]})]);
     loading(false);
     lock(false);
   }
@@ -205,7 +255,7 @@ const SwitchWorker = async (eventQueue) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Error while switching chain, make sure metamask are connected." })]})]);
     loading(false);
     lock(false);
   }
@@ -259,7 +309,7 @@ const BalanceWorker = async (eventQueue, TokenName) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Something went wrong, please try again" })]})]);
     loading(false);
     lock(false);
   }
@@ -283,7 +333,7 @@ const AddTokenWorker = async (eventQueue, TokenName) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "Error while add token to metamask" })]})]);
     loading(false);
     lock(false);
   }
@@ -305,7 +355,7 @@ const FaucetWorker = async (eventQueue) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    print([textLine({words:[textWord({ characters: "" })]})]);
     loading(false);
     lock(false);
   }
@@ -325,7 +375,11 @@ const BuyWorker = async (eventQueue, Args) =>
     const Token1 = tmpARGS[0]; // GTON amount
     const Token2 = tmpARGS[2]; // FTM, USDC, etc
 
-    let tx, price, TradePrice;
+    if(Token1 == 0)         throw new Error('You cant buy 0 $GTON')
+    if(Token1 < 0)          throw new Error('You cant buy less than 0 $GTON')
+    if(Token2 == undefined) throw new Error("Apparently you did not specify for which token you want to buy $GTON, example: buy 1 with ftm")
+
+    let tx, TradePrice;
 
     switch (Token2) // Find pairs on spirit
     {
@@ -349,13 +403,6 @@ const BuyWorker = async (eventQueue, Args) =>
         TradePrice = TradePrice + (TradePrice * 0.003) // slippage
         break;
       }
-      default: 
-      {
-        print([textLine({words:[textWord({ characters: 'Sorry ' + Token2 + ' not found' })]})]);
-
-        loading(false);
-        lock(false);
-      }
     }
     tx = await buy(+Token1, TradePrice);
 
@@ -369,11 +416,32 @@ const BuyWorker = async (eventQueue, Args) =>
   }
   catch (err) 
   {
-    print([textLine({words:[textWord({ characters: "Something went wrong, please try again later." })]})]);
+    if (err.code in ErrorCodes)
+    {
+      ErrorHandler(eventQueue, err.code, "Buy");
+    }
+    else
+    {
+      print([textLine({words:[textWord({ characters: err.message })]})]);
+    }
     loading(false);
     lock(false);
   }
 }
+
+const Commands =
+[
+  "help",
+  "join",
+  "stake",
+  "unstake",
+  "switch",
+  "balance",
+  "add",
+  "faucet",
+  "harvest",
+  "buy",
+]
 
 const GTONRouterMap =
 {
@@ -406,9 +474,13 @@ async function Parse(eventQueue, command)
 
   try
   {
+    for (command in Commands) // check if user provided something like stake10 instead of stake 10
+    {
+      if(Command.indexOf(command) !== -1) throw new Error("It looks like you forgot the space in the command, examples: \n stake 10 \n unstake 10 \n harvest 10");
+    }
     // Handle incorrect command
     if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
-    if(ArgsFunctions.includes(Command) && Arg == "") throw Error("You should provide args for calling this function. e.g stake 1");
+    if(ArgsFunctions.includes(Command) && Arg == Command) throw Error("You should provide args for calling this function. e.g stake 1");
     GTONRouterMap[Command](eventQueue, Arg.toLowerCase());
   }
   catch(err)
