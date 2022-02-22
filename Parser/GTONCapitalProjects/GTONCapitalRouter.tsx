@@ -35,6 +35,8 @@ const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 enum ErrorCodes 
 {
   INVALID_ARGUMENT = "INVALID_ARGUMENT",
+  USER_DECLINED_TRANSACTION = 3,
+  NOT_ENOUGHT_FUNDS = -32000
 }
 
 const ErrorHandler = (eventQueue, Code, Operation) =>
@@ -43,6 +45,14 @@ const ErrorHandler = (eventQueue, Code, Operation) =>
   if(Code == ErrorCodes.INVALID_ARGUMENT) 
   {
     print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: " + Operation + " 20, or " + Operation + " all" })]})]);
+  }
+  if(Code == ErrorCodes.USER_DECLINED_TRANSACTION) 
+  {
+    print([textLine({words:[textWord({ characters: "User declined transaction" })]})]);
+  }
+  if(Code == ErrorCodes.NOT_ENOUGHT_FUNDS) 
+  {
+    print([textLine({words:[textWord({ characters: "You don't have enough funds to buy that many GTON" })]})]);
   }
 }
 
@@ -143,18 +153,13 @@ const UnStakeWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    switch(err.code) 
+    if (err.code in ErrorCodes)
     {
-      case "INVALID_ARGUMENT":
-      {
-        print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: unstake 20, or unstake all" })]})]);
-        break;
-      }
-      default: 
-      {
-        print([textLine({words:[textWord({ characters: err.message })]})]);
-        break;
-      }
+      ErrorHandler(eventQueue, err.code, "unstake");
+    }
+    else
+    {
+      print([textLine({words:[textWord({ characters: err.message })]})]);
     }
     loading(false);
     lock(false);
@@ -196,18 +201,13 @@ const HarvestWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    switch(err.code) 
+    if (err.code in ErrorCodes)
     {
-      case "INVALID_ARGUMENT":
-      {
-        print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: harvest 20, or harvest all" })]})]);
-        break;
-      }
-      default: 
-      {
-        print([textLine({words:[textWord({ characters: err.message })]})]);
-        break;
-      }
+      ErrorHandler(eventQueue, err.code, "unstake");
+    }
+    else
+    {
+      print([textLine({words:[textWord({ characters: err.message })]})]);
     }
     loading(false);
     lock(false);
@@ -330,7 +330,7 @@ const AddTokenWorker = async (eventQueue, TokenName) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: "Error while add tokent to metamask" })]})]);
+    print([textLine({words:[textWord({ characters: "Error while add token to metamask" })]})]);
     loading(false);
     lock(false);
   }
@@ -413,28 +413,13 @@ const BuyWorker = async (eventQueue, Args) =>
   }
   catch (err) 
   {
-    switch (err.code)
+    if (err.code in ErrorCodes)
     {
-      case 3: 
-      {
-        print([textLine({words:[textWord({ characters: "User declined transaction" })]})]);
-        break;
-      }
-      case 4001:
-      {
-        print([textLine({words:[textWord({ characters: "User declined transaction" })]})]);
-        break;
-      }
-      case -32000: 
-      {
-        print([textLine({words:[textWord({ characters: "You don't have enough funds to buy that many GTON" })]})]);
-        break;
-      }
-      default: 
-      {
-        print([textLine({words:[textWord({ characters: err.message })]})]);
-        break;
-      }
+      ErrorHandler(eventQueue, err.code, "Buy");
+    }
+    else
+    {
+      print([textLine({words:[textWord({ characters: err.message })]})]);
     }
     loading(false);
     lock(false);
