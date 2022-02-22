@@ -34,13 +34,13 @@ const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 
 enum ErrorCodes 
 {
-  INVALID_ARGUMENT,
+  INVALID_ARGUMENT = "INVALID_ARGUMENT",
 }
 
 const ErrorHandler = (eventQueue, Code, Operation) =>
 {
   const { print } = eventQueue.handlers;
-  if(Code == "INVALID_ARGUMENT") 
+  if(Code == ErrorCodes.INVALID_ARGUMENT) 
   {
     print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: " + Operation + " 20, or " + Operation + " all" })]})]);
   }
