@@ -10,7 +10,6 @@ import {
   stakingAddress,
   ftmscanUrl,
   fantomNet,
-  network,
   WFTMAddress,
   GTONAddress,
   spiritswappooladdress,
@@ -26,13 +25,26 @@ import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
-import { ChainId, Fetcher, WETH, Route } from 'spiritswap-sdk';
 import buy from '../WEB3/buyGTON';
 import erc20 from '../WEB3/ABI/erc20.json';
 const ethers = require('ethers');  
 
 const url = fantomNet.rpcUrls[0];
 const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
+
+enum ErrorCodes 
+{
+  INVALID_ARGUMENT,
+}
+
+const ErrorHandler = (eventQueue, Code, Operation) =>
+{
+  const { print } = eventQueue.handlers;
+  if(Code == "INVALID_ARGUMENT") 
+  {
+    print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: " + Operation + " 20, or " + Operation + " all" })]})]);
+  }
+}
 
 // Func Router 
 
@@ -85,19 +97,15 @@ const StakeWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    switch(err.code) 
+    if (err.code in ErrorCodes)
     {
-      case "INVALID_ARGUMENT":
-      {
-        print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: stake 20, or stake all" })]})]);
-        break;
-      }
-      default: 
-      {
-        print([textLine({words:[textWord({ characters: err.message })]})]);
-        break;
-      }
+      ErrorHandler(eventQueue, err.code, "stake");
     }
+    else
+    {
+      print([textLine({words:[textWord({ characters: err.message })]})]);
+    }
+    
     loading(false);
     lock(false);
   }
@@ -431,11 +439,6 @@ const BuyWorker = async (eventQueue, Args) =>
     loading(false);
     lock(false);
   }
-}
-
-const DisconnectWorker = async (eventQueue) =>
-{
-  ethers.disconnect(eventQueue)
 }
 
 const Commands =
