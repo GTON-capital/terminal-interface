@@ -11,7 +11,8 @@ enum Commands
     BALANCE = "balance",
     ADD_TOKEN = "add",
     FAUCET = "faucet",
-    HARVEST = "harvest"
+    HARVEST = "harvest",
+    BUY = "buy",
 }
 
 enum OptionalActions {
@@ -64,12 +65,13 @@ const messages = {
   Available commands:
   ${Prefix.PREFIX}${Commands.HELP} - this output
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
-  ${Prefix.PREFIX}${Commands.STAKE} <amount> - stake funds
-  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> - unstake funds
-  ${Prefix.PREFIX}${Commands.HARVEST} <amount> - harvest reward
+  ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
+  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
+  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
-  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask
+  ${Prefix.PREFIX}${Commands.BUY} buy <amount> with ftm - buy <amount> of gton via CLI
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
 
   ${Prefix.PREFIX}${Commands.CD}  ogswap | candyshop | staking- change project

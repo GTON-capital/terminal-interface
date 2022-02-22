@@ -20,7 +20,7 @@ const Projects =
   "ogswap": "ogswap"
 }
 
-var CurrentDirectory = Projects.staking;
+let CurrentDirectory = Projects.staking;
 
 export default function Web() {
 
