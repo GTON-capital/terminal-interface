@@ -79,14 +79,15 @@ const StakeWorker = async (eventQueue, Amount) =>
     if(Amount == 'all')
     {
       userBalance = await balance(tokenMap['gton'].address);
+      amount =      await balance(tokenMap['gton'].address);
+      console.log(userBalance.toString());
     }
     else
     {
       amount = toWei(new BigNumber(Amount))
       userBalance = await balance(tokenAddress);
+      if(amount.gt(userBalance)) throw Error("Insufficient amount")
     }
-
-    if(amount.gt(userBalance)) throw Error("Insufficient amount")
 
     const userAllowance = await allowance();
     if(amount.gt(userAllowance)) {
