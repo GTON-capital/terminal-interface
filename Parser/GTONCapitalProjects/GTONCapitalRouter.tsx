@@ -79,7 +79,7 @@ const StakeWorker = async (eventQueue, Amount) =>
     if(Amount == 'all')
     {
       userBalance = await balance(tokenMap['gton'].address);
-      amount =      userBalance;
+      amount = userBalance;
     }
     else
     {
