@@ -34,8 +34,6 @@ const ethers = require('ethers');
 const url = fantomNet.rpcUrls[0];
 const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 
-const chainId = ChainId.MAINNET;
-
 // Func Router 
 
 const HelpWorker = (eventQueue) =>
@@ -52,7 +50,9 @@ const StakeWorker = async (eventQueue, Amount) =>
     lock(true);
     loading(true);
 
-    let gton, amount, userBalance;
+    if(Amount == 0) throw new Error('You cant stake less than 0 $GTON');
+
+    let amount, userBalance;
 
     if(Amount == 'all')
     {
@@ -85,7 +85,19 @@ const StakeWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: "Something went wrong please try again later" })]})]);
+    switch(err.code) 
+    {
+      case "INVALID_ARGUMENT":
+      {
+        print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: stake 20, or stake all" })]})]);
+        break;
+      }
+      default: 
+      {
+        print([textLine({words:[textWord({ characters: err.message })]})]);
+        break;
+      }
+    }
     loading(false);
     lock(false);
   }
@@ -96,6 +108,7 @@ const UnStakeWorker = async (eventQueue, Amount) =>
   const { lock, loading, print } = eventQueue.handlers;
   try
   {
+    if(Amount == 0) throw new Error('You cant unstake less than 0 $GTON');
     lock(true);
     loading(true);
 
@@ -122,7 +135,19 @@ const UnStakeWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: "Something went wrong please try again later" })]})]);
+    switch(err.code) 
+    {
+      case "INVALID_ARGUMENT":
+      {
+        print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: unstake 20, or unstake all" })]})]);
+        break;
+      }
+      default: 
+      {
+        print([textLine({words:[textWord({ characters: err.message })]})]);
+        break;
+      }
+    }
     loading(false);
     lock(false);
   }
@@ -135,6 +160,8 @@ const HarvestWorker = async (eventQueue, Amount) =>
   {
     lock(true);
     loading(true);
+
+    if(Amount == 0) throw new Error('You cant harvest less than 0 $GTON')
 
     let TxnHash, amount, balanceUser, userStake
 
@@ -161,7 +188,19 @@ const HarvestWorker = async (eventQueue, Amount) =>
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: "Something went wrong, please try again later" })]})]);
+    switch(err.code) 
+    {
+      case "INVALID_ARGUMENT":
+      {
+        print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: harvest 20, or harvest all" })]})]);
+        break;
+      }
+      default: 
+      {
+        print([textLine({words:[textWord({ characters: err.message })]})]);
+        break;
+      }
+    }
     loading(false);
     lock(false);
   }
@@ -325,7 +364,11 @@ const BuyWorker = async (eventQueue, Args) =>
     const Token1 = tmpARGS[0]; // GTON amount
     const Token2 = tmpARGS[2]; // FTM, USDC, etc
 
-    let tx, price, TradePrice;
+    if(Token1 == 0)         throw new Error('You cant buy 0 $GTON')
+    if(Token1 < 0)          throw new Error('You cant buy less than 0 $GTON')
+    if(Token2 == undefined) throw new Error("Apparently you did not specify for which token you want to buy $GTON, example: buy 1 with ftm")
+
+    let tx, TradePrice;
 
     switch (Token2) // Find pairs on spirit
     {
@@ -349,13 +392,6 @@ const BuyWorker = async (eventQueue, Args) =>
         TradePrice = TradePrice + (TradePrice * 0.003) // slippage
         break;
       }
-      default: 
-      {
-        print([textLine({words:[textWord({ characters: 'Sorry ' + Token2 + ' not found' })]})]);
-
-        loading(false);
-        lock(false);
-      }
     }
     tx = await buy(+Token1, TradePrice);
 
@@ -369,11 +405,52 @@ const BuyWorker = async (eventQueue, Args) =>
   }
   catch (err) 
   {
-    print([textLine({words:[textWord({ characters: "Something went wrong, please try again later." })]})]);
+    switch (err.code)
+    {
+      case 3: 
+      {
+        print([textLine({words:[textWord({ characters: "User declined transaction" })]})]);
+        break;
+      }
+      case 4001:
+      {
+        print([textLine({words:[textWord({ characters: "User declined transaction" })]})]);
+        break;
+      }
+      case -32000: 
+      {
+        print([textLine({words:[textWord({ characters: "You don't have enough funds to buy that many GTON" })]})]);
+        break;
+      }
+      default: 
+      {
+        print([textLine({words:[textWord({ characters: err.message })]})]);
+        break;
+      }
+    }
     loading(false);
     lock(false);
   }
 }
+
+const DisconnectWorker = async (eventQueue) =>
+{
+  ethers.disconnect(eventQueue)
+}
+
+const Commands =
+[
+  "help",
+  "join",
+  "stake",
+  "unstake",
+  "switch",
+  "balance",
+  "add",
+  "faucet",
+  "harvest",
+  "buy",
+]
 
 const GTONRouterMap =
 {
@@ -406,14 +483,18 @@ async function Parse(eventQueue, command)
 
   try
   {
+    for (command in Commands) // check if user provided something like stake10 instead of stake 10
+    {
+      if(Command.indexOf(command) !== -1) throw new Error("It looks like you forgot the space in the command, examples: \n stake 10 \n unstake 10 \n harvest 10");
+    }
     // Handle incorrect command
     if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
-    if(ArgsFunctions.includes(Command) && Arg == "") throw Error("You should provide args for calling this function. e.g stake 1");
+    if(ArgsFunctions.includes(Command) && Arg == Command) throw Error("You should provide args for calling this function. e.g stake 1");
     GTONRouterMap[Command](eventQueue, Arg.toLowerCase());
   }
   catch(err)
   {
-    print([textLine({words:[textWord({ characters: "" })]})]);
+    print([textLine({words:[textWord({ characters: err.message })]})]);
   }
 }
 
