@@ -2,7 +2,17 @@ version: 2.1
 orbs:
   aws-eks: circleci/aws-eks@2.1.0
   kubernetes: circleci/kubernetes@1.1.0
+  node: circleci/node@5.0.0
 jobs:
+  test-node-install:
+    executor:
+      name: node/default
+      tag: '16.14.0'
+    steps:
+      - checkout
+      - node/install-packages:
+          cache-path: node_modules
+          override-ci-command: npm i
   docker-image-build:
     docker:
       - image: cimg/base:2021.04
@@ -28,7 +38,8 @@ jobs:
       - kubernetes/install
       - aws-eks/update-kubeconfig-with-authenticator:
           cluster-name: ${CLUSTER_NAME}
-      - run: kubectl rollout restart deployment << parameters.deployment-name >> --namespace=${NAMESPACE}     
+      - run: kubectl rollout restart deployment << parameters.deployment-name >> --namespace=${NAMESPACE}
+           
 workflows:
   version: 2
   build-deploy:
@@ -66,12 +77,10 @@ workflows:
       equal: [ master, << pipeline.git.branch >> ]
   build-on-push:
     jobs:
-      - docker-image-build:
-          container-tag: testcontainertag
-          prod-config: false
-    when:
-      branches:
-        ignore:
-          - develop
-          - master
-          - alpha
+      - test-node-install:
+        filters:
+          branches:
+            ignore:
+              - develop
+              - master
+              - alpha
