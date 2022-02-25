@@ -64,3 +64,14 @@ workflows:
             - docker-image-build
     when:
       equal: [ master, << pipeline.git.branch >> ]
+  build-on-push:
+    jobs:
+      - docker-image-build:
+          container-tag: testcontainertag
+          prod-config: false
+    when:
+      branches:
+        ignore:
+          - develop
+          - master
+          - alpha
