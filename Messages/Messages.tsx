@@ -13,6 +13,7 @@ enum Commands
     FAUCET = "faucet",
     HARVEST = "harvest",
     BUY = "buy",
+    PRICE = "price",
 }
 
 enum OptionalActions {
@@ -72,6 +73,7 @@ const messages = {
   ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask
   ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
+  ${Prefix.PREFIX}${Commands.PRICE} - get current gton price in USDC pool
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
 
   ${Prefix.PREFIX}${Commands.CD}  ogswap | candyshop | staking- change project
