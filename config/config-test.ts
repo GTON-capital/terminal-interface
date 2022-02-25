@@ -13,7 +13,8 @@ const FTMGTONSwapPath = ['0xD0011dE099E514c2094a510dd0109F91bf8791Fa', '0xc4d0a7
 const stakingAddress = '0x314650ac2876c6B6f354499362Df8B4DC95E4750';
 const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
 const tokenAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
-const fantomNet = {
+const fantomNet = 
+{
   chainId: '4002',
   chainIdHex: '0xFA2',
   chainName: 'Fantom Testnet',
@@ -21,6 +22,17 @@ const fantomNet = {
   nativeCurrency: { name: 'FTM', decimals: 18, symbol: 'FTM' },
   blockExplorerUrls: ['https://testnet.ftmscan.com/'],
 };
+
+const fantomTestnet = 
+{
+  chainId: '4002',
+  chainIdHex: '0xFA2',
+  chainName: 'Fantom Testnet',
+  rpcUrls: ['https://rpc.testnet.fantom.network/'],
+  nativeCurrency: { name: 'FTM', decimals: 18, symbol: 'FTM' },
+  blockExplorerUrls: ['https://testnet.ftmscan.com/'],
+};
+
 const ftmscanUrl = "https://testnet.ftmscan.com/tx/"
 const faucetLink = "https://faucet.fantom.network/"
 const gcLink = "https://gton.capital/"
@@ -36,6 +48,7 @@ export {
   ftmscanUrl,
   isTestnet,
   fantomNet,
+  fantomTestnet,
   stakingAddress,
   faucetAddress,
   tokenAddress,
