@@ -184,7 +184,7 @@ const HarvestWorker = async (eventQueue, Amount) =>
       const token = tokenMap['sgton']
       const Balance = (await balance(token.address));
 
-      amount = toWei(Balance.minus(await userShare()))
+      amount = Balance.minus(await userShare())
     }
     else
     {
