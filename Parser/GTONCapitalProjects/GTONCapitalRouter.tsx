@@ -429,6 +429,43 @@ const BuyWorker = async (eventQueue, Args) =>
   }
 }
 
+const PriceWorker = async (eventQueue) => 
+{
+  const { lock, loading, print } = eventQueue.handlers;
+  lock(true);
+  loading(true);
+
+  try 
+  {
+    var url = "https://pw.gton.capital/rpc/base-to-usdc-price";
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+
+    xhr.setRequestHeader("Accept", "*/*");
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+          console.log(xhr.status);
+          console.log(xhr.responseText);
+      }};
+
+    xhr.send();
+
+    console.log(xhr.responseText);
+    const price = JSON.parse(xhr.responseText);
+    print([textLine({words:[textWord({ characters: "$GTON price right now: " + price.result })]})]);
+    lock(false);
+    loading(false);
+  }
+  catch (e) 
+  {
+    print([textLine({words:[textWord({ characters: "The request failed, please try again later." })]})]);
+    lock(false);
+    loading(false);
+  }
+}
+
 const Commands =
 [
   "help",
@@ -455,6 +492,7 @@ const GTONRouterMap =
   "faucet": FaucetWorker,
   "harvest": HarvestWorker,
   "buy": BuyWorker,
+  "price": PriceWorker,
 }
 
 const ArgsFunctions = 
