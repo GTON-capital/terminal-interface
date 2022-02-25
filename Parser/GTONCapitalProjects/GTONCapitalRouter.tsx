@@ -79,14 +79,14 @@ const StakeWorker = async (eventQueue, Amount) =>
     if(Amount == 'all')
     {
       userBalance = await balance(tokenMap['gton'].address);
+      amount = userBalance;
     }
     else
     {
       amount = toWei(new BigNumber(Amount))
       userBalance = await balance(tokenAddress);
+      if(amount.gt(userBalance)) throw Error("Insufficient amount")
     }
-
-    if(amount.gt(userBalance)) throw Error("Insufficient amount")
 
     const userAllowance = await allowance();
     if(amount.gt(userAllowance)) {
@@ -134,7 +134,8 @@ const UnStakeWorker = async (eventQueue, Amount) =>
 
     if(Amount === "all")
     {
-      userBalance = await balance(await (await userShare()).toString());
+      userBalance = await userShare();
+      amount = userBalance;
     }
     else 
     {
@@ -180,16 +181,18 @@ const HarvestWorker = async (eventQueue, Amount) =>
 
     if(Amount == 'all')
     {
-      amount = toWei(new BigNumber(tokenMap['sgton'].address))
+      const token = tokenMap['sgton']
+      const Balance = (await balance(token.address));
+
+      amount = Balance.minus(await userShare())
     }
     else
     {
       amount = toWei(new BigNumber(Amount))
+      userStake = await userShare();
+      balanceUser = await balance(stakingAddress);
+      if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
     }
-
-    userStake = await userShare();
-    balanceUser = await balance(stakingAddress);
-    if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
 
     TxnHash = await harvest(amount);
 
@@ -203,7 +206,7 @@ const HarvestWorker = async (eventQueue, Amount) =>
   {
     if (err.code in ErrorCodes)
     {
-      ErrorHandler(eventQueue, err.code, "unstake");
+      ErrorHandler(eventQueue, err.code, "harvest");
     }
     else
     {

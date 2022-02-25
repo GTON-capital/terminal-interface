@@ -71,7 +71,7 @@ const messages = {
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
   ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask
-  ${Prefix.PREFIX}${Commands.BUY} buy <amount> with ftm - buy <amount> of gton via CLI
+  ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
 
   ${Prefix.PREFIX}${Commands.CD}  ogswap | candyshop | staking- change project

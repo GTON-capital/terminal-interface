@@ -27,7 +27,6 @@ const buy = async (amount, gtonftmprice): Promise<string> =>
                                                 path, 
                                                 signer.getAddress(), 
                                                 Deadline, { value: gtonftmprice.toString(), })
-  console.log(tx)
   const receipt = await tx.wait();
   return receipt.transactionHash;
 };

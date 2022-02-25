@@ -46,7 +46,7 @@ workflows:
     jobs:
       - docker-image-build:
           container-tag: ${CONTAINER_TAG_ALPHA}
-          prod-config: false
+          prod-config: true
       - cluster-deploy:
           deployment-name: ${DEPLOYMENT_ALPHA}
           requires: 
@@ -64,3 +64,14 @@ workflows:
             - docker-image-build
     when:
       equal: [ master, << pipeline.git.branch >> ]
+  build-on-push:
+    jobs:
+      - docker-image-build:
+          container-tag: testcontainertag
+          prod-config: false
+    when:
+      branches:
+        ignore:
+          - develop
+          - master
+          - alpha
