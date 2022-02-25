@@ -439,31 +439,44 @@ const PriceWorker = async (eventQueue) =>
   {
     var url = "https://pw.gton.capital/rpc/base-to-usdc-price";
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
+    let result = await makeRequest("GET", url);
 
-    xhr.setRequestHeader("Accept", "*/*");
-
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-          console.log(xhr.status);
-          console.log(xhr.responseText);
-      }};
-
-    xhr.send();
-
-    console.log(xhr.responseText);
-    const price = JSON.parse(xhr.responseText);
+    const price = JSON.parse(result.toString());
     print([textLine({words:[textWord({ characters: "$GTON price right now: " + price.result })]})]);
     lock(false);
     loading(false);
   }
   catch (e) 
   {
+    console.log("errored: " + e.message);
     print([textLine({words:[textWord({ characters: "The request failed, please try again later." })]})]);
     lock(false);
     loading(false);
   }
+}
+
+function makeRequest(method, url) {
+  return new Promise(function (resolve, reject) {
+      let xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      xhr.onload = function () {
+          if (this.status >= 200 && this.status < 300) {
+              resolve(xhr.responseText);
+          } else {
+              reject({
+                  status: this.status,
+                  statusText: xhr.statusText
+              });
+          }
+      };
+      xhr.onerror = function () {
+          reject({
+              status: this.status,
+              statusText: xhr.statusText
+          });
+      };
+      xhr.send();
+  });
 }
 
 const Commands =
