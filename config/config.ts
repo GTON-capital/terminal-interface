@@ -52,6 +52,7 @@ export {
   faucetLink,
   ftmscanUrl,
   isTestnet,
+  DataBaseAddressCommands,
   spiritswaprouteraddress,
   fantomNet,
   fantomTestnet,

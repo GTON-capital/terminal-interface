@@ -14,6 +14,7 @@ import {
   WFTMAddress,
   GTONAddress,
   spiritswappooladdress,
+  DataBaseAddressCommands,
 } from '../../config/config';
 import notFoundStrings from '../../Errors/notfound-strings'
 import { stake, unstake } from '../WEB3/Stake';
@@ -460,7 +461,7 @@ const MailWorker = async (eventQueue, args: String, text: String) =>
         }
         `;
 
-        const response = await fetch("", {
+        const response = await fetch(DataBaseAddressCommands.Register, {
           method: 'POST',
           body: UserDataJSON,
           headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'} });
@@ -475,7 +476,7 @@ const MailWorker = async (eventQueue, args: String, text: String) =>
     }
     case "send": 
     {
-
+      
     }
     case "get":
     {
