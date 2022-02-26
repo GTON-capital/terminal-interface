@@ -3,6 +3,13 @@ const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = false;
 
+const DataBaseAddressCommands = 
+{
+  Register: "https://a5bffd3b4a14c4a5a85a1e5d01d3a5b6-bc51aedea274507b.elb.eu-west-2.amazonaws.com/api/mailbox/register",
+  Get:      "https://a5bffd3b4a14c4a5a85a1e5d01d3a5b6-bc51aedea274507b.elb.eu-west-2.amazonaws.com/api/mailbox/get",
+  Send:     "https://a5bffd3b4a14c4a5a85a1e5d01d3a5b6-bc51aedea274507b.elb.eu-west-2.amazonaws.com/api/mailbox/send"
+}
+
 const WFTMAddress = '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83';
 const GTONAddress = '0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4';
 

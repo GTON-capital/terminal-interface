@@ -1,7 +1,8 @@
 import {
   textLine,
   textWord,
-  anchorWord
+  anchorWord,
+  EventQueue
 } from 'crt-terminal';
 import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
@@ -27,7 +28,10 @@ import faucet from '../WEB3/Faucet';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import buy from '../WEB3/buyGTON';
 import erc20 from '../WEB3/ABI/erc20.json';
+import { arrayify, hashMessage, recoverAddress, recoverPublicKey } from 'ethers/lib/utils';
 const ethers = require('ethers');  
+
+declare const window: any;
 
 const url = fantomNet.rpcUrls[0];
 const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
@@ -426,6 +430,57 @@ const BuyWorker = async (eventQueue, Args) =>
     }
     loading(false);
     lock(false);
+  }
+}
+
+const MailWorker = async (eventQueue, args: String, text: String) => 
+{
+  const { lock, loading, print } = eventQueue.handlers;
+
+  switch(args) 
+  {
+    case "register": 
+    {
+      const provider = new ethers.providers.Web3Provider(window.web3.currentProvider);
+      const signer = provider.getSigner();
+
+      const signature = await signer.signMessage(text);
+      const digest = arrayify(hashMessage(text.toString()));
+
+      const publicKey = await recoverPublicKey(digest, signature);
+
+      if(localStorage.getItem("MailBoxUser") === null) 
+      {
+        const UserDataJSON = 
+        `
+        { 
+          "open_key": "` + publicKey + `",
+          "sign": "` + signature + `",
+          "name": "` + text + `"
+        }
+        `;
+
+        const response = await fetch("", {
+          method: 'POST',
+          body: UserDataJSON,
+          headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'} });
+        
+        if (!response.ok) 
+        { 
+          print([textLine({words:[textWord({ characters: "The request was not successful" })]})]);
+        }
+        localStorage.setItem("MailBoxUser", publicKey);
+        print([textLine({words:[textWord({ characters: "User " + text + " was successfully registered" })]})]);
+      }
+    }
+    case "send": 
+    {
+
+    }
+    case "get":
+    {
+      
+    }
   }
 }
 
