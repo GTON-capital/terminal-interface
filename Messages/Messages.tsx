@@ -9,8 +9,11 @@ enum Commands
     UNSTAKE = "unstake",
     SWITCH = "switch",
     BALANCE = "balance",
-    ADD_TOKEN = "add token",
-    FAUCET = "faucet"
+    ADD_TOKEN = "add",
+    FAUCET = "faucet",
+    HARVEST = "harvest",
+    BUY = "buy",
+    PRICE = "price",
 }
 
 enum OptionalActions {
@@ -43,12 +46,14 @@ const messages = {
       ╚██████╔╝   ██║   ╚██████╔╝██║ ╚████║    ╚██████╗██║  ██║██║     ██║   ██║   ██║  ██║███████╗
        ╚═════╝    ╚═╝    ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝
                                                        
-                      ⚜️ Welcome to GTON CAPITAL (𝔾ℂ) CLI UI 📺!
+                          ⚜️ Welcome to GTON CAPITAL (𝔾ℂ) CLI UI 📺!
 
-       We were inspired by the way how GearBox CA minting ceremony (the biggest bag of @ivangbi 
-         besides $USDC and $LOBS NFT) was organized and decided to fork the ui application, 
-         so that our users can work with smart contracts directly, both on the testnet 
-           and mainnet.
+      This dApp allows to interact with GTON Capital staking smart contracts on Fantom${isTestnet? ' Testnet' : ''}.
+                                    ${isTestnet? 'Mainnet coming soon!' : ''}
+      The old-school console-based user interface was forked from Gearbox protocol. 
+                          
+      Kudos for the inspiration to the intricate brain of ivangbi and the Gearbox team 
+      who came up with the idea of geeky CLI for their launch.
 
                        Type ${Prefix.PREFIX}${Commands.HELP} to see the list of available commands.
 
@@ -61,11 +66,14 @@ const messages = {
   Available commands:
   ${Prefix.PREFIX}${Commands.HELP} - this output
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
-  ${Prefix.PREFIX}${Commands.STAKE} <amount> - stake funds
-  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> - unstake funds
-  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to test fantom
-  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
+  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
+  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
+  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
+  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask
+  ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
+  ${Prefix.PREFIX}${Commands.PRICE} - get current gton price in USDC pool
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
 
   ${Prefix.PREFIX}${Commands.CD}  ogswap | candyshop | staking- change project
@@ -102,6 +110,12 @@ const messages = {
     You have succesfully ${type} your funds!
     Amount: ${amount},
     Transaction stake:`;
+   },
+  harvested(amount: string) {
+    return `
+    You have succesfully harvested your reward!
+    Amount: ${amount},
+    Transaction:`;
    },
   accountsMined: (n: number) => `
   Accounts mined: ${n}

@@ -20,7 +20,7 @@ const Projects =
   "ogswap": "ogswap"
 }
 
-var CurrentDirectory = Projects.staking;
+let CurrentDirectory = Projects.staking;
 
 export default function Web() {
 
@@ -29,13 +29,13 @@ export default function Web() {
 
   return (
     <Layout
-    layoutParams={{
-      title: 'CLI UI | GTON Capital (𝔾ℂ)',
-      description:
-        'An inovative way of USER <-> SC interaction for 𝔾ℂEco products.',
-      keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
-      url: 'https://test.cli.gton.capital/',
-    }}>
+      layoutParams={{
+        title: 'CLI UI | GTON Capital (𝔾ℂ)',
+        description:
+          'An inovative way of USER <-> SC interaction for 𝔾ℂEco products.',
+        keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
+        url: 'https://test.cli.gton.capital/',
+      }}>
       <main className={classes.mainContainer}>
       <DisableMobile>
         <Terminal
@@ -87,11 +87,11 @@ export default function Web() {
           }
         }
         prompt={"/"+CurrentDirectory+" $ "}
-          banner={[
-            textLine({ words: [textWord({ characters: messages.banner })] }),
-            textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, href: gcLink })] }),
-            isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }): null,
-          ]}
+        banner={[
+          textLine({ words: [textWord({ characters: messages.banner })] }),
+          textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, href: gcLink })] }),
+          isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }): null,
+        ]}
         />
         </DisableMobile>
       </main>
