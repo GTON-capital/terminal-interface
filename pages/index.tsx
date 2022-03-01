@@ -11,16 +11,18 @@ import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
+import BondingParser from '../Parser/Bonding/Parser';
 import messages from '../Messages/Messages';
 
 const Projects =
 {
-  "staking": "staking", 
-  "candyshop": "candyshop", 
-  "ogswap": "ogswap"
+  Staking: "staking", 
+  Candyshop: "candyshop", 
+  Ogswap: "ogswap",
+  Bonding: "bonding"
 }
 
-let CurrentDirectory = Projects.staking;
+let CurrentDirectory = Projects.Staking;
 
 export default function Web() {
 
@@ -47,8 +49,12 @@ export default function Web() {
               switch(command.split(' ')[1])
               {
                 case "staking":
-                  CurrentDirectory = Projects.staking;
-                  print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.staking })]})]);
+                  CurrentDirectory = Projects.Staking;
+                  print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.Staking })]})]);
+                  break;
+                case "bonding":
+                  CurrentDirectory = Projects.Bonding;
+                  print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.Bonding })]})]);
                   break;
                 case "candyshop":
                   // CurrentDirectory = Projects.candyshop;
@@ -70,13 +76,16 @@ export default function Web() {
 
             switch(CurrentDirectory)
             {
-              case Projects.staking:
+              case Projects.Staking:
                 GTONParser(eventQueue, command);
                 break;
-              case Projects.candyshop:
+              case Projects.Bonding:
+                BondingParser(eventQueue, command);
+                break;
+              case Projects.Candyshop:
                 // import CandyParser from './Parser/CandyShop/CandyShopParser'
                 break;
-              case Projects.ogswap:
+              case Projects.Ogswap:
                 // import OGSwapParser from './Parser/OGSwap/OGSwapParser'
                 break;
               default:

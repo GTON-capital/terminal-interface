@@ -10,9 +10,10 @@ const spiritswaprouteraddress = '0x3c4925b50e337aecc2cf4b9e4767b43dcfbad286';
 const spiritswappooladdress = '0x131ee332febf8d2aa5f18f0d2c444e99411462e5';
 const FTMGTONSwapPath = ['0xD0011dE099E514c2094a510dd0109F91bf8791Fa', '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d']
 
+const usdcAddress = "0xA2DCeFfc29003101b4bca24134dd1437106A7f81";
 const stakingAddress = '0x314650ac2876c6B6f354499362Df8B4DC95E4750';
 const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
-const tokenAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
+const gtonAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
 const fantomNet = 
 {
   chainId: '4002',
@@ -51,7 +52,8 @@ export {
   fantomTestnet,
   stakingAddress,
   faucetAddress,
-  tokenAddress,
+  gtonAddress,
+  usdcAddress,
   isDev,
   isLive,
 };

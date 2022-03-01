@@ -1,6 +1,6 @@
 import { ethers, utils } from 'ethers';
 import {
-  tokenAddress,
+  gtonAddress,
   faucetAddress,
 } from '../../config/config';
 import FAUCET_ABI from './ABI/faucet.json';
@@ -14,7 +14,7 @@ const faucet = async (): Promise<string> => {
   const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
   const signer = provider.getSigner(0);
   const contract = new ethers.Contract(faucetAddress, FAUCET_ABI, signer);
-  const tx = await contract.faucet(tokenAddress);
+  const tx = await contract.faucet(gtonAddress);
   const receipt = await tx.wait();
   return receipt.transactionHash;
 };

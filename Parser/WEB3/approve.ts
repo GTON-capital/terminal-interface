@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils'
 import BigNumber from 'bignumber.js';
 import {
-  tokenAddress as gton,
+  gtonAddress as gton,
   stakingAddress,
 } from '../../config/config';
 
@@ -13,7 +13,7 @@ import { validate } from './validate';
 declare const window: any;
 
 export const approve = async (
-  tokenAddress: string,
+  gtonAddress: string,
   spender: string,
   amount: BigNumber,
 ): Promise<string> => {

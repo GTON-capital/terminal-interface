@@ -1,9 +1,9 @@
 import { BigNumber } from 'bignumber.js';
 import { BigNumber as OldBigNumber } from 'ethers';
-import { tokenAddress, stakingAddress } from '../../../config/config';
+import { gtonAddress, stakingAddress } from '../../../config/config';
 
 export const addressMap: Record<string, string> = {
-  gton: tokenAddress,
+  gton: gtonAddress,
   staking: stakingAddress,
 };
 const defaultDecimals = new BigNumber(18);
