@@ -1,4 +1,4 @@
-import { stakingAddress, gtonAddress } from '../../../config/config';
+import { stakingAddress, gtonAddress, usdcAddress } from '../../../config/config';
 
 export type Token = {
   address: string,
@@ -27,5 +27,10 @@ const tokenMap: Record<string, Token> = {
     image: 'https://alpha.graviton.one/img/gton-metamask.png',
   },
 };
+
+export const tokens: Record<string, string> = {
+  gton: gtonAddress,
+  usdc: usdcAddress,
+}
 
 export default tokenMap;

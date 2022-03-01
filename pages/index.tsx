@@ -22,7 +22,7 @@ const Projects =
   Bonding: "bonding"
 }
 
-let CurrentDirectory = Projects.Staking;
+let CurrentDirectory = Projects.Bonding;
 
 export default function Web() {
 

@@ -9,7 +9,7 @@ import faucet from './WEB3/Faucet';
 import messages from '../Messages/Messages';
 import balance, {userShare} from './WEB3/Balance';
 import { fromWei } from './WEB3/API/balance';
-import tokenMap from './WEB3/API/addToken';
+import tokenMap, {tokens} from './WEB3/API/addToken';
 
 const ConnectMetamaskWorker = async (eventQueue) =>
 {
@@ -133,15 +133,19 @@ const AddTokenWorker = async (eventQueue, TokenName) =>
   }
 }
 
-const FaucetWorker = async (eventQueue) => 
+const FaucetWorker = async (eventQueue, token) => 
 {
   const { lock, loading, print } = eventQueue.handlers;
   try
   {
     lock(true);
     loading(true);
-
-    await faucet();
+    const tokenAddress = tokens[token]
+    if(!tokenAddress) {
+        print([textLine({words:[textWord({ characters: "Pass token name as second argument" })]})]);
+        return;
+    }
+    await faucet(tokenAddress);
     print([textLine({words:[textWord({ characters: messages.faucetDeposit })]})]);
 
     loading(false);

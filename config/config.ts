@@ -96,12 +96,20 @@ const fantomTestnet =
 const ftmscanUrl = "https://testnet.ftmscan.com/tx/"
 const faucetLink = "https://faucet.fantom.network/"
 const gcLink = "https://gton.capital/"
+
+const storageAddress = "0xd9c72C722e35d6C773695412a232969AE0a6c898";
+const bondings = {
+  usdc: "0x3E173507B52F1e0935F2f9A1F3eEb6924c3a4100"
+}
+const bondingETHAddress = "0x84535E0a5f03B295908a4ADf436D17B537EFb567"
+
 export {
   WFTMAddress,
   GTONAddress,
   spiritswappooladdress,
   spiritswaprouteraddress,
   FTMGTONSwapPath,
+  bondingETHAddress,
   faucetLink,
   gcLink,
   network,
@@ -110,9 +118,11 @@ export {
   fantomNet,
   fantomTestnet,
   stakingAddress,
+  storageAddress,
   faucetAddress,
   gtonAddress,
   usdcAddress,
+  bondings,
   isDev,
   isLive,
 };

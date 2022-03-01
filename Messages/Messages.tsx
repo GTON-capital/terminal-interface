@@ -21,7 +21,8 @@ enum BondingCommands {
   Buy = "buy",
   Claim = "claim",
   Info = "info",
-  Bonds = "bonds"
+  Bonds = "bonds",
+  Preview = "preview"
 }
 
 enum OptionalActions {
@@ -52,7 +53,7 @@ const commonCommands =
 `
   ${Prefix.PREFIX}${Commands.HELP} - this output
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
-  ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
+  ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}
   ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask`
 
@@ -102,6 +103,7 @@ const messages = {
   ${Prefix.PREFIX}${BondingCommands.Claim} <bondId> - claim bond with given id
   ${Prefix.PREFIX}${BondingCommands.Info} <bondId> - prints info about given bond id
   ${Prefix.PREFIX}${BondingCommands.Bonds} - prints bonds ids of connected wallet
+  ${Prefix.PREFIX}${BondingCommands.Preview} <amount> - shows amount gton out after claim
 
   ${cdHelp}
   `,
@@ -154,7 +156,7 @@ const messages = {
   Successfully switched to Fantom ${isTestnet? 'Testnet' : ''}.
   `,
   faucetDeposit: `
-  Succesfully airdropped GTON.
+  Succesfully airdropped token.
   `,
   addToken: `
   Successfully added token to the MetaMask.
