@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
 import notFoundStrings from '../../Errors/notfound-strings'
 import commonOperators from '../common';
-import userBondIds, { getBondingByBondId } from '../WEB3/bonding/ids';
+import userBondIds, { getBondingByBondId, bondInfo } from '../WEB3/bonding/ids';
 import getAmountOut from '../WEB3/bonding/amountOut';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import { BondTypes, BondTokens, bondingContracts, tokenAddresses, ftmscanUrl, storageAddress } from '../../config/config';
@@ -22,6 +22,19 @@ const parseArguments = (args: string) => {
     const amount = argArr[2]
     return [token, type, amount]
 }
+
+function timeConverter(UNIX_timestamp){
+    const a = new Date(UNIX_timestamp * 1000);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const year = a.getFullYear();
+    const month = months[a.getMonth()];
+    const date = a.getDate();
+    const hour = a.getHours();
+    const min = a.getMinutes();
+    const sec = a.getSeconds();
+    const time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    return time;
+  }
 
 // Func Router 
 
@@ -112,14 +125,26 @@ const claimWorker = async (eq, bondId) => {
     }
 }
 
-const infoWorker = async (eq, id) => {
-    const { print } = eq.handlers;
-    const ids = await userBondIds();
-    if (ids.length === 0) {
-        print([textLine({ words: [textWord({ characters: "You don't have active bonds." })] })]);
-        return;
+const infoWorker = async (eq, bondId) => {
+    const { lock, loading, print } = eq.handlers;
+    try {
+        lock(true);
+        loading(true);
+        const contractAddress = await getBondingByBondId(bondId);
+        const info = await bondInfo(contractAddress, bondId);
+        print([textLine({ words: [textWord({ characters: `
+        Issued: ${timeConverter(info.issueTimestamp)}
+        Claim date: ${timeConverter(info.releaseTimestamp)}
+        Release amount: ${fromWei(new BigNumber(info.releaseAmount)).toFixed(4)}
+        ` })] })]);
+        loading(false);
+        lock(false);
     }
-    print([textLine({ words: [textWord({ characters: `Your bond ids are: ${ids.join(", ")}` })] })]);
+    catch (err) {
+        print([textLine({ words: [textWord({ characters: err.message })] })]);
+        loading(false);
+        lock(false);
+    }
 }
 
 const previewWorker = async (eventQueue, args) => {
