@@ -1,3 +1,4 @@
+
 const network = '4002';
 const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
@@ -37,13 +38,42 @@ const fantomTestnet =
 const ftmscanUrl = "https://testnet.ftmscan.com/tx/"
 const faucetLink = "https://faucet.fantom.network/"
 const gcLink = "https://gton.capital/"
+
+const storageAddress = "0xd9c72C722e35d6C773695412a232969AE0a6c898";
+const bondingETHAddress = "0x84535E0a5f03B295908a4ADf436D17B537EFb567"
+
+enum BondTokens {
+  FTM = "ftm",
+  USDC = "usdc"
+}
+
+enum BondTypes {
+  Week = "week",
+  Quarter = "quarter"
+}
+
+const tokenAddresses = {
+  [BondTokens.USDC]: "0xA2DCeFfc29003101b4bca24134dd1437106A7f81"
+}
+
+const bondingContracts = {
+  [BondTokens.FTM]: {
+      [BondTypes.Week]: "0x76E817CfD2F91663e1eb6b4C0fc8B6F733Bda6BC",
+      [BondTypes.Quarter]: "0x84535E0a5f03B295908a4ADf436D17B537EFb567",
+  }
+}
 export {
+  BondTokens,
+  BondTypes,
+  tokenAddresses,
   WFTMAddress,
   GTONAddress,
   spiritswappooladdress,
   spiritswaprouteraddress,
   FTMGTONSwapPath,
+  bondingETHAddress,
   faucetLink,
+  bondingContracts,
   gcLink,
   network,
   ftmscanUrl,
@@ -51,6 +81,7 @@ export {
   fantomNet,
   fantomTestnet,
   stakingAddress,
+  storageAddress,
   faucetAddress,
   gtonAddress,
   usdcAddress,
