@@ -1,3 +1,4 @@
+
 const network = '4002';
 const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
@@ -10,9 +11,10 @@ const spiritswaprouteraddress = '0x3c4925b50e337aecc2cf4b9e4767b43dcfbad286';
 const spiritswappooladdress = '0x131ee332febf8d2aa5f18f0d2c444e99411462e5';
 const FTMGTONSwapPath = ['0xD0011dE099E514c2094a510dd0109F91bf8791Fa', '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d']
 
+const usdcAddress = "0xA2DCeFfc29003101b4bca24134dd1437106A7f81";
 const stakingAddress = '0x314650ac2876c6B6f354499362Df8B4DC95E4750';
 const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
-const tokenAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
+const gtonAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
 const fantomNet = 
 {
   chainId: '4002',
@@ -36,13 +38,42 @@ const fantomTestnet =
 const ftmscanUrl = "https://testnet.ftmscan.com/tx/"
 const faucetLink = "https://faucet.fantom.network/"
 const gcLink = "https://gton.capital/"
+
+const storageAddress = "0xd9c72C722e35d6C773695412a232969AE0a6c898";
+const bondingETHAddress = "0x84535E0a5f03B295908a4ADf436D17B537EFb567"
+
+enum BondTokens {
+  FTM = "ftm",
+  USDC = "usdc"
+}
+
+enum BondTypes {
+  Week = "week",
+  Quarter = "quarter"
+}
+
+const tokenAddresses = {
+  [BondTokens.USDC]: "0xA2DCeFfc29003101b4bca24134dd1437106A7f81"
+}
+
+const bondingContracts = {
+  [BondTokens.FTM]: {
+      [BondTypes.Week]: "0x76E817CfD2F91663e1eb6b4C0fc8B6F733Bda6BC",
+      [BondTypes.Quarter]: "0x84535E0a5f03B295908a4ADf436D17B537EFb567",
+  }
+}
 export {
+  BondTokens,
+  BondTypes,
+  tokenAddresses,
   WFTMAddress,
   GTONAddress,
   spiritswappooladdress,
   spiritswaprouteraddress,
   FTMGTONSwapPath,
+  bondingETHAddress,
   faucetLink,
+  bondingContracts,
   gcLink,
   network,
   ftmscanUrl,
@@ -50,8 +81,10 @@ export {
   fantomNet,
   fantomTestnet,
   stakingAddress,
+  storageAddress,
   faucetAddress,
-  tokenAddress,
+  gtonAddress,
+  usdcAddress,
   isDev,
   isLive,
 };

@@ -16,6 +16,16 @@ enum Commands
     PRICE = "price",
 }
 
+enum BondingCommands {
+  Tokens = "tokens",
+  Mint = "mint",
+  Claim = "claim",
+  Info = "info",
+  Bonds = "bonds",
+  Preview = "preview",
+  Types = "types"
+}
+
 enum OptionalActions {
   YES = 'yes',
   NO = 'no'
@@ -35,6 +45,18 @@ enum Links {
   CLAIM = 'https://medium.com/gearbox-protocol/credit-account-mining-guide-fueling-up-for-the-launch-abc17fbddbad',
 }
 
+const cdHelp =  
+`
+  ${Prefix.PREFIX}${Commands.CD}  ogswap | bonding | candyshop | staking - change project
+`
+
+const commonCommands = 
+`
+  ${Prefix.PREFIX}${Commands.HELP} - this output
+  ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
+  ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}
+  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask`
 
 const messages = {
   banner: `
@@ -62,22 +84,30 @@ const messages = {
   faucet: 'Get free testnet $FTMs',
   gc: 'Find more info about GC',
 
-  helpText: `
+  stakingHelpText: `
   Available commands:
-  ${Prefix.PREFIX}${Commands.HELP} - this output
-  ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
+  ${commonCommands}
   ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
   ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
   ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
-  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
-  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask
   ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
   ${Prefix.PREFIX}${Commands.PRICE} - get current gton price in USDC pool
-  ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
 
-  ${Prefix.PREFIX}${Commands.CD}  ogswap | candyshop | staking- change project
+  ${cdHelp}
+  `,
+  bondingHelpText: `
+  Available commands:
+  ${commonCommands}
+  ${Prefix.PREFIX}${BondingCommands.Tokens} - prints list of tokens, that are available to spend on bond
+  ${Prefix.PREFIX}${BondingCommands.Types} - prints list of available bond types
+  ${Prefix.PREFIX}${BondingCommands.Bonds} - prints bonds ids of connected wallet
+  ${Prefix.PREFIX}${BondingCommands.Mint} <token> <type> <amount> - buy <type> of bond, spending <amount> of <token> via CLI
+  ${Prefix.PREFIX}${BondingCommands.Claim} <bondId> - claim bond with given id
+  ${Prefix.PREFIX}${BondingCommands.Info} <bondId> - prints info about given bond id
+  ${Prefix.PREFIX}${BondingCommands.Preview} <token> <type> <amount> - shows amount gton out after claim
 
+  ${cdHelp}
   `,
   links: `
   Empty command rn
@@ -128,7 +158,7 @@ const messages = {
   Successfully switched to Fantom ${isTestnet? 'Testnet' : ''}.
   `,
   faucetDeposit: `
-  Succesfully airdropped GTON.
+  Succesfully airdropped token.
   `,
   addToken: `
   Successfully added token to the MetaMask.

@@ -12,7 +12,8 @@ const FTMGTONSwapPath = ['0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', '0xC1Be9a
 
 const stakingAddress = '0xB0dAAb4eb0C23aFFaA5c9943d6f361b51479ac48';
 const faucetAddress = '';
-const tokenAddress = '0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4';
+const gtonAddress = '0xc1be9a4d5d45beeacae296a7bd5fadbfc14602c4';
+const usdcAddress = "0xA2DCeFfc29003101b4bca24134dd1437106A7f81";
 const fantomNet = {
   chainId: '250',
   chainIdHex: '0xFA',
@@ -50,7 +51,8 @@ export {
   fantomTestnet,
   stakingAddress,
   faucetAddress,
-  tokenAddress,
+  gtonAddress,
+  usdcAddress,
   isDev,
   isLive,
 };

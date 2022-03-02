@@ -1,6 +1,5 @@
-import { ethers, utils } from 'ethers';
+import { ethers } from 'ethers';
 import {
-  tokenAddress,
   faucetAddress,
 } from '../../config/config';
 import FAUCET_ABI from './ABI/faucet.json';
@@ -8,7 +7,7 @@ import { validate } from './validate';
 
 declare const window: any;
 
-const faucet = async (): Promise<string> => {
+const faucet = async (tokenAddress): Promise<string> => {
   await validate();
   await window.ethereum.request({ method: 'eth_requestAccounts' });
   const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');

@@ -10,11 +10,11 @@ import { validate } from './validate';
 
 declare const window: any;
 
-const balance = async (tokenAddress: string): Promise<BigNumber> => {
+const balance = async (gtonAddress: string): Promise<BigNumber> => {
   await validate();
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  const contract = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
+  const contract = new ethers.Contract(gtonAddress, ERC20_ABI, signer);
   const userBalance: OldBigNumber = await contract.balanceOf(signer.getAddress());
   return migrateBigNumber(userBalance);
 };
