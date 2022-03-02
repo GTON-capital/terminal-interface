@@ -24,4 +24,12 @@ const userBondIds = async (): Promise<number[]> => {
   return result;
 };
 
+export const getBondingByBondId = async (id: string): Promise<string> => {
+  await validate();
+  const web3 = new Web3(window.ethereum);
+  const contract = new web3.eth.Contract(STORAGE as AbiItem[], storageAddress);
+  const address = await contract.methods.issuedBy(id).call();
+  return address;
+}
+
 export default userBondIds;

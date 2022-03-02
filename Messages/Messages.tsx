@@ -18,11 +18,12 @@ enum Commands
 
 enum BondingCommands {
   Tokens = "tokens",
-  Buy = "buy",
+  Mint = "mint",
   Claim = "claim",
   Info = "info",
   Bonds = "bonds",
-  Preview = "preview"
+  Preview = "preview",
+  Types = "types"
 }
 
 enum OptionalActions {
@@ -99,11 +100,12 @@ const messages = {
   Available commands:
   ${commonCommands}
   ${Prefix.PREFIX}${BondingCommands.Tokens} - prints list of tokens, that are available to spend on bond
-  ${Prefix.PREFIX}${BondingCommands.Buy} <amount> with <token> - buy bond, spending <amount> of <token> via CLI
+  ${Prefix.PREFIX}${BondingCommands.Types} - prints list of available bond types
+  ${Prefix.PREFIX}${BondingCommands.Bonds} - prints bonds ids of connected wallet
+  ${Prefix.PREFIX}${BondingCommands.Mint} <token> <type> <amount> - buy <type> of bond, spending <amount> of <token> via CLI
   ${Prefix.PREFIX}${BondingCommands.Claim} <bondId> - claim bond with given id
   ${Prefix.PREFIX}${BondingCommands.Info} <bondId> - prints info about given bond id
-  ${Prefix.PREFIX}${BondingCommands.Bonds} - prints bonds ids of connected wallet
-  ${Prefix.PREFIX}${BondingCommands.Preview} <amount> - shows amount gton out after claim
+  ${Prefix.PREFIX}${BondingCommands.Preview} <token> <type> <amount> - shows amount gton out after claim
 
   ${cdHelp}
   `,
