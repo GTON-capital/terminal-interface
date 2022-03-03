@@ -27,11 +27,11 @@ export const approve = async (
   return tx.transactionHash;
 };
 
-export const allowance = async (): Promise<BigNumber> => {
+export const allowance = async (token: string, address: string): Promise<BigNumber> => {
   await validate();
   const web3 = new Web3(window.ethereum);
   const signer = (await web3.eth.getAccounts())[0]
-  const contract = new web3.eth.Contract(ERC20_ABI as AbiItem[], gton);
-  const userBalance: string = await contract.methods.allowance(signer, stakingAddress).call();
+  const contract = new web3.eth.Contract(ERC20_ABI as AbiItem[], token);
+  const userBalance: string = await contract.methods.allowance(signer, address).call();
   return new BigNumber(userBalance);
 };
