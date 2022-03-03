@@ -26,6 +26,12 @@ const tokenMap: Record<string, Token> = {
     decimals: 18,
     image: 'https://alpha.graviton.one/img/gton-metamask.png',
   },
+  usdc: {
+    address: usdcAddress,
+    symbol: 'tUSDC',
+    decimals: 18,
+    image: '',
+  },
 };
 
 export const tokens: Record<string, string> = {
