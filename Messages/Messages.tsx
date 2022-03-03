@@ -56,7 +56,7 @@ const commonCommands =
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}
   ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
-  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask`
+  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | usdc - add tokens to metamask`
 
 const messages = {
   banner: `

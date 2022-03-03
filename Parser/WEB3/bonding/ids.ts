@@ -37,7 +37,6 @@ interface BondInfo {
   isActive: boolean;
   issueTimestamp: number;
   releaseTimestamp: number;
-  bondType: string;
   releaseAmount: number;
 }
 

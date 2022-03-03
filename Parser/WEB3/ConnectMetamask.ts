@@ -23,12 +23,6 @@ const connectMetamask = async () => {
     throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
   }
 
-  const chainId: string = await window.ethereum.request({ method: 'net_version' });
-
-  if (chainId !== network) {
-    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  }
-
   const account = accounts[0];
   if (!isAddress(account)) {
     throw new TerminalError({ code: 'GET_ADDRESS_FAILED' });

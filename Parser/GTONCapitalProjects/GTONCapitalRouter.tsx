@@ -1,7 +1,6 @@
 import {
   textLine,
   textWord,
-  anchorWord
 } from 'crt-terminal';
 import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
@@ -14,7 +13,7 @@ import {
   GTONAddress,
   spiritswappooladdress,
 } from '../../config/config';
-import commonOperators from "../common";
+import commonOperators, {printLink} from "../common";
 import notFoundStrings from '../../Errors/notfound-strings'
 import { stake, unstake } from '../WEB3/Stake';
 import {harvest} from '../WEB3/harvest';
@@ -37,18 +36,17 @@ enum ErrorCodes
   NOT_ENOUGHT_FUNDS = -32000
 }
 
-const ErrorHandler = (eventQueue, Code, Operation) =>
+const ErrorHandler = (print, Code, Operation) =>
 {
-  const { print } = eventQueue.handlers;
-  if(Code == ErrorCodes.INVALID_ARGUMENT) 
+  if(Code === ErrorCodes.INVALID_ARGUMENT) 
   {
     print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: " + Operation + " 20, or " + Operation + " all" })]})]);
   }
-  if(Code == ErrorCodes.USER_DECLINED_TRANSACTION) 
+  if(Code === ErrorCodes.USER_DECLINED_TRANSACTION) 
   {
     print([textLine({words:[textWord({ characters: "User declined transaction" })]})]);
   }
-  if(Code == ErrorCodes.NOT_ENOUGHT_FUNDS) 
+  if(Code === ErrorCodes.NOT_ENOUGHT_FUNDS) 
   {
     print([textLine({words:[textWord({ characters: "You don't have enough funds to buy that many GTON" })]})]);
   }
@@ -56,15 +54,13 @@ const ErrorHandler = (eventQueue, Code, Operation) =>
 
 // Func Router 
 
-const HelpWorker = (eventQueue) =>
+const HelpWorker = ({ print }) =>
 {
-  const { print } = eventQueue.handlers;
   print([textLine({words:[textWord({ characters: messages.stakingHelpText })]})]);
 }
 
-const StakeWorker = async (eventQueue, Amount) => 
+const StakeWorker = async ({ lock, loading, print }, Amount) => 
 {
-  const { lock, loading, print } = eventQueue.handlers;
   try
   {
     lock(true);
@@ -86,19 +82,19 @@ const StakeWorker = async (eventQueue, Amount) =>
       if(amount.gt(userBalance)) throw Error("Insufficient amount")
     }
 
-    const userAllowance = await allowance();
+    const userAllowance = await allowance(gtonAddress, stakingAddress);
     if(amount.gt(userAllowance)) {
       const firstTxn = await approve(gtonAddress, stakingAddress, amount)
 
       print([textLine({words:[textWord({ characters: messages.approve })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
+      printLink(print, messages.viewTxn, ftmscanUrl+firstTxn)
       
     }
 
     const secondTxn = await stake(amount);
 
     print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
+    printLink(print, messages.viewTxn, ftmscanUrl+secondTxn)
   
     loading(false);
     lock(false);
@@ -107,7 +103,7 @@ const StakeWorker = async (eventQueue, Amount) =>
   {
     if (err.code in ErrorCodes)
     {
-      ErrorHandler(eventQueue, err.code, "stake");
+      ErrorHandler(print, err.code, "stake");
     }
     else
     {
@@ -119,9 +115,8 @@ const StakeWorker = async (eventQueue, Amount) =>
   }
 }
 
-const UnStakeWorker = async (eventQueue, Amount) => 
+const UnStakeWorker = async ({ lock, loading, print }, Amount) => 
 {
-  const { lock, loading, print } = eventQueue.handlers;
   try
   {
     if(Amount == 0) throw new Error('You cant unstake less than 0 $GTON');
@@ -145,7 +140,7 @@ const UnStakeWorker = async (eventQueue, Amount) =>
     TxnHash = await unstake(amount);
 
     print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
+    printLink(print, messages.viewTxn, ftmscanUrl+TxnHash)
   
     loading(false);
     lock(false);
@@ -154,7 +149,7 @@ const UnStakeWorker = async (eventQueue, Amount) =>
   {
     if (err.code in ErrorCodes)
     {
-      ErrorHandler(eventQueue, err.code, "unstake");
+      ErrorHandler(print, err.code, "unstake");
     }
     else
     {
@@ -165,9 +160,8 @@ const UnStakeWorker = async (eventQueue, Amount) =>
   }
 }
 
-const HarvestWorker = async (eventQueue, Amount) => 
+const HarvestWorker = async ({ lock, loading, print }, Amount) => 
 {
-  const { lock, loading, print } = eventQueue.handlers;
   try
   {
     lock(true);
@@ -195,8 +189,7 @@ const HarvestWorker = async (eventQueue, Amount) =>
     TxnHash = await harvest(amount);
 
     print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
-  
+    printLink(print, messages.viewTxn, ftmscanUrl+TxnHash)
     loading(false);
     lock(false);
   }
@@ -204,7 +197,7 @@ const HarvestWorker = async (eventQueue, Amount) =>
   {
     if (err.code in ErrorCodes)
     {
-      ErrorHandler(eventQueue, err.code, "harvest");
+      ErrorHandler(print, err.code, "harvest");
     }
     else
     {
@@ -215,10 +208,8 @@ const HarvestWorker = async (eventQueue, Amount) =>
   }
 }
 
-const BuyWorker = async (eventQueue, Args) =>
+const BuyWorker = async ({ lock, loading, print }, Args) =>
 {
-  const { lock, loading, print } = eventQueue.handlers;
-
   try 
   {
     loading(true);
@@ -263,7 +254,7 @@ const BuyWorker = async (eventQueue, Args) =>
     print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
     print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
     print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+tx, '_blank');} })]})]);
+    printLink(print, messages.viewTxn, ftmscanUrl + tx)
 
     loading(false);
     lock(false);
@@ -272,7 +263,7 @@ const BuyWorker = async (eventQueue, Args) =>
   {
     if (err.code in ErrorCodes)
     {
-      ErrorHandler(eventQueue, err.code, "Buy");
+      ErrorHandler(print, err.code, "Buy");
     }
     else
     {
@@ -283,9 +274,8 @@ const BuyWorker = async (eventQueue, Args) =>
   }
 }
 
-const PriceWorker = async (eventQueue) => 
+const PriceWorker = async ({ lock, loading, print }) => 
 {
-  const { lock, loading, print } = eventQueue.handlers;
   lock(true);
   loading(true);
 
@@ -382,7 +372,7 @@ async function Parse(eventQueue, command)
     // Handle incorrect command
     if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
     if(ArgsFunctions.includes(Command) && Arg == Command) throw Error("You should provide args for calling this function. e.g stake 1");
-    GTONRouterMap[Command](eventQueue, Arg.toLowerCase());
+    GTONRouterMap[Command](eventQueue.handlers, Arg.toLowerCase());
   }
   catch(err)
   {

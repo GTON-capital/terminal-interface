@@ -58,8 +58,12 @@ const tokenAddresses = {
 
 const bondingContracts = {
   [BondTokens.FTM]: {
-      [BondTypes.Week]: "0x76E817CfD2F91663e1eb6b4C0fc8B6F733Bda6BC",
-      [BondTypes.Quarter]: "0x84535E0a5f03B295908a4ADf436D17B537EFb567",
+      [BondTypes.Week]: "0xADe54e7bc3708dC227D91c00688fC5DFa24DBbCB",
+      [BondTypes.Quarter]: "0xdE1c20F0369934337096180F802814Ecf473Dcf0",
+  },
+  [BondTokens.USDC]: {
+    [BondTypes.Week]: "0x98E81943Aba1aC87EF4c28eE08afAd1FDc5E7D9f",
+    [BondTypes.Quarter]: "0x0d479c7a1099f59D9489cae9E452498A736A3221",
   }
 }
 export {

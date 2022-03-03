@@ -1,6 +1,7 @@
 import {
     textLine,
     textWord,
+    anchorWord
   } from 'crt-terminal';
 import connectMetamask from './WEB3/ConnectMetamask';
 import switchChain from './WEB3/Switch';
@@ -11,9 +12,8 @@ import balance, {userShare} from './WEB3/Balance';
 import { fromWei } from './WEB3/API/balance';
 import tokenMap, {tokens} from './WEB3/API/addToken';
 
-const ConnectMetamaskWorker = async (eventQueue) =>
+const ConnectMetamaskWorker = async ({ lock, loading, print }) =>
 {
-  const { lock, loading, print } = eventQueue.handlers;
   try
   {
     lock(true);
@@ -33,9 +33,8 @@ const ConnectMetamaskWorker = async (eventQueue) =>
   }
 }
 
-const SwitchWorker = async (eventQueue) =>
+const SwitchWorker = async ({ lock, loading, print }) =>
 {
-  const { lock, loading, print } = eventQueue.handlers;
   try
   {
     lock(true);
@@ -55,10 +54,8 @@ const SwitchWorker = async (eventQueue) =>
   }
 }
 
-const BalanceWorker = async (eventQueue, TokenName) => 
+const BalanceWorker = async ({ lock, loading, print }, TokenName) => 
 {
-  const { lock, loading, print } = eventQueue.handlers;
-
   try
   {
     lock(true);
@@ -109,10 +106,8 @@ const BalanceWorker = async (eventQueue, TokenName) =>
   }
 }
 
-const AddTokenWorker = async (eventQueue, TokenName) =>
+const AddTokenWorker = async ({ lock, loading, print }, TokenName) =>
 {
-  const { lock, loading, print } = eventQueue.handlers;
-
   try
   {
     lock(true);
@@ -127,20 +122,22 @@ const AddTokenWorker = async (eventQueue, TokenName) =>
   }
   catch(err)
   {
+    console.log(err);
+    
     print([textLine({words:[textWord({ characters: "Error while add token to metamask" })]})]);
     loading(false);
     lock(false);
   }
 }
 
-const FaucetWorker = async (eventQueue, token) => 
+const FaucetWorker = async ({ lock, loading, print }, token) => 
 {
-  const { lock, loading, print } = eventQueue.handlers;
   try
   {
     lock(true);
     loading(true);
     const tokenAddress = tokens[token]
+    
     if(!tokenAddress) {
         print([textLine({words:[textWord({ characters: "Pass token name as second argument" })]})]);
         return;
@@ -165,6 +162,11 @@ const commonOperators = {
     balance: BalanceWorker,
     switch: SwitchWorker,
     join: ConnectMetamaskWorker
+}
+
+export function printLink(print, text, link) {
+  print([textLine({words:[anchorWord({ className: "link-padding", characters: text,  onClick: () => {window.open(link, '_blank');} })]})]);
+
 }
 
 export default commonOperators;

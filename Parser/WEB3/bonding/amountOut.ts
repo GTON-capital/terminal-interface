@@ -6,14 +6,22 @@ import { validate } from '../validate';
 
 declare const window: any;
 
-const getAmountOut = async (address: string, amountIn: BigNumber): Promise<BigNumber> => {
+const getAmountOut = async (address: string, amountIn: BigNumber): Promise<BigNumber[]> => {
   await validate();
   const web3 = new Web3(window.ethereum);
   const contract = new web3.eth.Contract(BONDING as AbiItem[], address);
   const dis = await contract.methods.amountWithoutDiscount(amountIn).call()
   const out = await contract.methods.bondAmountOut(dis).call()
   const staking = await contract.methods.getStakingReward(out).call()
-  return new BigNumber(out).plus(staking);
+  return [new BigNumber(out).plus(staking), new BigNumber(dis).minus(amountIn)];
+};
+
+export const getDiscount = async (address: string): Promise<number> => {
+  await validate();
+  const web3 = new Web3(window.ethereum);
+  const contract = new web3.eth.Contract(BONDING as AbiItem[], address);
+  const discountNominator = await contract.methods.discountNominator.call().call()
+  return discountNominator / 100;
 };
 
 export default getAmountOut;
