@@ -12,6 +12,7 @@ import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
 import BondingParser from '../Parser/Bonding/Parser';
+import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
 
 const Projects =
@@ -19,10 +20,11 @@ const Projects =
   Staking: "staking", 
   Candyshop: "candyshop", 
   Ogswap: "ogswap",
-  Bonding: "bonding"
+  Bonding: "bonding",
+  Chat: "chat"
 }
 
-let CurrentDirectory = Projects.Bonding;
+let CurrentDirectory = Projects.Chat;
 
 export default function Web() {
 
@@ -56,6 +58,10 @@ export default function Web() {
                   CurrentDirectory = Projects.Bonding;
                   print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.Bonding })]})]);
                   break;
+                case "chat":
+                  CurrentDirectory = Projects.Chat;
+                  print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.Chat })]})]);
+                  break;
                 case "candyshop":
                   // CurrentDirectory = Projects.candyshop;
                   // print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.candyshop })]})]);
@@ -81,6 +87,9 @@ export default function Web() {
                 break;
               case Projects.Bonding:
                 BondingParser(eventQueue, command);
+                break;
+              case Projects.Chat:
+                ChatParser(eventQueue, command);
                 break;
               case Projects.Candyshop:
                 // import CandyParser from './Parser/CandyShop/CandyShopParser'

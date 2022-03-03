@@ -6,7 +6,7 @@ import {
 import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
 import notFoundStrings from '../../Errors/notfound-strings'
-import commonOperators from '../common';
+import commonOperators, {parser} from '../common';
 import userBondIds, { getBondingByBondId, bondInfo } from '../WEB3/bonding/ids';
 import getAmountOut from '../WEB3/bonding/amountOut';
 import { fromWei, toWei } from '../WEB3/API/balance';
@@ -38,13 +38,11 @@ function timeConverter(UNIX_timestamp){
 
 // Func Router 
 
-const helpWorker = (eventQueue) => {
-    const { print } = eventQueue.handlers;
+const helpWorker = ({ print }) => {
     print([textLine({ words: [textWord({ characters: messages.bondingHelpText })] })]);
 }
 
-const typesWorker = (eventQueue) => {
-    const { print } = eventQueue.handlers;
+const typesWorker = ({ print }) => {
     print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
     for (const key of Object.keys(BondTypes)) {
         print([textLine({ words: [textWord({ characters: `-  ${key}` })] })]);
@@ -52,8 +50,7 @@ const typesWorker = (eventQueue) => {
 
 }
 
-const tokensWorker = (eventQueue) => {
-    const { print } = eventQueue.handlers;
+const tokensWorker = ({ print }) => {
     print([textLine({ words: [textWord({ characters: "Available tokens: " })] })]);
     for (const key of Object.keys(BondTokens)) {
         print([textLine({ words: [textWord({ characters: `-  ${key}` })] })]);
@@ -61,8 +58,7 @@ const tokensWorker = (eventQueue) => {
 
 }
 
-const bondsWorker = async (eq) => {
-    const { print } = eq.handlers;
+const bondsWorker = async ({ print }) => {
     const ids = await userBondIds();
     if (ids.length === 0) {
         print([textLine({ words: [textWord({ characters: "You don't have active bonds." })] })]);
@@ -71,8 +67,7 @@ const bondsWorker = async (eq) => {
     print([textLine({ words: [textWord({ characters: `Your bond ids are: ${ids.join(", ")}` })] })]);
 }
 
-const mintWorker = async (eq, args) => {
-    const { lock, loading, print } = eq.handlers;
+const mintWorker = async ({ lock, loading, print }, args) => {
     const [token, type, amount] = parseArguments(args)
     const contractAddress = bondingContracts[token][type]
     const tokenAddress = tokenAddresses[token];
@@ -104,8 +99,7 @@ const mintWorker = async (eq, args) => {
     }
 }
 
-const claimWorker = async (eq, bondId) => {
-    const { lock, loading, print } = eq.handlers;
+const claimWorker = async ({ lock, loading, print }, bondId) => {
     try {
         lock(true);
         loading(true);
@@ -125,8 +119,7 @@ const claimWorker = async (eq, bondId) => {
     }
 }
 
-const infoWorker = async (eq, bondId) => {
-    const { lock, loading, print } = eq.handlers;
+const infoWorker = async ({ lock, loading, print }, bondId) => {
     try {
         lock(true);
         loading(true);
@@ -147,8 +140,7 @@ const infoWorker = async (eq, bondId) => {
     }
 }
 
-const previewWorker = async (eventQueue, args) => {
-    const { lock, loading, print } = eventQueue.handlers;
+const previewWorker = async ({ lock, loading, print }, args) => {
     try {
         lock(true);
         loading(true);
@@ -190,29 +182,6 @@ const BondingMap =
     ...commonOperators
 }
 
-const ArgsFunctions =
-    [
-        "stake",
-        "unstake",
-        "harvest",
-        "buy"
-    ]
-
-async function Parse(eventQueue, command) {
-    const { print } = eventQueue.handlers;
-    const Command = command.split(' ')[0].trim().toLowerCase();
-    // split was replaced by substring because of the buy command, which assumes two parameters
-    const Arg = command.substring(command.indexOf(' ')).replace(' ', '');
-
-    try {
-        // Handle incorrect command
-        if (!(Command in BondingMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
-        if (ArgsFunctions.includes(Command) && Arg === Command) throw Error("You should provide args for calling this function. e.g stake 1");
-        BondingMap[Command](eventQueue, Arg.toLowerCase());
-    }
-    catch (err) {
-        print([textLine({ words: [textWord({ characters: err.message })] })]);
-    }
-}
+const Parse = parser(BondingMap)
 
 export default Parse;

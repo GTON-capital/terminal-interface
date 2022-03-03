@@ -10,6 +10,7 @@ import messages from '../Messages/Messages';
 import balance, {userShare} from './WEB3/Balance';
 import { fromWei } from './WEB3/API/balance';
 import tokenMap, {tokens} from './WEB3/API/addToken';
+import notFoundStrings from '../Errors/notfound-strings'
 
 const ConnectMetamaskWorker = async (eventQueue) =>
 {
@@ -167,4 +168,21 @@ const commonOperators = {
     join: ConnectMetamaskWorker
 }
 
+export function parser(operands) {
+  return async (queue, command) =>  {
+    const {print} = queue.handlers;
+    const Command = command.split(' ')[0].trim().toLowerCase();
+    // split was replaced by substring because of the buy command, which assumes two parameters
+    const Arg = command.substring(command.indexOf(' ')).replace(' ', '');
+
+    try {
+        // Handle incorrect command
+        if (!(Command in operands)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
+        operands[Command](queue.handlers, Arg.toLowerCase());
+    }
+    catch (err) {
+        print([textLine({ words: [textWord({ characters: err.message })] })]);
+    }
+  }
+}
 export default commonOperators;
