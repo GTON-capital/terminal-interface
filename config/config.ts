@@ -21,6 +21,16 @@ const fantomNet = {
   nativeCurrency: { name: 'FTM', decimals: 18, symbol: 'FTM' },
   blockExplorerUrls: ['https://ftmscan.com/'],
 };
+
+const fantomTestnet = 
+{
+  chainId: '4002',
+  chainIdHex: '0xFA2',
+  chainName: 'Fantom Testnet',
+  rpcUrls: ['https://rpc.testnet.fantom.network/'],
+  nativeCurrency: { name: 'FTM', decimals: 18, symbol: 'FTM' },
+  blockExplorerUrls: ['https://testnet.ftmscan.com/'],
+};
 const ftmscanUrl = "https://ftmscan.com/tx/"
 const faucetLink = "https://faucet.fantom.network/"
 const gcLink = "https://gton.capital/"
@@ -37,6 +47,7 @@ export {
   isTestnet,
   spiritswaprouteraddress,
   fantomNet,
+  fantomTestnet,
   stakingAddress,
   faucetAddress,
   tokenAddress,

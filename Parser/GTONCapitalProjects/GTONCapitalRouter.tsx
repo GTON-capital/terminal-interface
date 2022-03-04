@@ -79,7 +79,7 @@ const StakeWorker = async (eventQueue, Amount) =>
     if(Amount == 'all')
     {
       userBalance = await balance(tokenMap['gton'].address);
-      amount =      userBalance;
+      amount = userBalance;
     }
     else
     {
@@ -184,7 +184,7 @@ const HarvestWorker = async (eventQueue, Amount) =>
       const token = tokenMap['sgton']
       const Balance = (await balance(token.address));
 
-      amount = toWei(Balance.minus(await userShare()))
+      amount = Balance.minus(await userShare())
     }
     else
     {
@@ -429,6 +429,56 @@ const BuyWorker = async (eventQueue, Args) =>
   }
 }
 
+const PriceWorker = async (eventQueue) => 
+{
+  const { lock, loading, print } = eventQueue.handlers;
+  lock(true);
+  loading(true);
+
+  try 
+  {
+    var url = "https://pw.gton.capital/rpc/base-to-usdc-price";
+
+    let result = await makeRequest("GET", url);
+
+    const price = JSON.parse(result.toString());
+    print([textLine({words:[textWord({ characters: "$GTON price right now: " + price.result })]})]);
+    lock(false);
+    loading(false);
+  }
+  catch (e) 
+  {
+    console.log("errored: " + e.message);
+    print([textLine({words:[textWord({ characters: "The request failed, please try again later." })]})]);
+    lock(false);
+    loading(false);
+  }
+}
+
+function makeRequest(method, url) {
+  return new Promise(function (resolve, reject) {
+      let xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      xhr.onload = function () {
+          if (this.status >= 200 && this.status < 300) {
+              resolve(xhr.responseText);
+          } else {
+              reject({
+                  status: this.status,
+                  statusText: xhr.statusText
+              });
+          }
+      };
+      xhr.onerror = function () {
+          reject({
+              status: this.status,
+              statusText: xhr.statusText
+          });
+      };
+      xhr.send();
+  });
+}
+
 const Commands =
 [
   "help",
@@ -455,6 +505,7 @@ const GTONRouterMap =
   "faucet": FaucetWorker,
   "harvest": HarvestWorker,
   "buy": BuyWorker,
+  "price": PriceWorker,
 }
 
 const ArgsFunctions = 
