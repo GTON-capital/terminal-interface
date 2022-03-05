@@ -443,8 +443,8 @@ const PriceWorker = async (eventQueue) =>
 
     const price = JSON.parse(result.toString());
     print([textLine({words:[textWord({ characters: "$GTON price right now: " + price.result })]})]);
-    lock(false);
     loading(false);
+    lock(false);
   }
   catch (e) 
   {
