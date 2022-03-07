@@ -15,7 +15,7 @@ import notFoundStrings from '../Errors/notfound-strings'
 
 
 export function createWorker(handler: (handlers, arg) => Promise<void>, errMessage: string | null = null) {
-  return async function ({ lock, loading, print }, args: string) {
+  return async ({ lock, loading, print }, args: string) =>  {
     try {
       lock(true);
       loading(true);
@@ -44,16 +44,16 @@ const SwitchWorker = createWorker(async ({ print }) => {
 
 const BalanceWorker = createWorker(async ({ lock, loading, print }, TokenName) => {
     if (TokenName === "all") {
-      const token = tokenMap['sgton']
+      const token = tokenMap.sgton
       const Balance = (await balance(token.address));
 
       const harvest = fromWei(Balance.minus(await userShare()));
       const share = fromWei(await userShare())
-      const gton = fromWei(await balance(tokenMap['gton'].address))
+      const gton = fromWei(await balance(tokenMap.gton.address))
 
-      print([textLine({ words: [textWord({ characters: "Harvest: " + harvest.toFixed(4).replace(/0*$/, "") })] })]);
-      print([textLine({ words: [textWord({ characters: "SGTON:   " + share.toFixed(4).replace(/0*$/, "") })] })]);
-      print([textLine({ words: [textWord({ characters: "GTON:    " + gton.toFixed(4).replace(/0*$/, "") })] })]);
+      print([textLine({ words: [textWord({ characters: `Harvest: ${harvest.toFixed(4).replace(/0*$/, "")}`})] })]);
+      print([textLine({ words: [textWord({ characters: `SGTON:   ${share.toFixed(4).replace(/0*$/, "")}`})] })]);
+      print([textLine({ words: [textWord({ characters: `GTON:    ${gton.toFixed(4).replace(/0*$/, "")}`})] })]);
 
       loading(false);
       lock(false);
