@@ -19,12 +19,17 @@ const helpWorker = ({ print }) => {
     print([textLine({ words: [textWord({ characters: messages.chatHelpText })] })]);
 }
 
-const sendWorker = createWorker(async ({ print }, args) => {
+const sendWorker = createWorker(async ({ print }, msg) => {
+    const list = await getWhitelist();
+    const addresses = list.map(e => e.address.substring(2)).join("");
+    const message = addresses+msg;
+    const sign = await signData(message)
+
     print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
 })
 
 const loginWorker = createWorker(async ({ print }, args, [userAddress]) => {
-    const addresses = await getWhitelist();
+    const addresses = (await getWhitelist()).map(e => e.address);
     if(userAddress in addresses) {
         throw new Error();
     }

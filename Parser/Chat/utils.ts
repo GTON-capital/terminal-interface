@@ -2,7 +2,7 @@
 export const messengerUrl = "http://a5bffd3b4a14c4a5a85a1e5d01d3a5b6-bc51aedea274507b.elb.eu-west-2.amazonaws.com/api/mailbox/"
 
 export const makeRequest = async (route: string, body: Record<string, string>) => {
-    const res = await fetch(messengerUrl+route, {
+    const res = await fetch(messengerUrl + route, {
         method: "POST",
         body: JSON.stringify(body)
     })
@@ -10,8 +10,7 @@ export const makeRequest = async (route: string, body: Record<string, string>) =
     return resBody
 }
 
-export const getWhitelist = async (): Promise<string[]> =>  {
+export const getWhitelist = async (): Promise<{ id: number, address: string, open_key: string, name: string }[]> => {
     const res = await makeRequest("whitelist", {});
-    const addresses = res.map(e => e.address);
-    return addresses;
+    return res;
 }
