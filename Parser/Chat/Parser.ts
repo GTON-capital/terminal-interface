@@ -5,34 +5,44 @@ import {
 } from 'crt-terminal';
 import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
+import {getOpenKey} from "../WEB3/chat/metamaskAPI"
 import notFoundStrings from '../../Errors/notfound-strings'
 import { fromWei, toWei } from '../WEB3/API/balance';
 import {  } from '../../config/config';
-import commonOperators, { parser } from '../common';
+import {makeRequest} from "./utils"
+import commonOperators, { parser, createWorker } from '../common';
 // Func Router 
+
+enum Routes {
+    Login = "register",
+    Send = "send",
+    Get = "get",
+    List = "whitelist"
+}
 
 const helpWorker = ({ print }) => {
     print([textLine({ words: [textWord({ characters: messages.chatHelpText })] })]);
 }
 
-const sendWorker = ({ lock, loading, print }) => {
+const sendWorker = createWorker(async ({ print }, args) => {
     print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
-}
+})
 
-const loginWorker = ({ lock, loading, print }) => {
-    print([textLine({ words: [textWord({ characters: "Available tokens: " })] })]);
-}
+const loginWorker = createWorker(async ({ print }, args) => {
+    // TODO check if user is already logged in
+    const name = ""
+    const open_key = await getOpenKey()
+    // const data = await makeRequest(Routes.Login, {open_key, sign, name})
+    print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
+})
 
-const loadWorker = ({ lock, loading, print }) => {
-    const { print } = eventQueue.handlers;
-    print([textLine({ words: [textWord({ characters: "Available tokens: " })] })]);
+const loadWorker = createWorker(async ({ print }, args) => {
+    print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
+})
 
-}
-const membersWorker = ({ lock, loading, print }) => {
-    const { print } = eventQueue.handlers;
-    print([textLine({ words: [textWord({ characters: "Available tokens: " })] })]);
-
-}
+const membersWorker = createWorker(async ({ print }, args) => {
+    print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
+})
 
 
 const ChatMap =

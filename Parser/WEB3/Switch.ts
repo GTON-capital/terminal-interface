@@ -1,4 +1,4 @@
-import { fantomTestnet } from '../../config/config';
+import { fantomNet } from '../../config/config';
 import { TerminalError } from '../../Errors/ErrorCodes';
 
 declare const window: any;
@@ -16,7 +16,7 @@ const switchChain = async (): Promise<void> => {
     rpcUrls,
     nativeCurrency,
     blockExplorerUrls,
-  } = fantomTestnet;
+  } = fantomNet;
 
   await window.ethereum.request({
     method: 'wallet_addEthereumChain',
