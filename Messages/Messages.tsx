@@ -117,7 +117,7 @@ const messages = {
   chatHelpText: `
   Available commands:
   ${commonCommands}
-  ${Prefix.PREFIX}${ChatCommands.Login} - logs in connected account
+  ${Prefix.PREFIX}${ChatCommands.Login} <name> - logs in connected account
   ${Prefix.PREFIX}${ChatCommands.Load} <amount> - load and print last <amount> messages
   ${Prefix.PREFIX}${ChatCommands.Send} <message> - sends message to the chat
   ${Prefix.PREFIX}${ChatCommands.Members} - prints addresses that are registered in the chat

@@ -6,19 +6,17 @@ import { validate } from '../validate';
 
 declare const window: any;
 
-export const mint = async (address: string, amount: BigNumber): Promise<number> => {
+export const mint = async (userAddress: string, address: string, amount: BigNumber): Promise<number> => {
   await validate();
   const web3 = new Web3(window.ethereum);
-  const signer = (await web3.eth.getAccounts())[0]
   const contract = new web3.eth.Contract(BONDING as AbiItem[], address);
-  const id = await contract.methods.mint(amount).send({from: signer})
+  const id = await contract.methods.mint(amount).send({from: userAddress})
   return id;
 };
-export const mintFTM = async (address: string, amount: BigNumber): Promise<number> => {
+export const mintFTM = async (userAddress: string, address: string, amount: BigNumber): Promise<number> => {
     await validate();
     const web3 = new Web3(window.ethereum);
-    const signer = (await web3.eth.getAccounts())[0]
     const contract = new web3.eth.Contract(BONDING as AbiItem[], address);
-    const id = await contract.methods.mint(amount).send({from: signer, value: amount})
+    const id = await contract.methods.mint(amount).send({from: userAddress, value: amount})
     return id;
 };

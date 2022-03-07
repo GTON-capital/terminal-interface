@@ -61,8 +61,8 @@ const tokensWorker = ({ print }) => {
 
 }
 
-const bondsWorker = createWorker(async ({ print }) => {
-    const ids = await userBondIds();
+const bondsWorker = createWorker(async ({ print }, _, [userAddress]) => {
+    const ids = await userBondIds(userAddress);
     if (ids.length === 0) {
         throw new Error("You don't have active bonds.")
     }
@@ -70,7 +70,7 @@ const bondsWorker = createWorker(async ({ print }) => {
     print([textLine({ words: [textWord({ characters: `Your bond ${amount}: ${ids.join(", ")}` })] })]);
 })
 
-const mintWorker = createWorker(async ({ print }, args) => {
+const mintWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const [token, type, amount] = parseArguments(args)
     validateArgs([token, type]);
     const weiAmount = toWei(new BigNumber(amount))
@@ -78,14 +78,14 @@ const mintWorker = createWorker(async ({ print }, args) => {
     const tokenAddress = tokenAddresses[token];
     let tx;
     if (token === BondTokens.ftm) {
-        tx = await mintFTM(contractAddress, weiAmount);
+        tx = await mintFTM(userAddress, contractAddress, weiAmount);
     } else {
         // TODO add check for allowance
         const all = await allowance(tokenAddress, contractAddress);
         if (all.lt(weiAmount)) {
-            await approve(tokenAddress, contractAddress, weiAmount)
+            await approve(userAddress, tokenAddress, contractAddress, weiAmount)
         }
-        tx = await mint(contractAddress, weiAmount);
+        tx = await mint(userAddress, contractAddress, weiAmount);
     }
     const id = tx.events.Mint.returnValues.tokenId;
     const txHash = tx.transactionHash
@@ -93,15 +93,15 @@ const mintWorker = createWorker(async ({ print }, args) => {
     printLink(print, messages.viewTxn, ftmscanUrl + txHash)
 })
 
-const claimWorker = createWorker(async ({ print }, bondId) => {
+const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
     const contractAddress = await getBondingByBondId(bondId);
     const info = await bondInfo(contractAddress, bondId);
     const currentTs = Math.floor(Date.now() / 1000);
     if (currentTs < info.releaseTimestamp) {
         throw new Error("Bond is not allowed to claim yet")
     }
-    await approve(storageAddress, contractAddress, new BigNumber(bondId))
-    const tx = await claim(contractAddress, bondId);
+    await approve(userAddress, storageAddress, contractAddress, new BigNumber(bondId))
+    const tx = await claim(userAddress, contractAddress, bondId);
     const txHash = tx.transactionHash
     print([textLine({ words: [textWord({ characters: `You have successfully claimed bond with id ${bondId}` })] })]);
     printLink(print, messages.viewTxn, ftmscanUrl + txHash)

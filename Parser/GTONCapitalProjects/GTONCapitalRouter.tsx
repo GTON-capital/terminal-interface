@@ -54,7 +54,7 @@ const HelpWorker = ({ print }) => {
   print([textLine({ words: [textWord({ characters: messages.stakingHelpText })] })]);
 }
 
-const StakeWorker = async ({ lock, loading, print }, Amount) => {
+const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
   try {
     lock(true);
     loading(true);
@@ -65,12 +65,12 @@ const StakeWorker = async ({ lock, loading, print }, Amount) => {
     let userBalance;
 
     if (Amount === 'all') {
-      userBalance = await balance(tokenMap.gton.address);
+      userBalance = await balance(userAddress, tokenMap.gton.address);
       amount = userBalance;
     }
     else {
       amount = toWei(new BigNumber(Amount))
-      userBalance = await balance(gtonAddress);
+      userBalance = await balance(userAddress, gtonAddress);
       if (amount.gt(userBalance)) throw Error("Insufficient amount")
     }
 
@@ -83,7 +83,7 @@ const StakeWorker = async ({ lock, loading, print }, Amount) => {
 
     }
 
-    const secondTxn = await stake(amount);
+    const secondTxn = await stake(userAddress, amount);
 
     print([textLine({ words: [textWord({ characters: messages.stake("staked", Amount) })] })]);
     printLink(print, messages.viewTxn, ftmscanUrl + secondTxn)
@@ -104,7 +104,7 @@ const StakeWorker = async ({ lock, loading, print }, Amount) => {
   }
 }
 
-const UnStakeWorker = async ({ lock, loading, print }, Amount) => {
+const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
   try {
     if (Amount === 0) throw new Error('You cant unstake less than 0 $GTON');
     lock(true);
@@ -114,16 +114,16 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount) => {
     let userBalance;
 
     if (Amount === "all") {
-      userBalance = await userShare();
+      userBalance = await userShare(userAddress);
       amount = userBalance;
     }
     else {
       amount = toWei(new BigNumber(Amount))
-      userBalance = await balance(stakingAddress);
+      userBalance = await balance(userAddress, stakingAddress);
     }
 
     if (amount.gt(userBalance)) throw Error("Insufficient amount")
-    const TxnHash = await unstake(amount);
+    const TxnHash = await unstake(userAddress, amount);
 
     print([textLine({ words: [textWord({ characters: messages.stake("unstaked", Amount) })] })]);
     printLink(print, messages.viewTxn, ftmscanUrl + TxnHash)
@@ -143,7 +143,7 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount) => {
   }
 }
 
-const HarvestWorker = async ({ lock, loading, print }, Amount) => {
+const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
   try {
     lock(true);
     loading(true);
@@ -156,18 +156,18 @@ const HarvestWorker = async ({ lock, loading, print }, Amount) => {
 
     if (Amount === 'all') {
       const token = tokenMap.sgton
-      const Balance = (await balance(token.address));
+      const Balance = (await balance(userAddress, token.address));
 
-      amount = Balance.minus(await userShare())
+      amount = Balance.minus(await userShare(userAddress))
     }
     else {
       amount = toWei(new BigNumber(Amount))
-      userStake = await userShare();
-      balanceUser = await balance(stakingAddress);
+      userStake = await userShare(userAddress);
+      balanceUser = await balance(userAddress, stakingAddress);
       if (amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
     }
 
-    const TxnHash = await harvest(amount);
+    const TxnHash = await harvest(userAddress, amount);
 
     print([textLine({ words: [textWord({ characters: messages.harvested(Amount) })] })]);
     printLink(print, messages.viewTxn, ftmscanUrl + TxnHash)
@@ -305,7 +305,7 @@ const ArgsFunctions =
     "buy"
   ]
 
-async function Parse(eventQueue, command) {
+async function Parse(eventQueue, state, command) {
   const { print } = eventQueue.handlers;
   const Command = command.split(' ')[0].trim().toLowerCase();
   // split was replaced by substring because of the buy command, which assumes two parameters
@@ -319,7 +319,7 @@ async function Parse(eventQueue, command) {
     // Handle incorrect command
     if (!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
     if (ArgsFunctions.includes(Command) && Arg == Command) throw Error("You should provide args for calling this function. e.g stake 1");
-    GTONRouterMap[Command](eventQueue.handlers, Arg.toLowerCase());
+    GTONRouterMap[Command](eventQueue.handlers, Arg.toLowerCase(), state);
   }
   catch (err) {
     print([textLine({ words: [textWord({ characters: err.message })] })]);

@@ -14,16 +14,17 @@ import tokenMap, {tokens} from './WEB3/API/addToken';
 import notFoundStrings from '../Errors/notfound-strings'
 
 
-export function createWorker(handler: (handlers, arg) => Promise<void>, errMessage: string | null = null) {
-  return async ({ lock, loading, print }, args: string) =>  {
+export function createWorker(handler: (handlers, arg, state) => Promise<void>, errMessage: string | null = null) {
+  return async ({ lock, loading, print }, args: string, state) =>  {
     try {
       lock(true);
       loading(true);
-      await handler({ lock, loading, print }, args)
+      await handler({ lock, loading, print }, args, state)
       loading(false);
       lock(false);
     }
     catch (err) {
+      console.log(err);
       const message = errMessage || err.message
       print([textLine({ words: [textWord({ characters: message })] })]);
       loading(false);
@@ -32,9 +33,14 @@ export function createWorker(handler: (handlers, arg) => Promise<void>, errMessa
   }
 }
 
-const ConnectMetamaskWorker = createWorker(async ({ print }) => {
-    const address = await connectMetamask();
-    print([textLine({ words: [textWord({ characters: `Connected succefuly: ${address}` })] })]);
+export async function connect({print}, state) {
+  const address = await connectMetamask();
+  state[1](address)
+  print([textLine({ words: [textWord({ characters: `Connected succefuly: ${address}` })] })]);
+}
+
+const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
+  await connect({print}, state)
 }, "Error while connecting metamask, please try again")
 
 const SwitchWorker = createWorker(async ({ print }) => {
@@ -108,7 +114,7 @@ export function printLink(print, text, link) {
 }
 
 export function parser(operands) {
-  return async (queue, command) =>  {
+  return async (queue, state, command) =>  {
     const {print} = queue.handlers;
     const Command = command.split(' ')[0].trim().toLowerCase();
     // split was replaced by substring because of the buy command, which assumes two parameters
@@ -117,7 +123,7 @@ export function parser(operands) {
     try {
         // Handle incorrect command
         if (!(Command in operands)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
-        operands[Command](queue.handlers, Arg.toLowerCase());
+        operands[Command](queue.handlers, Arg.toLowerCase(), state);
     }
     catch (err) {
         print([textLine({ words: [textWord({ characters: err.message })] })]);

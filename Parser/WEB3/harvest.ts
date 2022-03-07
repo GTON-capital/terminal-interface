@@ -9,12 +9,11 @@ import { validate } from './validate';
 
 declare const window: any;
 
-export const harvest = async (amount: BigNumber): Promise<string> => {
+export const harvest = async (userAddress: string, amount: BigNumber): Promise<string> => {
   await validate();
   const web3 = new Web3(window.ethereum);
-  const signer = (await web3.eth.getAccounts())[0]
   const contract = new web3.eth.Contract(STAKING_ABI as AbiItem[], stakingAddress);
   const txn = await contract.methods.harvest(amount)
-    .send({ from: signer })
+    .send({ from: userAddress })
   return txn.transactionHash;
 };
