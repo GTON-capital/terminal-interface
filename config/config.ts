@@ -102,27 +102,27 @@ const storageAddress = "0xd9c72C722e35d6C773695412a232969AE0a6c898";
 const bondingETHAddress = "0x84535E0a5f03B295908a4ADf436D17B537EFb567"
 
 enum BondTokens {
-  FTM = "ftm",
-  USDC = "usdc"
+  ftm = "ftm",
+  usdc = "usdc"
 }
 
 enum BondTypes {
-  Week = "week",
-  Quarter = "quarter"
+  week = "week",
+  quarter = "quarter"
 }
 
 const tokenAddresses = {
-  [BondTokens.USDC]: "0xA2DCeFfc29003101b4bca24134dd1437106A7f81"
+  [BondTokens.usdc]: "0xA2DCeFfc29003101b4bca24134dd1437106A7f81"
 }
 
 const bondingContracts = {
-  [BondTokens.FTM]: {
-      [BondTypes.Week]: "0xADe54e7bc3708dC227D91c00688fC5DFa24DBbCB",
-      [BondTypes.Quarter]: "0xdE1c20F0369934337096180F802814Ecf473Dcf0",
+  [BondTokens.ftm]: {
+      [BondTypes.week]: "0xADe54e7bc3708dC227D91c00688fC5DFa24DBbCB",
+      [BondTypes.quarter]: "0xdE1c20F0369934337096180F802814Ecf473Dcf0",
   },
-  [BondTokens.USDC]: {
-    [BondTypes.Week]: "0x98E81943Aba1aC87EF4c28eE08afAd1FDc5E7D9f",
-    [BondTypes.Quarter]: "0x0d479c7a1099f59D9489cae9E452498A736A3221",
+  [BondTokens.usdc]: {
+    [BondTypes.week]: "0x98E81943Aba1aC87EF4c28eE08afAd1FDc5E7D9f",
+    [BondTypes.quarter]: "0x0d479c7a1099f59D9489cae9E452498A736A3221",
   }
 }
 export {
