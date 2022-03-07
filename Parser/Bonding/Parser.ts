@@ -5,7 +5,7 @@ import {
 import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
 import notFoundStrings from '../../Errors/notfound-strings'
-import commonOperators, {printLink} from '../common';
+import commonOperators, { printLink } from '../common';
 import userBondIds, { getBondingByBondId, bondInfo } from '../WEB3/bonding/ids';
 import getAmountOut, { getDiscount } from '../WEB3/bonding/amountOut';
 import { fromWei, toWei } from '../WEB3/API/balance';
@@ -35,6 +35,11 @@ function timeConverter(UNIX_timestamp) {
     return time;
 }
 
+function validateArgs([token, type]: string[]) {
+    if(!(Object.keys(BondTokens).includes(token)) || !(Object.keys(BondTypes).includes(type))) {
+        throw new Error("Invalid arguments are passed")
+    }
+}
 // Func Router 
 
 const helpWorker = ({ print }) => {
@@ -68,18 +73,16 @@ const bondsWorker = async ({ print }) => {
 }
 
 const mintWorker = async ({ lock, loading, print }, args) => {
-    const [token, type, amount] = parseArguments(args)
-    const contractAddress = bondingContracts[token][type]
-    const tokenAddress = tokenAddresses[token];
-    const weiAmount = toWei(new BigNumber(amount))
-    if (!contractAddress || (token !== BondTokens.FTM && !tokenAddress)) {
-        throw new Error("Incorrect arguments passed.")
-    }
     try {
+        const [token, type, amount] = parseArguments(args)
+        validateArgs([token, type]);
+        const weiAmount = toWei(new BigNumber(amount))
+        const contractAddress = bondingContracts[token][type]
+        const tokenAddress = tokenAddresses[token];
         lock(true);
         loading(true);
         let tx;
-        if (token === BondTokens.FTM) {
+        if (token === BondTokens.ftm) {
             tx = await mintFTM(contractAddress, weiAmount);
         } else {
             // TODO add check for allowance
@@ -154,17 +157,13 @@ const infoWorker = async ({ lock, loading, print }, bondId) => {
 }
 
 const previewWorker = async ({ lock, loading, print }, args) => {
-    console.log("блядь");
-
     try {
+        const [token, type, amount] = parseArguments(args)
+        validateArgs([token, type]);
+        const contractAddress = bondingContracts[token][type]
+        const weiAmount = toWei(new BigNumber(amount));
         lock(true);
         loading(true);
-        const [token, type, amount] = parseArguments(args)
-        const contractAddress = bondingContracts[token][type]
-        if (!contractAddress) {
-            throw new Error("Incorrect arguments passed. /n Print >help to see how to use it")
-        }
-        const weiAmount = toWei(new BigNumber(amount));
         const [amountOut, discount] = await getAmountOut(contractAddress, weiAmount);
         const outEther = fromWei(amountOut);
         const discountEther = fromWei(discount)
@@ -177,7 +176,7 @@ const previewWorker = async ({ lock, loading, print }, args) => {
         lock(false);
     }
     catch (err) {
-        print([textLine({ words: [textWord({ characters: err })] })]);
+        print([textLine({ words: [textWord({ characters: err.message })] })]);
         loading(false);
         lock(false);
     }
@@ -199,10 +198,11 @@ const BondingMap =
 
 const ArgsFunctions =
     [
-        "stake",
-        "unstake",
-        "harvest",
-        "buy"
+        "mint",
+        "preview",
+        "claim",
+        "info",
+        
     ]
 
 async function Parse(eventQueue, command) {
