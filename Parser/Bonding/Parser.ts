@@ -1,17 +1,15 @@
 import {
     textLine,
     textWord,
-    anchorWord
 } from 'crt-terminal';
 import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
-import notFoundStrings from '../../Errors/notfound-strings'
-import commonOperators, {parser} from '../common';
+import commonOperators, { printLink, createWorker, parser } from '../common';
 import userBondIds, { getBondingByBondId, bondInfo } from '../WEB3/bonding/ids';
-import getAmountOut from '../WEB3/bonding/amountOut';
+import getAmountOut, { getDiscount } from '../WEB3/bonding/amountOut';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import { BondTypes, BondTokens, bondingContracts, tokenAddresses, ftmscanUrl, storageAddress } from '../../config/config';
-import { approve } from '../WEB3/approve';
+import { allowance, approve } from '../WEB3/approve';
 import { mint, mintFTM } from '../WEB3/bonding/mint';
 import { claim } from '../WEB3/bonding/claim';
 
@@ -23,19 +21,24 @@ const parseArguments = (args: string) => {
     return [token, type, amount]
 }
 
-function timeConverter(UNIX_timestamp){
+function timeConverter(UNIX_timestamp) {
     const a = new Date(UNIX_timestamp * 1000);
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const year = a.getFullYear();
     const month = months[a.getMonth()];
     const date = a.getDate();
     const hour = a.getHours();
     const min = a.getMinutes();
     const sec = a.getSeconds();
-    const time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    const time = `${date} ${month} ${year} ${hour}:${min}:${sec}`;
     return time;
-  }
+}
 
+function validateArgs([token, type]: string[]) {
+    if (!(Object.keys(BondTokens).includes(token)) || !(Object.keys(BondTypes).includes(type))) {
+        throw new Error("Invalid arguments are passed")
+    }
+}
 // Func Router 
 
 const helpWorker = ({ print }) => {
@@ -58,115 +61,80 @@ const tokensWorker = ({ print }) => {
 
 }
 
-const bondsWorker = async ({ print }) => {
+const bondsWorker = createWorker(async ({ print }) => {
     const ids = await userBondIds();
     if (ids.length === 0) {
-        print([textLine({ words: [textWord({ characters: "You don't have active bonds." })] })]);
-        return;
+        throw new Error("You don't have active bonds.")
     }
-    print([textLine({ words: [textWord({ characters: `Your bond ids are: ${ids.join(", ")}` })] })]);
-}
+    const amount = ids.length === 1 ? "id is" : "ids are";
+    print([textLine({ words: [textWord({ characters: `Your bond ${amount}: ${ids.join(", ")}` })] })]);
+})
 
-const mintWorker = async ({ lock, loading, print }, args) => {
+const mintWorker = createWorker(async ({ print }, args) => {
     const [token, type, amount] = parseArguments(args)
+    validateArgs([token, type]);
+    const weiAmount = toWei(new BigNumber(amount))
     const contractAddress = bondingContracts[token][type]
     const tokenAddress = tokenAddresses[token];
-    const weiAmount = toWei(new BigNumber(amount))
-    if (!contractAddress || (token !== BondTokens.FTM && !tokenAddress)) {
-        throw new Error("Incorrect arguments passed.")
-    }
-    try {
-        lock(true);
-        loading(true);
-        let tx;
-        if (token === BondTokens.FTM) {
-            tx = await mintFTM(contractAddress, weiAmount);
-        } else {
+    let tx;
+    if (token === BondTokens.ftm) {
+        tx = await mintFTM(contractAddress, weiAmount);
+    } else {
+        // TODO add check for allowance
+        const all = await allowance(tokenAddress, contractAddress);
+        if (all.lt(weiAmount)) {
             await approve(tokenAddress, contractAddress, weiAmount)
-            tx = await mint(contractAddress, weiAmount);
         }
-        const id = tx.events.Mint.returnValues.tokenId;
-        const txHash = tx.transactionHash
-        print([textLine({ words: [textWord({ characters: `You have successfully issued bond with id ${id}` })] })]);
-        print([textLine({ words: [anchorWord({ className: "link-padding", characters: messages.viewTxn, onClick: () => { window.open(ftmscanUrl + txHash, '_blank'); } })] })]);
-        loading(false);
-        lock(false);
+        tx = await mint(contractAddress, weiAmount);
     }
-    catch (err) {
-        print([textLine({ words: [textWord({ characters: err.message })] })]);
-        loading(false);
-        lock(false);
-    }
-}
+    const id = tx.events.Mint.returnValues.tokenId;
+    const txHash = tx.transactionHash
+    print([textLine({ words: [textWord({ characters: `You have successfully issued bond with id ${id}` })] })]);
+    printLink(print, messages.viewTxn, ftmscanUrl + txHash)
+})
 
-const claimWorker = async ({ lock, loading, print }, bondId) => {
-    try {
-        lock(true);
-        loading(true);
-        const contractAddress = await getBondingByBondId(bondId);
-        await approve(storageAddress, contractAddress, new BigNumber(bondId))
-        const tx = await claim(contractAddress, bondId);
-        const txHash = tx.transactionHash
-        print([textLine({ words: [textWord({ characters: `You have successfully claimed bond with id ${id}` })] })]);
-        print([textLine({ words: [anchorWord({ className: "link-padding", characters: messages.viewTxn, onClick: () => { window.open(ftmscanUrl + txHash, '_blank'); } })] })]);
-        loading(false);
-        lock(false);
+const claimWorker = createWorker(async ({ print }, bondId) => {
+    const contractAddress = await getBondingByBondId(bondId);
+    const info = await bondInfo(contractAddress, bondId);
+    const currentTs = Math.floor(Date.now() / 1000);
+    if (currentTs < info.releaseTimestamp) {
+        throw new Error("Bond is not allowed to claim yet")
     }
-    catch (err) {
-        print([textLine({ words: [textWord({ characters: err.message })] })]);
-        loading(false);
-        lock(false);
-    }
-}
+    await approve(storageAddress, contractAddress, new BigNumber(bondId))
+    const tx = await claim(contractAddress, bondId);
+    const txHash = tx.transactionHash
+    print([textLine({ words: [textWord({ characters: `You have successfully claimed bond with id ${bondId}` })] })]);
+    printLink(print, messages.viewTxn, ftmscanUrl + txHash)
 
-const infoWorker = async ({ lock, loading, print }, bondId) => {
-    try {
-        lock(true);
-        loading(true);
+})
+
+const infoWorker = createWorker(async ({ print }, bondId) => {
         const contractAddress = await getBondingByBondId(bondId);
         const info = await bondInfo(contractAddress, bondId);
-        print([textLine({ words: [textWord({ characters: `
+        print([textLine({
+            words: [textWord({
+                characters: `
+        Status: ${info.isActive ? "Active" : "Claimed"}
         Issued: ${timeConverter(info.issueTimestamp)}
         Claim date: ${timeConverter(info.releaseTimestamp)}
         Release amount: ${fromWei(new BigNumber(info.releaseAmount)).toFixed(4)}
-        ` })] })]);
-        loading(false);
-        lock(false);
-    }
-    catch (err) {
-        print([textLine({ words: [textWord({ characters: err.message })] })]);
-        loading(false);
-        lock(false);
-    }
-}
+        ` })]
+        })]);
+})
 
-const previewWorker = async ({ lock, loading, print }, args) => {
-    try {
-        lock(true);
-        loading(true);
+const previewWorker = createWorker(async ({ print }, args) => {
         const [token, type, amount] = parseArguments(args)
+        validateArgs([token, type]);
         const contractAddress = bondingContracts[token][type]
-        if (!contractAddress) {
-            print([textLine({ words: [textWord({ characters: "Incorrect arguments passed. /n Print >help to see how to use it" })] })]);
-            loading(false);
-            lock(false);
-            return;
-        }
         const weiAmount = toWei(new BigNumber(amount));
-
-        const amountOut = await getAmountOut(contractAddress, weiAmount);
+        const [amountOut, discount] = await getAmountOut(contractAddress, weiAmount);
         const outEther = fromWei(amountOut);
-        print([textLine({ words: [textWord({ characters: `You will receive ${outEther.toFixed(18)} of sGTON` })] })]);
+        const discountEther = fromWei(discount)
+        const percent = await getDiscount(contractAddress);
 
-        loading(false);
-        lock(false);
-    }
-    catch (err) {
-        print([textLine({ words: [textWord({ characters: err })] })]);
-        loading(false);
-        lock(false);
-    }
-}
+        print([textLine({ words: [textWord({ characters: `You will receive ${outEther.toFixed(18)} of sGTON` })] })]);
+        print([textLine({ words: [textWord({ characters: `Discount for this offer will be ${discountEther.toFixed(18)} - ${percent}%` })] })]);
+})
 
 
 const BondingMap =
