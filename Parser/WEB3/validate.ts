@@ -17,7 +17,6 @@ export async function validate() {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       if (accounts.length === 0) {
         throw new TerminalError({ code: 'NO_METAMASK' });
-
       }
       const chainId: string = await window.ethereum.request({ method: 'net_version' });
       if (chainId !== network) {

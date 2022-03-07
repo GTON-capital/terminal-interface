@@ -29,9 +29,10 @@ let CurrentDirectory = Projects.Chat;
 export default function Web() {
 
   const eventQueue = useEventQueue();
-  const { lock, loading, clear, print, focus } = eventQueue.handlers;
-  const state = useState("");
-  useEffect(() => {connect(eventQueue.handlers, state).then()}, []);
+  const { print } = eventQueue.handlers;
+  const state = useState(null);
+  // it's necessary update state if wallet is available
+  useEffect(() => {connect(state).then()}, []);
   return (
     <Layout
       layoutParams={{

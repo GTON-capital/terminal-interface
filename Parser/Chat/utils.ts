@@ -9,3 +9,9 @@ export const makeRequest = async (route: string, body: Record<string, string>) =
     const resBody = await res.json()
     return resBody
 }
+
+export const getWhitelist = async (): Promise<string[]> =>  {
+    const res = await makeRequest("whitelist", {});
+    const addresses = res.map(e => e.address);
+    return addresses;
+}

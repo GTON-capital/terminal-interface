@@ -76,7 +76,7 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
 
     const userAllowance = await allowance(gtonAddress, stakingAddress);
     if (amount.gt(userAllowance)) {
-      const firstTxn = await approve(gtonAddress, stakingAddress, amount)
+      const firstTxn = await approve(userAddress, gtonAddress, stakingAddress, amount)
 
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
       printLink(print, messages.viewTxn, ftmscanUrl + firstTxn)
