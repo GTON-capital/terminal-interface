@@ -4,6 +4,7 @@ import {
 } from 'crt-terminal';
 import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
+import axios from 'axios';
 import {
   gtonAddress,
   stakingAddress,
@@ -281,14 +282,13 @@ const PriceWorker = async ({ lock, loading, print }) =>
 
   try 
   {
-    var url = "https://pw.gton.capital/rpc/base-to-usdc-price";
+    const urlPrice = "https://pw.gton.capital/rpc/base-to-usdc-price";
 
-    let result = await makeRequest("GET", url);
-
-    const price = JSON.parse(result.toString());
-    print([textLine({words:[textWord({ characters: "$GTON price right now: " + price.result })]})]);
-    lock(false);
+    const result = await axios.get(urlPrice);
+    
+    print([textLine({words:[textWord({ characters: `$GTON price right now: ${result.data.result}` })]})]);
     loading(false);
+    lock(false);
   }
   catch (e) 
   {
@@ -299,29 +299,6 @@ const PriceWorker = async ({ lock, loading, print }) =>
   }
 }
 
-function makeRequest(method, url) {
-  return new Promise(function (resolve, reject) {
-      let xhr = new XMLHttpRequest();
-      xhr.open(method, url);
-      xhr.onload = function () {
-          if (this.status >= 200 && this.status < 300) {
-              resolve(xhr.responseText);
-          } else {
-              reject({
-                  status: this.status,
-                  statusText: xhr.statusText
-              });
-          }
-      };
-      xhr.onerror = function () {
-          reject({
-              status: this.status,
-              statusText: xhr.statusText
-          });
-      };
-      xhr.send();
-  });
-}
 
 const Commands =
 [
