@@ -39,8 +39,8 @@ const ftmscanUrl = "https://testnet.ftmscan.com/tx/"
 const faucetLink = "https://faucet.fantom.network/"
 const gcLink = "https://gton.capital/"
 
-const storageAddress = "0x9E8bcf8360Da63551Af0341A67538c918ba81007";
-const bondingETHAddress = "0xc1c672e75c6D68cc480c4a8083370a4D9CD9EC83"
+const storageAddress = "0x9E8bcf8360Da63551Af0341A67538c918ba81007"
+const bondingETHAddress = "0xc7b266aafcea5c1d8e6d90339a73cca34e476492"
 
 enum BondTokens {
   FTM = "ftm",
@@ -58,8 +58,8 @@ const tokenAddresses = {
 
 const bondingContracts = {
   [BondTokens.FTM]: {
-      [BondTypes.Week]: "0xADe54e7bc3708dC227D91c00688fC5DFa24DBbCB",
-      [BondTypes.Quarter]: "0xdE1c20F0369934337096180F802814Ecf473Dcf0",
+      [BondTypes.Week]: "0xc7b266aafcea5c1d8e6d90339a73cca34e476492",
+      [BondTypes.Quarter]: "0xc1c672e75c6D68cc480c4a8083370a4D9CD9EC83",
   },
   [BondTokens.USDC]: {
     [BondTypes.Week]: "0x98E81943Aba1aC87EF4c28eE08afAd1FDc5E7D9f",

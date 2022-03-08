@@ -39,6 +39,9 @@ function validateArgs([token, type]: string[]) {
     if (!(Object.keys(BondTokens).includes(token)) || !(Object.keys(BondTypes).includes(type))) {
         throw new Error("Invalid arguments are passed")
     }
+    if (token === BondTokens.usdc) {
+        throw new Error("Only FTM bonding is available for now")
+    }
 }
 // Func Router 
 
@@ -81,6 +84,7 @@ const mintWorker = createWorker(async ({ print }, args) => {
     if (token === BondTokens.ftm) {
         tx = await mintFTM(contractAddress, weiAmount);
     } else {
+        throw new Error("Only FTM bonding is available for now")
         // TODO add check for allowance
         const all = await allowance(tokenAddress, contractAddress);
         if (all.lt(weiAmount)) {
