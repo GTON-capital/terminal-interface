@@ -21,6 +21,8 @@ const helpWorker = ({ print }) => {
 
 const sendWorker = createWorker(async ({ print }, msg) => {
     // const list = await getWhitelist();
+    const message = msg.trim();
+    console.log(message);
     const list = [
         {
             "id": 18,
@@ -41,25 +43,23 @@ const sendWorker = createWorker(async ({ print }, msg) => {
             "open_key": "EGl8WNUy9lqXWaNBFETeiWTiYndzbYOr1xz6D2IXrmk="
         }
     ]
-    const downgrade = list.map(e => e.address.substring(2)).join("");
     const payload = list.map(e => {
-        console.log(e.open_key);
-        
-        const sign = (encryptMessage(msg, e.open_key)).substring(2);
-        console.log(sign);
-        
+        const sign = encryptMessage(message, e.open_key);
         return {
             payload: sign.substring(2),
             to_address: e.address
         }
     })
-    const signPayload = payloadToString(payload)
-    const sign = await signData(signPayload)
-    console.log(sign);
-    console.log(JSON.stringify(payload));
-    console.log(JSON.stringify(signPayload));
+    let signPayload = ""
+    payload.forEach(e => {
+        signPayload += e.to_address+e.payload
+    })
+    const mesg = `0x${Buffer.from(signPayload, 'utf8').toString('hex')}`;
 
-    await makeRequest(Routes.Send, { downgrade, sign, payload })
+    const sign = await signData(mesg)
+    console.log(sign);
+    
+    await makeRequest(Routes.Send, { downgrade: [], sign, payload })
     print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
 })
 

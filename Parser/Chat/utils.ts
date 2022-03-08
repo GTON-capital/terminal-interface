@@ -1,12 +1,12 @@
 import {
     encrypt,
 } from 'eth-sig-util';
-import {utils} from "ethers";
+import {ethers} from "ethers";
 
 export const messengerUrl = "http://a5bffd3b4a14c4a5a85a1e5d01d3a5b6-bc51aedea274507b.elb.eu-west-2.amazonaws.com/api/mailbox/"
 
 function stringifiableToHex(value) {
-    return utils.hexlify(Buffer.from(JSON.stringify(value)));
+    return ethers.utils.hexlify(Buffer.from(JSON.stringify(value)));
 }
 
 export const encryptMessage = (message: string, openKey: string): string => {
@@ -17,15 +17,8 @@ export const encryptMessage = (message: string, openKey: string): string => {
             'x25519-xsalsa20-poly1305',
         ),
     );
-    return res;
-}
-
-export const payloadToString = (data: {to_address: string, payload: string}[]): string => {
-    let res = "";
-    for(let i = 0; i < data.length; i += 1) {
-        const address = data[i];
-        res += address.to_address.substring(2) + address.payload
-    }
+    console.log(res);
+    
     return res;
 }
 
