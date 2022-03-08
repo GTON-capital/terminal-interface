@@ -4,7 +4,7 @@ import {
 } from 'crt-terminal';
 import messages from '../../Messages/Messages';
 import { getOpenKey, signData } from "../WEB3/chat/metamaskAPI"
-import { makeRequest, getWhitelist } from "./utils"
+import { makeRequest, getWhitelist, encryptMessage, payloadToString } from "./utils"
 import commonOperators, { parser, createWorker } from '../common';
 // Func Router 
 
@@ -20,22 +20,59 @@ const helpWorker = ({ print }) => {
 }
 
 const sendWorker = createWorker(async ({ print }, msg) => {
-    const list = await getWhitelist();
-    const addresses = list.map(e => e.address.substring(2)).join("");
-    const message = addresses+msg;
-    const sign = await signData(message)
+    // const list = await getWhitelist();
+    const list = [
+        {
+            "id": 18,
+            "address": "b7d52483f9ae624054a297dd87bcd882a585163b",
+            "name": "Nikitos_huesos",
+            "open_key": "XftlVcuzujtVxzlPqjrY/bMDCCmLh135bI0YEwPM/B4="
+        },
+        {
+            "id": 19,
+            "address": "5bd8ee8bde88c8a48743cd3160983b3eb60c14b8",
+            "name": "dev ms",
+            "open_key": "+g47ZqlI6mvEBFVmKDPK+vnJuAcbvmLEEdA1XpTDv2o="
+        },
+        {
+            "id": 20,
+            "address": "7edfa2bc7b74debb2544ccd82a9114be36a92da7",
+            "name": "test",
+            "open_key": "EGl8WNUy9lqXWaNBFETeiWTiYndzbYOr1xz6D2IXrmk="
+        }
+    ]
+    const downgrade = list.map(e => e.address.substring(2)).join("");
+    const payload = list.map(e => {
+        console.log(e.open_key);
+        
+        const sign = (encryptMessage(msg, e.open_key)).substring(2);
+        console.log(sign);
+        
+        return {
+            payload: sign.substring(2),
+            to_address: e.address
+        }
+    })
+    const signPayload = payloadToString(payload)
+    const sign = await signData(signPayload)
+    console.log(sign);
+    console.log(JSON.stringify(payload));
+    console.log(JSON.stringify(signPayload));
 
+    await makeRequest(Routes.Send, { downgrade, sign, payload })
     print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
 })
 
 const loginWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const addresses = (await getWhitelist()).map(e => e.address);
-    if(userAddress in addresses) {
+    if (userAddress in addresses) {
         throw new Error();
     }
     const name = (args.split(" ")[0]).trim();
     const openKey = await getOpenKey()
+    console.log(openKey);
     const sign = await signData(openKey)
+    console.log(sign);
     await makeRequest(Routes.Login, { open_key: openKey, sign: sign.substring(2), name })
     print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
 }, "Something went wrong while registering")
