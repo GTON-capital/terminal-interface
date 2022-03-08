@@ -121,13 +121,14 @@ const claimWorker = createWorker(async ({ print }, bondId) => {
 const infoWorker = createWorker(async ({ print }, bondId) => {
         const contractAddress = await getBondingByBondId(bondId);
         const info = await bondInfo(contractAddress, bondId);
+        const amountString = info.releaseAmount.toString();
         print([textLine({
             words: [textWord({
                 characters: `
         Status: ${info.isActive ? "Active" : "Claimed"}
         Issued: ${timeConverter(info.issueTimestamp)}
         Claim date: ${timeConverter(info.releaseTimestamp)}
-        Release amount: ${fromWei(new BigNumber(info.releaseAmount)).toFixed(4)}
+        Release amount: ${fromWei(new BigNumber(amountString)).toFixed(4)}
         ` })]
         })]);
 })
