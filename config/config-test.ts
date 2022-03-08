@@ -39,7 +39,7 @@ const ftmscanUrl = "https://testnet.ftmscan.com/tx/"
 const faucetLink = "https://faucet.fantom.network/"
 const gcLink = "https://gton.capital/"
 
-const storageAddress = "0x9E8bcf8360Da63551Af0341A67538c918ba81007"
+const storageAddress = "0x9E8bcf8360Da63551Af0341A67538c918ba81007";
 const bondingETHAddress = "0xc7b266aafcea5c1d8e6d90339a73cca34e476492"
 
 enum BondTokens {
