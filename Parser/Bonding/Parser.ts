@@ -36,11 +36,16 @@ function timeConverter(UNIX_timestamp) {
 }
 
 function validateArgs([token, type]: string[]) {
-    if (!(Object.keys(BondTokens).includes(token)) || !(Object.keys(BondTypes).includes(type))) {
-        throw new Error("Invalid arguments are passed")
+    const tokens = Object.keys(BondTokens)
+    if (!(tokens.includes(token))) {
+        throw new Error("Incorrect token name " + token + " avalable: " + tokens.toString() )
+    }
+    const types = Object.keys(BondTypes)
+    if (!(types.includes(type))) {
+        throw new Error("Incorrect bond type " + type + " avalable: " + types.toString())
     }
     if (token === BondTokens.usdc) {
-        throw new Error("Only FTM bonding is available for now")
+        throw new Error("Only FTM bonding is available for now, USDC coming soon")
     }
 }
 // Func Router 
