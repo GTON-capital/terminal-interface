@@ -26,6 +26,13 @@ enum BondingCommands {
   Types = "types"
 }
 
+enum ChatCommands {
+  Send = "send",
+  Load = "load",
+  Login = "login",
+  Members = "members"
+}
+
 enum OptionalActions {
   YES = 'yes',
   NO = 'no'
@@ -47,16 +54,16 @@ enum Links {
 
 const cdHelp =  
 `
-  ${Prefix.PREFIX}${Commands.CD}  ogswap | bonding | candyshop | staking - change project
+  ${Prefix.PREFIX}${Commands.CD} bonding | staking - change project
 `
 
 const commonCommands = 
 `
   ${Prefix.PREFIX}${Commands.HELP} - this output
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
-  ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}
   ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
-  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | usdc - add tokens to metamask`
+  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | usdc - add tokens to metamask
+  ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`
 
 const messages = {
   banner: `
@@ -93,7 +100,6 @@ const messages = {
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
   ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
   ${Prefix.PREFIX}${Commands.PRICE} - get current gton price in USDC pool
-
   ${cdHelp}
   `,
   bondingHelpText: `
@@ -106,7 +112,16 @@ const messages = {
   ${Prefix.PREFIX}${BondingCommands.Claim} <bondId> - claim bond with given id
   ${Prefix.PREFIX}${BondingCommands.Info} <bondId> - prints info about given bond id
   ${Prefix.PREFIX}${BondingCommands.Preview} <token> <type> <amount> - shows amount gton out after claim
-
+  ${cdHelp}
+  `,
+  chatHelpText: `
+  Available commands:
+  ${commonCommands}
+  ${Prefix.PREFIX}${ChatCommands.Login} <name> - logs in connected account, provide your <name>
+  ${Prefix.PREFIX}${ChatCommands.Load} <amount> - load and print last <amount> messages
+  ${Prefix.PREFIX}${ChatCommands.Send} <message> - sends message to the chat
+  ${Prefix.PREFIX}${ChatCommands.Members} - prints addresses that are registered in the chat
+  
   ${cdHelp}
   `,
   links: `

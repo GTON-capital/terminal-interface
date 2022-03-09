@@ -9,17 +9,16 @@ import { validate } from '../validate';
 
 declare const window: any;
 
-const userBondIds = async (): Promise<number[]> => {
+const userBondIds = async (userAddress: string): Promise<number[]> => {
   await validate();
   const web3 = new Web3(window.ethereum);
-  const signer = (await web3.eth.getAccounts())[0]
   const contract = new web3.eth.Contract(STORAGE as AbiItem[], storageAddress);
-  let len = await contract.methods.userIdsLength(signer).call();
+  let len = await contract.methods.userIdsLength(userAddress).call();
   
   const res = []
   while(len > 0) {
       len -= 1;
-      res.push(contract.methods.userIds(signer, len).call());
+      res.push(contract.methods.userIds(userAddress, len).call());
   }
   const result = await Promise.all(res)
   return result;

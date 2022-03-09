@@ -4,8 +4,7 @@ import {
 } from 'crt-terminal';
 import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
-import notFoundStrings from '../../Errors/notfound-strings'
-import commonOperators, { printLink, createWorker } from '../common';
+import commonOperators, { printLink, createWorker, parser } from '../common';
 import userBondIds, { getBondingByBondId, bondInfo } from '../WEB3/bonding/ids';
 import getAmountOut, { getDiscount } from '../WEB3/bonding/amountOut';
 import { fromWei, toWei } from '../WEB3/API/balance';
@@ -31,7 +30,7 @@ function timeConverter(UNIX_timestamp) {
     const hour = a.getHours();
     const min = a.getMinutes();
     const sec = a.getSeconds();
-    const time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
+    const time = `${date} ${month} ${year} ${hour}:${min}:${sec}`;
     return time;
 }
 
@@ -70,8 +69,8 @@ const tokensWorker = ({ print }) => {
 
 }
 
-const bondsWorker = createWorker(async ({ print }) => {
-    const ids = await userBondIds();
+const bondsWorker = createWorker(async ({ print }, _, [userAddress]) => {
+    const ids = await userBondIds(userAddress);
     if (ids.length === 0) {
         throw new Error("You don't have active bonds.")
     }
@@ -79,7 +78,7 @@ const bondsWorker = createWorker(async ({ print }) => {
     print([textLine({ words: [textWord({ characters: `Your bond ${amount}: ${ids.join(", ")}` })] })]);
 })
 
-const mintWorker = createWorker(async ({ print }, args) => {
+const mintWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const [token, type, amount] = parseArguments(args)
     validateArgs([token, type]);
     const weiAmount = toWei(new BigNumber(amount))
@@ -87,15 +86,15 @@ const mintWorker = createWorker(async ({ print }, args) => {
     const tokenAddress = tokenAddresses[token];
     let tx;
     if (token === BondTokens.ftm) {
-        tx = await mintFTM(contractAddress, weiAmount);
+        tx = await mintFTM(userAddress, contractAddress, weiAmount);
     } else {
         throw new Error("Only FTM bonding is available for now")
         // TODO add check for allowance
         const all = await allowance(tokenAddress, contractAddress);
         if (all.lt(weiAmount)) {
-            await approve(tokenAddress, contractAddress, weiAmount)
+            await approve(userAddress, tokenAddress, contractAddress, weiAmount)
         }
-        tx = await mint(contractAddress, weiAmount);
+        tx = await mint(userAddress, contractAddress, weiAmount);
     }
     const id = tx.events.Mint.returnValues.tokenId;
     const txHash = tx.transactionHash
@@ -103,15 +102,15 @@ const mintWorker = createWorker(async ({ print }, args) => {
     printLink(print, messages.viewTxn, ftmscanUrl + txHash)
 })
 
-const claimWorker = createWorker(async ({ print }, bondId) => {
+const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
     const contractAddress = await getBondingByBondId(bondId);
     const info = await bondInfo(contractAddress, bondId);
     const currentTs = Math.floor(Date.now() / 1000);
     if (currentTs < info.releaseTimestamp) {
         throw new Error("Bond is not allowed to claim yet")
     }
-    await approve(storageAddress, contractAddress, new BigNumber(bondId))
-    const tx = await claim(contractAddress, bondId);
+    await approve(userAddress, storageAddress, contractAddress, new BigNumber(bondId))
+    const tx = await claim(userAddress, contractAddress, bondId);
     const txHash = tx.transactionHash
     print([textLine({ words: [textWord({ characters: `You have successfully claimed bond with id ${bondId}` })] })]);
     printLink(print, messages.viewTxn, ftmscanUrl + txHash)
@@ -161,29 +160,6 @@ const BondingMap =
     ...commonOperators
 }
 
-const ArgsFunctions =
-    [
-        "mint",
-        "preview",
-        "claim",
-        "info",
-    ]
-
-async function Parse(eventQueue, command) {
-    const { print } = eventQueue.handlers;
-    const Command = command.split(' ')[0].trim().toLowerCase();
-    // split was replaced by substring because of the buy command, which assumes two parameters
-    const Arg = command.substring(command.indexOf(' ')).replace(' ', '');
-
-    try {
-        // Handle incorrect command
-        if (!(Command in BondingMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
-        if (ArgsFunctions.includes(Command) && Arg === Command) throw Error("You should provide args for calling this function. e.g stake 1");
-        BondingMap[Command](eventQueue.handlers, Arg.toLowerCase());
-    }
-    catch (err) {
-        print([textLine({ words: [textWord({ characters: err.message })] })]);
-    }
-}
+const Parse = parser(BondingMap)
 
 export default Parse;

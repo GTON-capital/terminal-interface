@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Terminal,
   useEventQueue,
@@ -12,14 +12,16 @@ import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
 import BondingParser from '../Parser/Bonding/Parser';
+import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
-
+import { connect } from "../Parser/common"
 const Projects =
 {
-  Staking: "staking", 
-  Candyshop: "candyshop", 
+  Staking: "staking",
+  Candyshop: "candyshop",
   Ogswap: "ogswap",
-  Bonding: "bonding"
+  Bonding: "bonding",
+  Chat: "chat"
 }
 
 let CurrentDirectory = Projects.Bonding;
@@ -27,8 +29,10 @@ let CurrentDirectory = Projects.Bonding;
 export default function Web() {
 
   const eventQueue = useEventQueue();
-  const { lock, loading, clear, print, focus } = eventQueue.handlers;
-
+  const { print } = eventQueue.handlers;
+  const state = useState(null);
+  // it's necessary update state if wallet is available
+  useEffect(() => {connect(state).then()}, []);
   return (
     <Layout
       layoutParams={{
@@ -39,69 +43,73 @@ export default function Web() {
         url: 'https://test.cli.gton.capital/',
       }}>
       <main className={classes.mainContainer}>
-      <DisableMobile>
-        <Terminal
-          queue={eventQueue}
-          onCommand={(command) =>
-          {
-            if(command.split(' ')[0] == "cd")
-            {
-              switch(command.split(' ')[1])
-              {
-                case "staking":
-                  CurrentDirectory = Projects.Staking;
-                  print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.Staking })]})]);
-                  break;
-                case "bonding":
-                  CurrentDirectory = Projects.Bonding;
-                  print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.Bonding })]})]);
-                  break;
-                case "candyshop":
-                  // CurrentDirectory = Projects.candyshop;
-                  // print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.candyshop })]})]);
-                  print([textLine({words:[textWord({ characters: "Project is coming soon " })]})]);
+        <DisableMobile>
+          <Terminal
+            queue={eventQueue}
+            onCommand={(command) => {
+              if (command.split(' ')[0] == "cd") {
+                switch (command.split(' ')[1]) {
+                  case "staking":
+                    CurrentDirectory = Projects.Staking;
+                    print([textLine({ words: [textWord({ characters: "Succefully switched to " + Projects.Staking })] })]);
+                    break;
+                  case "bonding":
+                    CurrentDirectory = Projects.Bonding;
+                    print([textLine({ words: [textWord({ characters: "Succefully switched to " + Projects.Bonding })] })]);
+                    break;
+                  case "chat":
+                    CurrentDirectory = Projects.Chat;
+                    print([textLine({ words: [textWord({ characters: "Succefully switched to " + Projects.Chat })] })]);
+                    print([textLine({ words: [textWord({ characters: "Keep in mind that chat backend checks only mainnet balances!" })] })]);
+                    break;
+                  case "candyshop":
+                    // CurrentDirectory = Projects.candyshop;
+                    // print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.candyshop })]})]);
+                    print([textLine({ words: [textWord({ characters: "Project is coming soon " })] })]);
 
+                    break;
+                  case "ogswap":
+                    // CurrentDirectory = Projects.ogswap;
+                    // print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.ogswap })]})]);
+                    print([textLine({ words: [textWord({ characters: "Project is coming soon " })] })]);
+                    break;
+                  default:
+                    print([textLine({ words: [textWord({ characters: "There is no project with this name " })] })]);
+                    break;
+                }
+                return;
+              }
+
+              switch (CurrentDirectory) {
+                case Projects.Staking:
+                  GTONParser(eventQueue, state, command);
                   break;
-                case "ogswap":
-                  // CurrentDirectory = Projects.ogswap;
-                  // print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.ogswap })]})]);
-                  print([textLine({words:[textWord({ characters: "Project is coming soon " })]})]);
+                case Projects.Bonding:
+                  BondingParser(eventQueue, state, command);
+                  break;
+                case Projects.Chat:
+                  ChatParser(eventQueue, state, command);
+                  break;
+                case Projects.Candyshop:
+                  // import CandyParser from './Parser/CandyShop/CandyShopParser'
+                  break;
+                case Projects.Ogswap:
+                  // import OGSwapParser from './Parser/OGSwap/OGSwapParser'
                   break;
                 default:
-                  print([textLine({words:[textWord({ characters: "There is no project with this name " })]})]);
+                  print([textLine({ words: [textWord({ characters: "Error: please refresh page" })] })]);
                   break;
               }
-              return;
-            }
 
-            switch(CurrentDirectory)
-            {
-              case Projects.Staking:
-                GTONParser(eventQueue, command);
-                break;
-              case Projects.Bonding:
-                BondingParser(eventQueue, command);
-                break;
-              case Projects.Candyshop:
-                // import CandyParser from './Parser/CandyShop/CandyShopParser'
-                break;
-              case Projects.Ogswap:
-                // import OGSwapParser from './Parser/OGSwap/OGSwapParser'
-                break;
-              default:
-                print([textLine({words:[textWord({ characters: "Error: please refresh page" })]})]);
-                break;
             }
-
-          }
-        }
-        prompt={"/"+CurrentDirectory+" $ "}
-        banner={[
-          textLine({ words: [textWord({ characters: messages.banner })] }),
-          textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, href: gcLink })] }),
-          isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }): null,
-        ]}
-        />
+            }
+            prompt={"/" + CurrentDirectory + " $ "}
+            banner={[
+              textLine({ words: [textWord({ characters: messages.banner })] }),
+              textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, href: gcLink })] }),
+              isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }) : null,
+            ]}
+          />
         </DisableMobile>
       </main>
     </Layout>
