@@ -4,7 +4,9 @@ import {
 import {ethers} from "ethers";
 
 export const messengerUrl = "https://mailbox.cli.gton.capital/api/mailbox/"
-
+const headers = {
+    "Content-type": "application/json"
+}
 function stringifiableToHex(value) {
     return ethers.utils.hexlify(Buffer.from(JSON.stringify(value)));
 }
@@ -23,7 +25,8 @@ export const encryptMessage = (message: string, openKey: string): string => {
 export const makeRequest = async (route: string, body: Record<string, any>) => {
     const res = await fetch(messengerUrl + route, {
         method: "POST",
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
+        headers
     })
     const resBody = await res.json()
     return resBody

@@ -31,13 +31,13 @@ const sendWorker = createWorker(async ({ print }, msg, [userAddress]) => {
     })
     let signPayload = ""
     payload.forEach(e => {
-        signPayload += e.to_address+e.payload
+        signPayload += e.to_address + e.payload
     })
     const convertedMsg = `0x${Buffer.from(signPayload, 'utf8').toString('hex')}`;
 
     const sign = await signData(convertedMsg, userAddress)
-    await makeRequest(Routes.Send, { downgrade: [], sign, payload })
-    print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
+    await makeRequest(Routes.Send, { downgrade: [], sign: sign.substring(2), payload })
+    print([textLine({ words: [textWord({ characters: "Succesfully sent message" })] })]);
 })
 
 const loginWorker = createWorker(async ({ print }, args, [userAddress]) => {
@@ -45,21 +45,25 @@ const loginWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const openKey = await getOpenKey(userAddress)
     const sign = await signData(openKey, userAddress)
     await makeRequest(Routes.Login, { open_key: openKey, sign: sign.substring(2), name })
-    print([textLine({ words: [textWord({ characters: "Available bond types: " })] })]);
+    print([textLine({ words: [textWord({ characters: "Succesfully logged in" })] })]);
 }, "Something went wrong while registering")
 
 const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
-    const limit = args;
-    const res = await makeRequest(Routes.Get, { address: userAddress, limit })
-    print([textLine({ words: [textWord({ characters: `Last ${limit} messages:` })] })]);
-    res.map(async (val) => {
-        const message = await decryptMessage(val.payload, userAddress);
-        const date = timeConverter(val.ts)
-        print([textLine({ words: [textWord({ characters: `Date - ${date}` })] })]);
-        print([textLine({ words: [textWord({ characters: `Sender -  ${val.name} (Address - ${val.from_address})` })] })]);
-        print([textLine({ words: [textWord({ characters: `Message -   ${message}` })] })]);
-        print([textLine({ words: [textWord({ characters: "--------------------------------------------" })] })]);
-    })
+    const limit = Number(args);
+    const res = await makeRequest(Routes.Get, { address: userAddress.substring(2), limit })
+    if (res.length > 0) {
+        print([textLine({ words: [textWord({ characters: `Last ${limit} messages:` })] })]);
+        res.map(async (val) => {
+            const message = await decryptMessage(val.payload, userAddress);
+            const date = timeConverter(val.ts)
+            print([textLine({ words: [textWord({ characters: `Date - ${date}` })] })]);
+            print([textLine({ words: [textWord({ characters: `Sender -  ${val.name} (Address - ${val.from_address})` })] })]);
+            print([textLine({ words: [textWord({ characters: `Message -   ${message}` })] })]);
+            print([textLine({ words: [textWord({ characters: "--------------------------------------------" })] })]);
+        })
+    } else {
+        print([textLine({ words: [textWord({ characters: `There is no messages for you` })] })]);
+    }
 })
 
 const membersWorker = createWorker(async ({ print }) => {
