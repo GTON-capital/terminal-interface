@@ -3,6 +3,7 @@ import {
   textWord,
 } from 'crt-terminal';
 import BigNumber from 'bignumber.js';
+import axios from 'axios';
 import messages from '../../Messages/Messages';
 import {
   gtonAddress,
@@ -13,7 +14,6 @@ import {
   GTONAddress,
   spiritswappooladdress,
 } from '../../config/config';
-import { makeRequest } from "./utils"
 import commonOperators, { printLink } from "../common";
 import notFoundStrings from '../../Errors/notfound-strings'
 import { stake, unstake } from '../WEB3/Stake';
@@ -254,15 +254,15 @@ const PriceWorker = async ({ lock, loading, print }) => {
   lock(true);
   loading(true);
 
-  try {
+  try 
+  {
     const urlPrice = "https://pw.gton.capital/rpc/base-to-usdc-price";
 
-    const result = await makeRequest("GET", urlPrice);
-
-    const price = JSON.parse(result.toString());
-    print([textLine({ words: [textWord({ characters: `$GTON price right now: ${price.result}`})] })]);
-    lock(false);
+    const result = await axios.get(urlPrice);
+    
+    print([textLine({words:[textWord({ characters: `$GTON price right now: ${result.data.result}` })]})]);
     loading(false);
+    lock(false);
   }
   catch (e) {
     print([textLine({ words: [textWord({ characters: "The request failed, please try again later." })] })]);

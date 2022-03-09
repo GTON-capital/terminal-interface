@@ -35,8 +35,16 @@ function timeConverter(UNIX_timestamp) {
 }
 
 function validateArgs([token, type]: string[]) {
-    if (!(Object.keys(BondTokens).includes(token)) || !(Object.keys(BondTypes).includes(type))) {
-        throw new Error("Invalid arguments are passed")
+    const tokens = Object.keys(BondTokens)
+    if (!(tokens.includes(token))) {
+        throw new Error("Incorrect token name " + token + " avalable: " + tokens.toString() )
+    }
+    const types = Object.keys(BondTypes)
+    if (!(types.includes(type))) {
+        throw new Error("Incorrect bond type " + type + " avalable: " + types.toString())
+    }
+    if (token === BondTokens.usdc) {
+        throw new Error("Only FTM bonding is available for now, USDC coming soon")
     }
 }
 // Func Router 
@@ -80,6 +88,7 @@ const mintWorker = createWorker(async ({ print }, args, [userAddress]) => {
     if (token === BondTokens.ftm) {
         tx = await mintFTM(userAddress, contractAddress, weiAmount);
     } else {
+        throw new Error("Only FTM bonding is available for now")
         // TODO add check for allowance
         const all = await allowance(tokenAddress, contractAddress);
         if (all.lt(weiAmount)) {
@@ -111,13 +120,14 @@ const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
 const infoWorker = createWorker(async ({ print }, bondId) => {
         const contractAddress = await getBondingByBondId(bondId);
         const info = await bondInfo(contractAddress, bondId);
+        const amountString = info.releaseAmount.toString();
         print([textLine({
             words: [textWord({
                 characters: `
         Status: ${info.isActive ? "Active" : "Claimed"}
         Issued: ${timeConverter(info.issueTimestamp)}
         Claim date: ${timeConverter(info.releaseTimestamp)}
-        Release amount: ${fromWei(new BigNumber(info.releaseAmount)).toFixed(4)}
+        Release amount: ${fromWei(new BigNumber(amountString)).toFixed(4)}
         ` })]
         })]);
 })
