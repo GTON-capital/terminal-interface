@@ -17,8 +17,6 @@ export const encryptMessage = (message: string, openKey: string): string => {
             'x25519-xsalsa20-poly1305',
         ),
     );
-    console.log(res);
-    
     return res;
 }
 
