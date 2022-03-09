@@ -3,7 +3,7 @@ import {
 } from 'eth-sig-util';
 import {ethers} from "ethers";
 
-export const messengerUrl = "http://a5bffd3b4a14c4a5a85a1e5d01d3a5b6-bc51aedea274507b.elb.eu-west-2.amazonaws.com/api/mailbox/"
+export const messengerUrl = "https://a5bffd3b4a14c4a5a85a1e5d01d3a5b6-bc51aedea274507b.elb.eu-west-2.amazonaws.com/api/mailbox/"
 
 function stringifiableToHex(value) {
     return ethers.utils.hexlify(Buffer.from(JSON.stringify(value)));
