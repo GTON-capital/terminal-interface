@@ -5,7 +5,7 @@ import {
 import messages from '../../Messages/Messages';
 import { getOpenKey, signData, decryptMessage } from "../WEB3/chat/metamaskAPI"
 import { makeRequest, getWhitelist, encryptMessage } from "./utils"
-import commonOperators, { parser, createWorker } from '../common';
+import commonOperators, { parser, createWorker, timeConverter } from '../common';
 // Func Router 
 
 enum Routes {
@@ -41,10 +41,6 @@ const sendWorker = createWorker(async ({ print }, msg, [userAddress]) => {
 })
 
 const loginWorker = createWorker(async ({ print }, args, [userAddress]) => {
-    // const addresses = (await getWhitelist()).map(e => e.address);
-    // if (userAddress in addresses) {
-    //     throw new Error();
-    // }
     const name = (args.split(" ")[0]).trim();
     const openKey = await getOpenKey(userAddress)
     const sign = await signData(openKey, userAddress)
@@ -56,24 +52,21 @@ const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const limit = args;
     const res = await makeRequest(Routes.Get, { address: userAddress, limit })
     print([textLine({ words: [textWord({ characters: `Last ${limit} messages:` })] })]);
-    res.map(async (e) => {
-        e.message = await decryptMessage(e.payload, userAddress);
-    })
-    res.forEach((val) => {
-        // 2022-02-24T12:25:46.362826
-        const date = val.ts.split(/[T.]*$/)
-        print([textLine({ words: [textWord({ characters: `Date - ${date[0]} ${date[1]}` })] })]);
+    res.map(async (val) => {
+        const message = await decryptMessage(val.payload, userAddress);
+        const date = timeConverter(val.ts)
+        print([textLine({ words: [textWord({ characters: `Date - ${date}` })] })]);
         print([textLine({ words: [textWord({ characters: `Sender -  ${val.name} (Address - ${val.from_address})` })] })]);
-        print([textLine({ words: [textWord({ characters: `Message -   ${val.message}` })] })]);
+        print([textLine({ words: [textWord({ characters: `Message -   ${message}` })] })]);
         print([textLine({ words: [textWord({ characters: "--------------------------------------------" })] })]);
     })
 })
 
 const membersWorker = createWorker(async ({ print }) => {
-    const list = await getWhitelist();
+    const list = (await getWhitelist());
     print([textLine({ words: [textWord({ characters: "Current addresses in chat: " })] })]);
     list.forEach((val) => {
-        print([textLine({ words: [textWord({ characters: `-  ${val}` })] })]);
+        print([textLine({ words: [textWord({ characters: `-  ${val.name} - ${val.address}` })] })]);
     })
 }, "Something went wrong while fetching addresses")
 

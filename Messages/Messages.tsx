@@ -54,7 +54,7 @@ enum Links {
 
 const cdHelp =  
 `
-  ${Prefix.PREFIX}${Commands.CD} bonding | staking | chat - change project
+  ${Prefix.PREFIX}${Commands.CD} bonding | staking - change project
 `
 
 const commonCommands = 

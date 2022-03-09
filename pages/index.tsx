@@ -24,7 +24,7 @@ const Projects =
   Chat: "chat"
 }
 
-let CurrentDirectory = Projects.Chat;
+let CurrentDirectory = Projects.Bonding;
 
 export default function Web() {
 
@@ -60,6 +60,7 @@ export default function Web() {
                   case "chat":
                     CurrentDirectory = Projects.Chat;
                     print([textLine({ words: [textWord({ characters: "Succefully switched to " + Projects.Chat })] })]);
+                    print([textLine({ words: [textWord({ characters: "Keep in mind that chat backend checks only mainnet balances!" })] })]);
                     break;
                   case "candyshop":
                     // CurrentDirectory = Projects.candyshop;
