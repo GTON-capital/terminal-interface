@@ -102,7 +102,7 @@ const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
 
 })
 
-const infoWorker = createWorker(async ({ print }, bondId) => {
+const infoWorker = async ({ print }, bondId) => {
         const contractAddress = await getBondingByBondId(bondId);
         const info = await bondInfo(contractAddress, bondId);
         print([textLine({
@@ -114,7 +114,7 @@ const infoWorker = createWorker(async ({ print }, bondId) => {
         Release amount: ${fromWei(info.releaseAmount).toFixed(4)}
         ` })]
         })]);
-})
+}
 
 const previewWorker = createWorker(async ({ print }, args) => {
         const [token, type, amount] = parseArguments(args)
