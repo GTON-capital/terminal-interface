@@ -4,6 +4,8 @@ import {
 } from 'crt-terminal';
 import axios from 'axios';
 import Big from 'big.js';
+import Web3 from 'web3';
+import { AbiItem } from 'web3-utils';
 import messages from '../../Messages/Messages';
 import {
   gtonAddress,
@@ -23,8 +25,6 @@ import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import buy from '../WEB3/buyGTON';
 import erc20 from '../WEB3/ABI/erc20.json';
-import Web3 from 'web3';
-import { AbiItem } from 'web3-utils';
 
 enum ErrorCodes {
   INVALID_ARGUMENT = "INVALID_ARGUMENT",
@@ -190,6 +190,7 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
 
     const Token1 = tmpARGS[0]; // GTON amount
     const Token2 = tmpARGS[2]; // FTM, USDC, etc
+    const token = toWei(Token1)
 
     if (Token1 === 0) throw new Error('You cant buy 0 $GTON')
     if (Token1 < 0) throw new Error('You cant buy less than 0 $GTON')
@@ -208,22 +209,22 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
           const wftmPoolValue: string = await WFTMContract.methods.balanceOf(spiritswappooladdress).call();
           const gtonPoolValue: string = await GTONContract.methods.balanceOf(spiritswappooladdress).call();
 
-          const wftm = fromWei(wftmPoolValue)
-          const gton = fromWei(gtonPoolValue)
-
+          const wftm = Big(wftmPoolValue)
+          const gton = Big(gtonPoolValue)
           const priceRN = wftm.div(gton);                        // price right now
-          const ExecFTM = wftm.plus(priceRN.mul(Token1));           // how much ftm be in the pool
-          const ExecGTON = gton.minus(Token1);                       // how much gton be in the pool
+          const ExecFTM = wftm.plus(priceRN.mul(token));           // how much ftm be in the pool
+          const ExecGTON = gton.minus(token);                       // how much gton be in the pool
 
           TradePrice = ExecFTM.div(ExecGTON);
-          TradePrice = TradePrice.mul(0.003) // slippage
+          TradePrice = TradePrice.add(TradePrice.mul(0.003)) // slippage
+          console.log(TradePrice.toFixed());
           break;
         }
         default: {
           throw new Error("Incorrect payment token")
         }
     }
-    const tx = await buy(Token1, TradePrice, userAddress);
+    const tx = await buy(token, TradePrice, userAddress);
 
     print([textLine({ words: [textWord({ characters: "You have successfully purchased $GTON!" })] })]);
     print([textLine({ words: [textWord({ characters: "#WA𝔾MI ⚜️" })] })]);
