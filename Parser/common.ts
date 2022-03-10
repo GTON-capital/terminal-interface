@@ -3,6 +3,7 @@ import {
   textWord,
   anchorWord
 } from 'crt-terminal';
+import Big from 'big.js';
 import connectMetamask from './WEB3/ConnectMetamask';
 import switchChain from './WEB3/Switch';
 import addToken from './WEB3/addTokenToMM';
@@ -12,7 +13,6 @@ import balance, { userShare } from './WEB3/Balance';
 import { fromWei } from './WEB3/API/balance';
 import tokenMap, { tokens } from './WEB3/API/addToken';
 import notFoundStrings from '../Errors/notfound-strings'
-
 
 export function timeConverter(UNIX_timestamp: number): string {
     const a = new Date(UNIX_timestamp * 1000);
@@ -71,10 +71,10 @@ const SwitchWorker = createWorker(async ({ print }) => {
 const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {
   if (TokenName === "all") {
     const token = tokenMap.sgton
-    const balanceWei = await balance(userAddress, token.address)
+    const balanceWei = Big(await balance(userAddress, token.address))
     const shareWei = await userShare(userAddress)
 
-    const harvest = fromWei(balanceWei.minus(shareWei));
+    const harvest = fromWei(balanceWei.minus(shareWei).toFixed(18));
     const share = fromWei(shareWei)
     const gton = fromWei(await balance(userAddress, tokenMap.gton.address))
 
@@ -86,16 +86,17 @@ const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) =
 
   const token = TokenName === "harvest" ? tokenMap.sgton : tokenMap[TokenName]
   if (!token) throw Error("Available tokens are: gton, sgton, harvest");
-  const Balance = (await balance(userAddress, token.address));
+  const Balance = Big(await balance(userAddress, token.address));
+  
   let CoinBalance;
 
   if (TokenName === "harvest") {
     const share = await userShare(userAddress);
-    CoinBalance = fromWei(Balance.minus(share));
+    CoinBalance = fromWei(Balance.minus(share).toFixed(18));
   } else if (TokenName === "sgton") {
     CoinBalance = fromWei(await userShare(userAddress))
   } else {
-    CoinBalance = fromWei(Balance);
+    CoinBalance = fromWei(Balance.toFixed(18));
   }
   const res = messages.balance(CoinBalance.toFixed(18));
   print([textLine({ words: [textWord({ characters: res })] })]);

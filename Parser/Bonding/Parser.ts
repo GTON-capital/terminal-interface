@@ -2,9 +2,8 @@ import {
     textLine,
     textWord,
 } from 'crt-terminal';
-import BigNumber from 'bignumber.js';
 import messages from '../../Messages/Messages';
-import commonOperators, { printLink, createWorker, parser } from '../common';
+import commonOperators, { printLink, createWorker, parser, timeConverter } from '../common';
 import userBondIds, { getBondingByBondId, bondInfo } from '../WEB3/bonding/ids';
 import getAmountOut, { getDiscount } from '../WEB3/bonding/amountOut';
 import { fromWei, toWei } from '../WEB3/API/balance';
@@ -21,27 +20,14 @@ const parseArguments = (args: string) => {
     return [token, type, amount]
 }
 
-function timeConverter(UNIX_timestamp) {
-    const a = new Date(UNIX_timestamp * 1000);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const year = a.getFullYear();
-    const month = months[a.getMonth()];
-    const date = a.getDate();
-    const hour = a.getHours();
-    const min = a.getMinutes();
-    const sec = a.getSeconds();
-    const time = `${date} ${month} ${year} ${hour}:${min}:${sec}`;
-    return time;
-}
-
 function validateArgs([token, type]: string[]) {
     const tokens = Object.keys(BondTokens)
     if (!(tokens.includes(token))) {
-        throw new Error("Incorrect token name " + token + " avalable: " + tokens.toString() )
+        throw new Error("Incorrect token name: " + token + ", avalable: " + tokens.toString() )
     }
     const types = Object.keys(BondTypes)
     if (!(types.includes(type))) {
-        throw new Error("Incorrect bond type " + type + " avalable: " + types.toString())
+        throw new Error("Incorrect bond type: " + type + ", avalable: " + types.toString())
     }
     if (token === BondTokens.usdc) {
         throw new Error("Only FTM bonding is available for now, USDC coming soon")
@@ -81,14 +67,13 @@ const bondsWorker = createWorker(async ({ print }, _, [userAddress]) => {
 const mintWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const [token, type, amount] = parseArguments(args)
     validateArgs([token, type]);
-    const weiAmount = toWei(new BigNumber(amount))
+    const weiAmount = toWei(amount)
     const contractAddress = bondingContracts[token][type]
     const tokenAddress = tokenAddresses[token];
     let tx;
     if (token === BondTokens.ftm) {
         tx = await mintFTM(userAddress, contractAddress, weiAmount);
     } else {
-        throw new Error("Only FTM bonding is available for now")
         // TODO add check for allowance
         const all = await allowance(tokenAddress, contractAddress);
         if (all.lt(weiAmount)) {
@@ -109,7 +94,7 @@ const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
     if (currentTs < info.releaseTimestamp) {
         throw new Error("Bond is not allowed to claim yet")
     }
-    await approve(userAddress, storageAddress, contractAddress, new BigNumber(bondId))
+    await approve(userAddress, storageAddress, contractAddress, bondId)
     const tx = await claim(userAddress, contractAddress, bondId);
     const txHash = tx.transactionHash
     print([textLine({ words: [textWord({ characters: `You have successfully claimed bond with id ${bondId}` })] })]);
@@ -120,14 +105,13 @@ const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
 const infoWorker = createWorker(async ({ print }, bondId) => {
         const contractAddress = await getBondingByBondId(bondId);
         const info = await bondInfo(contractAddress, bondId);
-        const amountString = info.releaseAmount.toString();
         print([textLine({
             words: [textWord({
                 characters: `
         Status: ${info.isActive ? "Active" : "Claimed"}
         Issued: ${timeConverter(info.issueTimestamp)}
         Claim date: ${timeConverter(info.releaseTimestamp)}
-        Release amount: ${fromWei(new BigNumber(amountString)).toFixed(4)}
+        Release amount: ${fromWei(info.releaseAmount).toFixed(4)}
         ` })]
         })]);
 })
@@ -136,7 +120,7 @@ const previewWorker = createWorker(async ({ print }, args) => {
         const [token, type, amount] = parseArguments(args)
         validateArgs([token, type]);
         const contractAddress = bondingContracts[token][type]
-        const weiAmount = toWei(new BigNumber(amount));
+        const weiAmount = toWei(amount);
         const [amountOut, discount] = await getAmountOut(contractAddress, weiAmount);
         const outEther = fromWei(amountOut);
         const discountEther = fromWei(discount)
