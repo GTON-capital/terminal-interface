@@ -2,6 +2,7 @@ import {
     textLine,
     textWord,
 } from 'crt-terminal';
+import Big from "big.js"
 import messages from '../../Messages/Messages';
 import commonOperators, { printLink, createWorker, parser, timeConverter } from '../common';
 import userBondIds, { getBondingByBondId, bondInfo, separateBonds } from '../WEB3/bonding/ids';
@@ -103,7 +104,7 @@ const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
     if (currentTs < info.releaseTimestamp) {
         throw new Error("Bond is not allowed to claim yet")
     }
-    await approve(userAddress, storageAddress, contractAddress, bondId)
+    await approve(userAddress, storageAddress, contractAddress, Big(bondId))
     const tx = await claim(userAddress, contractAddress, bondId);
     const txHash = tx.transactionHash
     print([textLine({ words: [textWord({ characters: `You have successfully claimed bond with id ${bondId}` })] })]);
