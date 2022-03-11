@@ -70,7 +70,7 @@ const membersWorker = createWorker(async ({ print }) => {
     const list = (await getWhitelist());
     print([textLine({ words: [textWord({ characters: "Current addresses in chat: " })] })]);
     list.forEach((val) => {
-        print([textLine({ words: [textWord({ characters: `-  ${val.name} - ${val.address}` })] })]);
+        print([textLine({ words: [textWord({ characters: `-  ${val.name} - 0x${val.address}` })] })]);
     })
 }, "Something went wrong while fetching addresses")
 
