@@ -4,7 +4,7 @@ import {
 } from 'crt-terminal';
 import messages from '../../Messages/Messages';
 import commonOperators, { printLink, createWorker, parser, timeConverter } from '../common';
-import userBondIds, { getBondingByBondId, bondInfo } from '../WEB3/bonding/ids';
+import userBondIds, { getBondingByBondId, bondInfo, separateBonds } from '../WEB3/bonding/ids';
 import getAmountOut, { getDiscount } from '../WEB3/bonding/amountOut';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import { BondTypes, BondTokens, bondingContracts, tokenAddresses, ftmscanUrl, storageAddress } from '../../config/config';
@@ -60,8 +60,17 @@ const bondsWorker = createWorker(async ({ print }, _, [userAddress]) => {
     if (ids.length === 0) {
         throw new Error("You don't have active bonds.")
     }
-    const amount = ids.length === 1 ? "id is" : "ids are";
-    print([textLine({ words: [textWord({ characters: `Your bond ${amount}: ${ids.join(", ")}` })] })]);
+    const [active, claimed] = await separateBonds(ids);
+    const printIds = (type: string, bondIds: string[]) => {
+        if(bondIds.length < 1) {
+            print([textLine({ words: [textWord({ characters: `You don't have ${type} bonds` })] })]);
+            return;
+        }
+        const amount = bondIds.length === 1 ? "id is" : "ids are";
+        print([textLine({ words: [textWord({ characters: `Your ${type} ${amount}: ${bondIds.join(", ")}` })] })]);
+    }
+    printIds("active", active);
+    printIds("claimed", claimed);
 })
 
 const mintWorker = createWorker(async ({ print }, args, [userAddress]) => {

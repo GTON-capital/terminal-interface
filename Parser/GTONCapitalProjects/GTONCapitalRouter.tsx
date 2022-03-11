@@ -2,7 +2,6 @@ import {
   textLine,
   textWord,
 } from 'crt-terminal';
-import axios from 'axios';
 import Big from 'big.js';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
@@ -20,7 +19,7 @@ import notFoundStrings from '../../Errors/notfound-strings'
 import { stake, unstake } from '../WEB3/Stake';
 import { harvest } from '../WEB3/harvest';
 import balance, { userShare } from '../WEB3/Balance';
-import { toWei, fromWei } from '../WEB3/API/balance';
+import { toWei } from '../WEB3/API/balance';
 import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import buy from '../WEB3/buyGTON';
@@ -246,28 +245,6 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
   }
 }
 
-const PriceWorker = async ({ lock, loading, print }) => {
-  lock(true);
-  loading(true);
-
-  try 
-  {
-    const urlPrice = "https://pw.gton.capital/rpc/base-to-usdc-price";
-
-    const result = await axios.get(urlPrice);
-    
-    print([textLine({words:[textWord({ characters: `$GTON price right now: ${result.data.result}` })]})]);
-    loading(false);
-    lock(false);
-  }
-  catch (e) {
-    print([textLine({ words: [textWord({ characters: "The request failed, please try again later." })] })]);
-    lock(false);
-    loading(false);
-  }
-}
-
-
 const Commands =
   [
     "help",
@@ -289,7 +266,6 @@ const GTONRouterMap =
   "unstake": UnStakeWorker,
   "harvest": HarvestWorker,
   "buy": BuyWorker,
-  "price": PriceWorker,
   ...commonOperators
 }
 
