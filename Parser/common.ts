@@ -42,7 +42,8 @@ export function createWorker(handler: (handlers, arg, state) => Promise<void>, e
       if (!state[0]) {
         message = "First - connect the website by typing >join"
       } else {
-        message = errMessage || err.message
+          message = errMessage || err.message
+          switch (err.)
       }
       print([textLine({ words: [textWord({ characters: message })] })]);
       loading(false);
