@@ -3,6 +3,7 @@ import {
   textWord,
   anchorWord
 } from 'crt-terminal';
+import axios from 'axios';
 import Big from 'big.js';
 import connectMetamask from './WEB3/ConnectMetamask';
 import switchChain from './WEB3/Switch';
@@ -120,12 +121,23 @@ const FaucetWorker = createWorker(async ({ print }, token) => {
   print([textLine({ words: [textWord({ characters: messages.faucetDeposit })] })]);
 })
 
+
+const PriceWorker = createWorker(async ({ print }) => {
+    const urlPrice = "https://pw.gton.capital/rpc/base-to-usdc-price";
+
+    const result = await axios.get(urlPrice);
+    
+    print([textLine({words:[textWord({ characters: `$GTON price right now: ${result.data.result}` })]})]);
+}, "The request failed, please try again later.")
+
+
 const commonOperators = {
   faucet: FaucetWorker,
   add: AddTokenWorker,
   balance: BalanceWorker,
   switch: SwitchWorker,
-  join: ConnectMetamaskWorker
+  join: ConnectMetamaskWorker,
+  price: PriceWorker
 }
 
 export function printLink(print, text, link) {

@@ -14,7 +14,8 @@ import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
 import BondingParser from '../Parser/Bonding/Parser';
 import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
-import { connect } from "../Parser/common"
+import { connect, printLink } from "../Parser/common"
+
 const Projects =
 {
   Staking: "staking",
@@ -106,8 +107,8 @@ export default function Web() {
             prompt={"/" + CurrentDirectory + " $ "}
             banner={[
               textLine({ words: [textWord({ characters: messages.banner })] }),
-              textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, href: gcLink })] }),
-              isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, href: faucetLink })] }) : null,
+              textLine({ words: [anchorWord({ className: "link-padding", characters: messages.gc, onClick: () => { window.open(gcLink, '_blank'); } })] }),
+              isTestnet ? textLine({ words: [anchorWord({ className: "link-padding", characters: messages.faucet, onClick: () => { window.open(faucetLink, '_blank'); } })] }) : null,
             ]}
           />
         </DisableMobile>
