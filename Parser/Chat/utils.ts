@@ -1,7 +1,7 @@
 import {
     encrypt,
 } from 'eth-sig-util';
-import {ethers} from "ethers";
+import { ethers } from "ethers";
 
 export const messengerUrl = "https://mailbox.cli.gton.capital/api/mailbox/"
 const headers = {
@@ -10,6 +10,8 @@ const headers = {
 function stringifiableToHex(value) {
     return ethers.utils.hexlify(Buffer.from(JSON.stringify(value)));
 }
+
+export type User = { id: number, address: string, open_key: string, name: string }
 
 export const encryptMessage = (message: string, openKey: string): string => {
     const res = stringifiableToHex(
@@ -32,7 +34,7 @@ export const makeRequest = async (route: string, body: Record<string, any>) => {
     return resBody
 }
 
-export const getWhitelist = async (): Promise<{ id: number, address: string, open_key: string, name: string }[]> => {
+export const getWhitelist = async (): Promise<User[]> => {
     const res = await makeRequest("whitelist", {});
     return res;
 }

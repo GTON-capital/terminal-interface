@@ -167,7 +167,7 @@ export function parser(operands) {
     try {
       // Handle incorrect command
       if (!(Command in operands)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
-      operands[Command](queue.handlers, Arg.toLowerCase(), state);
+      operands[Command](queue.handlers, Arg, state);
     }
     catch (err) {
       print([textLine({ words: [textWord({ characters: err.message })] })]);

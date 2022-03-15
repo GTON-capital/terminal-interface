@@ -22,7 +22,7 @@ const parseArguments = (args: string) => {
     return [token, type, amount]
 }
 const validateAmount = (amount: any) => {
-    if (!(amount) || Number.isNaN(amount))
+    if (!(amount) || Number.isNaN(amount) || Number(amount) <= 0)
         throw new Error("Please, provide correct amount.");
 }
 
@@ -112,7 +112,6 @@ const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
     // Check if contract address eq 0x00000....000
     if (parseInt(contractAddress, 16) === 0)
         throw new Error("Bond is not issued yet");
-
     const info = await bondInfo(contractAddress, bondId);
     if (!info.isActive)
         throw new Error("Bond is claimed or not active")
@@ -120,6 +119,7 @@ const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
     if (currentTs < info.releaseTimestamp) {
         throw new Error("Bond is not allowed to claim yet")
     }
+    // TODO add owner of check
     await approve(userAddress, storageAddress, contractAddress, Big(bondId))
     const tx = await claim(userAddress, contractAddress, bondId);
     const txHash = tx.transactionHash
