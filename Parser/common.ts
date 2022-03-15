@@ -15,6 +15,18 @@ import { fromWei } from './WEB3/API/balance';
 import tokenMap, { tokens } from './WEB3/API/addToken';
 import notFoundStrings from '../Errors/notfound-strings'
 
+enum ErrorCodes {
+  INVALID_ARGUMENT = "INVALID_ARGUMENT",
+  USER_DECLINED_TRANSACTION = 3,
+  NOT_ENOUGHT_FUNDS = -32000
+}
+
+const errorStrings = {
+  [ErrorCodes.INVALID_ARGUMENT]: "Please provide correct argument",
+  [ErrorCodes.USER_DECLINED_TRANSACTION]: "You have declined transaction",
+  [ErrorCodes.NOT_ENOUGHT_FUNDS]: "You don't have enough funds to proceed transaction",
+}
+
 export function timeConverter(UNIX_timestamp: number): string {
     const a = new Date(UNIX_timestamp * 1000);
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -38,11 +50,12 @@ export function createWorker(handler: (handlers, arg, state) => Promise<void>, e
       lock(false);
     }
     catch (err) {
-      console.log(err);
       let message
       if (!state[0]) {
         message = "First - connect the website by typing >join"
-      } else {
+      } else if (err.code in ErrorCodes) {
+        message = errorStrings[err.code];
+      } else{
         message = errMessage || err.message
       }
       print([textLine({ words: [textWord({ characters: message })] })]);

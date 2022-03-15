@@ -25,4 +25,10 @@ export const userShare = async (userAddress: string): Promise<Big> => {
   const userBalance = await contract.methods.userInfo(userAddress).call();
   return Big(userBalance.amount);
 }
+
+export const getEthBalance = async (userAddress: string): Promise<Big> => {
+  const web3 = new Web3(window.ethereum);
+  const ethBalance = await web3.eth.getBalance(userAddress);
+  return Big(ethBalance)
+}
 export default balance;
