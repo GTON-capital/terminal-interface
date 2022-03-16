@@ -1,4 +1,9 @@
+import {
+  textLine,
+  textWord,
+} from 'crt-terminal';
 import errorStrings, { TerminalErrorCodes } from './ErrorStrings';
+
 type ErrorNames = 'Metamask error' | 'Terminal error';
 
 interface ITerminalErrorProps {
