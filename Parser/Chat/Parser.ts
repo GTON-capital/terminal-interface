@@ -4,7 +4,7 @@ import {
 } from 'crt-terminal';
 import messages from '../../Messages/Messages';
 import { getOpenKey, signData, decryptMessage } from "../WEB3/chat/metamaskAPI"
-import { makeRequest, getWhitelist, encryptMessage } from "./utils"
+import { makeRequest, getWhitelist, encryptMessage, checkAccounts } from "./utils"
 import commonOperators, { parser, createWorker, timeConverter } from '../common';
 // Func Router 
 
@@ -21,8 +21,9 @@ const helpWorker = ({ print }) => {
 
 const sendWorker = createWorker(async ({ print }, msg, [userAddress]) => {
     const list = await getWhitelist();
+    const [whitelist, downgrade] = await checkAccounts(list);
     const message = msg.trim();
-    const payload = list.map(e => {
+    const payload = whitelist.map(e => {
         const sign = encryptMessage(message, e.open_key);
         return {
             payload: sign.substring(2),
@@ -36,7 +37,7 @@ const sendWorker = createWorker(async ({ print }, msg, [userAddress]) => {
     const convertedMsg = `0x${Buffer.from(signPayload, 'utf8').toString('hex')}`;
 
     const sign = await signData(convertedMsg, userAddress)
-    await makeRequest(Routes.Send, { downgrade: [], sign: sign.substring(2), payload })
+    await makeRequest(Routes.Send, { downgrade, sign: sign.substring(2), payload })
     print([textLine({ words: [textWord({ characters: "Succesfully sent message" })] })]);
 })
 
