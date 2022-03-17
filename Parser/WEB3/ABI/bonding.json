@@ -193,11 +193,6 @@
                 "type": "uint256"
             },
             {
-                "internalType": "bytes",
-                "name": "bondType",
-                "type": "bytes"
-            },
-            {
                 "internalType": "uint256",
                 "name": "releaseAmount",
                 "type": "uint256"

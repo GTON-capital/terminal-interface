@@ -2,14 +2,14 @@ import {
   textLine,
   textWord,
 } from 'crt-terminal';
-import BigNumber from 'bignumber.js';
-import axios from 'axios';
+import Big from 'big.js';
+import Web3 from 'web3';
+import { AbiItem } from 'web3-utils';
 import messages from '../../Messages/Messages';
 import {
   gtonAddress,
   stakingAddress,
   ftmscanUrl,
-  fantomNet,
   WFTMAddress,
   GTONAddress,
   spiritswappooladdress,
@@ -24,11 +24,6 @@ import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import buy from '../WEB3/buyGTON';
 import erc20 from '../WEB3/ABI/erc20.json';
-
-const ethers = require('ethers');
-
-const url = fantomNet.rpcUrls[0];
-const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
 
 enum ErrorCodes {
   INVALID_ARGUMENT = "INVALID_ARGUMENT",
@@ -69,11 +64,10 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
       amount = userBalance;
     }
     else {
-      amount = toWei(new BigNumber(Amount))
+      amount = toWei(Amount)
       userBalance = await balance(userAddress, gtonAddress);
       if (amount.gt(userBalance)) throw Error("Insufficient amount")
     }
-
     const userAllowance = await allowance(gtonAddress, stakingAddress);
     if (amount.gt(userAllowance)) {
       const firstTxn = await approve(userAddress, gtonAddress, stakingAddress, amount)
@@ -118,7 +112,7 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
       amount = userBalance;
     }
     else {
-      amount = toWei(new BigNumber(Amount))
+      amount = toWei(Amount)
       userBalance = await balance(userAddress, stakingAddress);
     }
 
@@ -158,10 +152,10 @@ const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
       const token = tokenMap.sgton
       const Balance = (await balance(userAddress, token.address));
 
-      amount = Balance.minus(await userShare(userAddress))
+      amount = new Big(Balance).minus(await userShare(userAddress))
     }
     else {
-      amount = toWei(new BigNumber(Amount))
+      amount = toWei(Amount)
       userStake = await userShare(userAddress);
       balanceUser = await balance(userAddress, stakingAddress);
       if (amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
@@ -186,7 +180,7 @@ const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
   }
 }
 
-const BuyWorker = async ({ lock, loading, print }, Args) => {
+const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
   try {
     loading(true);
     lock(true);
@@ -195,40 +189,41 @@ const BuyWorker = async ({ lock, loading, print }, Args) => {
 
     const Token1 = tmpARGS[0]; // GTON amount
     const Token2 = tmpARGS[2]; // FTM, USDC, etc
+    const token = toWei(Token1)
 
     if (Token1 === 0) throw new Error('You cant buy 0 $GTON')
     if (Token1 < 0) throw new Error('You cant buy less than 0 $GTON')
     if (Token2 === undefined) throw new Error("Apparently you did not specify for which token you want to buy $GTON, example: buy 1 with ftm")
 
     let TradePrice;
-
+    const web3 = new Web3(window.ethereum);
     switch (Token2) // Find pairs on spirit
     {
       case 'ftm': // By default, buy for native FTM
         {
           // Get tokens contract, for executing balanceOf, so we can calculate price later
-          const WFTMContract = await new ethers.Contract(WFTMAddress, erc20, customHttpProvider);
-          const GTONContract = await new ethers.Contract(GTONAddress, erc20, customHttpProvider);
+          const WFTMContract = new web3.eth.Contract(erc20 as AbiItem[], WFTMAddress);
+          const GTONContract = new web3.eth.Contract(erc20 as AbiItem[], GTONAddress);
 
-          const wftmPoolValue: BigNumber = await WFTMContract.balanceOf(spiritswappooladdress);
-          const gtonPoolValue: BigNumber = await GTONContract.balanceOf(spiritswappooladdress);
+          const wftmPoolValue: string = await WFTMContract.methods.balanceOf(spiritswappooladdress).call();
+          const gtonPoolValue: string = await GTONContract.methods.balanceOf(spiritswappooladdress).call();
 
-          const wftm = ethers.utils.formatEther(wftmPoolValue.toString()).toString()
-          const gton = ethers.utils.formatEther(gtonPoolValue.toString()).toString()
+          const wftm = Big(wftmPoolValue)
+          const gton = Big(gtonPoolValue)
+          const priceRN = wftm.div(gton);                        // price right now
+          const ExecFTM = wftm.plus(priceRN.mul(token));           // how much ftm be in the pool
+          const ExecGTON = gton.minus(token);                       // how much gton be in the pool
 
-          const priceRN = (+wftm / +gton);                        // price right now
-          const ExecFTM = +wftm + (+priceRN * +Token1);           // how much ftm be in the pool
-          const ExecGTON = +gton - +Token1;                       // how much gton be in the pool
-
-          TradePrice = ExecFTM / ExecGTON;
-          TradePrice =+ (TradePrice * 0.003) // slippage
+          TradePrice = ExecFTM.div(ExecGTON);
+          TradePrice = TradePrice.add(TradePrice.mul(0.003)) // slippage
+          console.log(TradePrice.toFixed());
           break;
         }
         default: {
           throw new Error("Incorrect payment token")
         }
     }
-    const tx = await buy(+Token1, TradePrice);
+    const tx = await buy(token, TradePrice, userAddress);
 
     print([textLine({ words: [textWord({ characters: "You have successfully purchased $GTON!" })] })]);
     print([textLine({ words: [textWord({ characters: "#WA𝔾MI ⚜️" })] })]);
@@ -249,28 +244,6 @@ const BuyWorker = async ({ lock, loading, print }, Args) => {
     lock(false);
   }
 }
-
-const PriceWorker = async ({ lock, loading, print }) => {
-  lock(true);
-  loading(true);
-
-  try 
-  {
-    const urlPrice = "https://pw.gton.capital/rpc/base-to-usdc-price";
-
-    const result = await axios.get(urlPrice);
-    
-    print([textLine({words:[textWord({ characters: `$GTON price right now: ${result.data.result}` })]})]);
-    loading(false);
-    lock(false);
-  }
-  catch (e) {
-    print([textLine({ words: [textWord({ characters: "The request failed, please try again later." })] })]);
-    lock(false);
-    loading(false);
-  }
-}
-
 
 const Commands =
   [
@@ -293,7 +266,6 @@ const GTONRouterMap =
   "unstake": UnStakeWorker,
   "harvest": HarvestWorker,
   "buy": BuyWorker,
-  "price": PriceWorker,
   ...commonOperators
 }
 

@@ -2,12 +2,13 @@ import {
     textLine,
     textWord,
 } from 'crt-terminal';
-import BigNumber from 'bignumber.js';
+import Big from "big.js"
 import messages from '../../Messages/Messages';
-import commonOperators, { printLink, createWorker, parser } from '../common';
-import userBondIds, { getBondingByBondId, bondInfo } from '../WEB3/bonding/ids';
+import commonOperators, { printLink, createWorker, parser, timeConverter } from '../common';
+import userBondIds, { getBondingByBondId, bondInfo, separateBonds } from '../WEB3/bonding/ids';
 import getAmountOut, { getDiscount } from '../WEB3/bonding/amountOut';
 import { fromWei, toWei } from '../WEB3/API/balance';
+import balance, { getEthBalance } from '../WEB3/Balance';
 import { BondTypes, BondTokens, bondingContracts, tokenAddresses, ftmscanUrl, storageAddress } from '../../config/config';
 import { allowance, approve } from '../WEB3/approve';
 import { mint, mintFTM } from '../WEB3/bonding/mint';
@@ -20,28 +21,19 @@ const parseArguments = (args: string) => {
     const amount = argArr[2]
     return [token, type, amount]
 }
-
-function timeConverter(UNIX_timestamp) {
-    const a = new Date(UNIX_timestamp * 1000);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const year = a.getFullYear();
-    const month = months[a.getMonth()];
-    const date = a.getDate();
-    const hour = a.getHours();
-    const min = a.getMinutes();
-    const sec = a.getSeconds();
-    const time = `${date} ${month} ${year} ${hour}:${min}:${sec}`;
-    return time;
+const validateAmount = (amount: any) => {
+    if (!(amount) || Number.isNaN(amount) || Number(amount) <= 0)
+        throw new Error("Please, provide correct amount.");
 }
 
 function validateArgs([token, type]: string[]) {
     const tokens = Object.keys(BondTokens)
     if (!(tokens.includes(token))) {
-        throw new Error("Incorrect token name " + token + " avalable: " + tokens.toString() )
+        throw new Error(`Incorrect token name, avalable: ${tokens.toString()}` )
     }
     const types = Object.keys(BondTypes)
     if (!(types.includes(type))) {
-        throw new Error("Incorrect bond type " + type + " avalable: " + types.toString())
+        throw new Error(`Incorrect bond type, avalable: ${types.toString()}`)
     }
     if (token === BondTokens.usdc) {
         throw new Error("Only FTM bonding is available for now, USDC coming soon")
@@ -58,7 +50,6 @@ const typesWorker = ({ print }) => {
     for (const key of Object.keys(BondTypes)) {
         print([textLine({ words: [textWord({ characters: `-  ${key}` })] })]);
     }
-
 }
 
 const tokensWorker = ({ print }) => {
@@ -66,7 +57,6 @@ const tokensWorker = ({ print }) => {
     for (const key of Object.keys(BondTokens)) {
         print([textLine({ words: [textWord({ characters: `-  ${key}` })] })]);
     }
-
 }
 
 const bondsWorker = createWorker(async ({ print }, _, [userAddress]) => {
@@ -74,22 +64,36 @@ const bondsWorker = createWorker(async ({ print }, _, [userAddress]) => {
     if (ids.length === 0) {
         throw new Error("You don't have active bonds.")
     }
-    const amount = ids.length === 1 ? "id is" : "ids are";
-    print([textLine({ words: [textWord({ characters: `Your bond ${amount}: ${ids.join(", ")}` })] })]);
+    const [active, claimed] = await separateBonds(ids);
+    const printIds = (type: string, bondIds: string[]) => {
+        if (bondIds.length < 1) {
+            print([textLine({ words: [textWord({ characters: `You don't have ${type} bonds` })] })]);
+            return;
+        }
+        const amount = bondIds.length === 1 ? "id is" : "ids are";
+        print([textLine({ words: [textWord({ characters: `Your ${type} ${amount}: ${bondIds.join(", ")}` })] })]);
+    }
+    printIds("active", active);
+    printIds("claimed", claimed);
 })
 
 const mintWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const [token, type, amount] = parseArguments(args)
     validateArgs([token, type]);
-    const weiAmount = toWei(new BigNumber(amount))
+    validateAmount(amount);
+    const weiAmount = toWei(amount)
     const contractAddress = bondingContracts[token][type]
     const tokenAddress = tokenAddresses[token];
     let tx;
     if (token === BondTokens.ftm) {
+        const tokenBalance = await getEthBalance(userAddress);
+        if (tokenBalance.lt(weiAmount))
+            throw new Error("Insufficient ETH amount");
         tx = await mintFTM(userAddress, contractAddress, weiAmount);
     } else {
-        throw new Error("Only FTM bonding is available for now")
-        // TODO add check for allowance
+        const tokenBalance = await balance(userAddress, tokenAddress);
+        if (tokenBalance.lt(weiAmount))
+            throw new Error("Insufficient token amount");
         const all = await allowance(tokenAddress, contractAddress);
         if (all.lt(weiAmount)) {
             await approve(userAddress, tokenAddress, contractAddress, weiAmount)
@@ -103,13 +107,20 @@ const mintWorker = createWorker(async ({ print }, args, [userAddress]) => {
 })
 
 const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
+    validateAmount(bondId);
     const contractAddress = await getBondingByBondId(bondId);
+    // Check if contract address eq 0x00000....000
+    if (parseInt(contractAddress, 16) === 0)
+        throw new Error("Bond is not issued yet");
     const info = await bondInfo(contractAddress, bondId);
+    if (!info.isActive)
+        throw new Error("Bond is claimed or not active")
     const currentTs = Math.floor(Date.now() / 1000);
     if (currentTs < info.releaseTimestamp) {
         throw new Error("Bond is not allowed to claim yet")
     }
-    await approve(userAddress, storageAddress, contractAddress, new BigNumber(bondId))
+    // TODO add owner of check
+    await approve(userAddress, storageAddress, contractAddress, Big(bondId))
     const tx = await claim(userAddress, contractAddress, bondId);
     const txHash = tx.transactionHash
     print([textLine({ words: [textWord({ characters: `You have successfully claimed bond with id ${bondId}` })] })]);
@@ -117,33 +128,37 @@ const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
 
 })
 
-const infoWorker = createWorker(async ({ print }, bondId) => {
-        const contractAddress = await getBondingByBondId(bondId);
-        const info = await bondInfo(contractAddress, bondId);
-        const amountString = info.releaseAmount.toString();
-        print([textLine({
-            words: [textWord({
-                characters: `
+const infoWorker = async ({ print }, bondId) => {
+    validateAmount(bondId);
+    const contractAddress = await getBondingByBondId(bondId);
+    if (parseInt(contractAddress, 16) === 0)
+        throw new Error("Bond is not issued yet");
+
+    const info = await bondInfo(contractAddress, bondId);
+    print([textLine({
+        words: [textWord({
+            characters: `
         Status: ${info.isActive ? "Active" : "Claimed"}
         Issued: ${timeConverter(info.issueTimestamp)}
         Claim date: ${timeConverter(info.releaseTimestamp)}
-        Release amount: ${fromWei(new BigNumber(amountString)).toFixed(4)}
+        Release amount: ${fromWei(info.releaseAmount).toFixed(4)}
         ` })]
-        })]);
-})
+    })]);
+}
 
 const previewWorker = createWorker(async ({ print }, args) => {
-        const [token, type, amount] = parseArguments(args)
-        validateArgs([token, type]);
-        const contractAddress = bondingContracts[token][type]
-        const weiAmount = toWei(new BigNumber(amount));
-        const [amountOut, discount] = await getAmountOut(contractAddress, weiAmount);
-        const outEther = fromWei(amountOut);
-        const discountEther = fromWei(discount)
-        const percent = await getDiscount(contractAddress);
+    const [token, type, amount] = parseArguments(args)
+    validateArgs([token, type]);
+    validateAmount(amount);
+    const contractAddress = bondingContracts[token][type]
+    const weiAmount = toWei(amount);
+    const [amountOut, discount] = await getAmountOut(contractAddress, weiAmount);
+    const outEther = fromWei(amountOut);
+    const discountEther = fromWei(discount)
+    const percent = await getDiscount(contractAddress);
 
-        print([textLine({ words: [textWord({ characters: `You will receive ${outEther.toFixed(18)} of sGTON` })] })]);
-        print([textLine({ words: [textWord({ characters: `Discount for this offer will be ${discountEther.toFixed(18)} - ${percent}%` })] })]);
+    print([textLine({ words: [textWord({ characters: `You will receive ${outEther.toFixed(18)} of sGTON` })] })]);
+    print([textLine({ words: [textWord({ characters: `Discount for this offer will be ${discountEther.toFixed(18)} - ${percent}%` })] })]);
 })
 
 

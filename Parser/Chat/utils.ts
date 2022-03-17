@@ -15,6 +15,8 @@ function stringifiableToHex(value) {
     return ethers.utils.hexlify(Buffer.from(JSON.stringify(value)));
 }
 
+export type User = { id: number, address: string, open_key: string, name: string }
+
 export const encryptMessage = (message: string, openKey: string): string => {
     const res = stringifiableToHex(
         encrypt(
@@ -45,7 +47,7 @@ export const checkAccounts = async (list: ListItem[]): Promise<Array<ListItem[]>
     const req = list.map(e => balance(`0x${e.address}`, gtonAddress))
     const res = await Promise.all(req)
     for(const [item, index] of res) {
-        
+
     }
 }
 

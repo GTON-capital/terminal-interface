@@ -3,6 +3,8 @@ import {
   textWord,
   anchorWord
 } from 'crt-terminal';
+import axios from 'axios';
+import Big from 'big.js';
 import connectMetamask from './WEB3/ConnectMetamask';
 import switchChain from './WEB3/Switch';
 import addToken from './WEB3/addTokenToMM';
@@ -13,6 +15,17 @@ import { fromWei } from './WEB3/API/balance';
 import tokenMap, { tokens } from './WEB3/API/addToken';
 import notFoundStrings from '../Errors/notfound-strings'
 
+enum ErrorCodes {
+  INVALID_ARGUMENT = "INVALID_ARGUMENT",
+  USER_DECLINED_TRANSACTION = 3,
+  NOT_ENOUGHT_FUNDS = -32000
+}
+
+const errorStrings = {
+  [ErrorCodes.INVALID_ARGUMENT]: "Please provide correct argument",
+  [ErrorCodes.USER_DECLINED_TRANSACTION]: "You have declined transaction",
+  [ErrorCodes.NOT_ENOUGHT_FUNDS]: "You don't have enough funds to proceed transaction",
+}
 
 export function timeConverter(UNIX_timestamp: number): string {
     const a = new Date(UNIX_timestamp * 1000);
@@ -37,11 +50,12 @@ export function createWorker(handler: (handlers, arg, state) => Promise<void>, e
       lock(false);
     }
     catch (err) {
-      console.log(err);
       let message
       if (!state[0]) {
         message = "First - connect the website by typing >join"
-      } else {
+      } else if (err.code in ErrorCodes) {
+        message = errorStrings[err.code];
+      } else{
         message = errMessage || err.message
       }
       print([textLine({ words: [textWord({ characters: message })] })]);
@@ -71,10 +85,10 @@ const SwitchWorker = createWorker(async ({ print }) => {
 const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {
   if (TokenName === "all") {
     const token = tokenMap.sgton
-    const balanceWei = await balance(userAddress, token.address)
+    const balanceWei = Big(await balance(userAddress, token.address))
     const shareWei = await userShare(userAddress)
 
-    const harvest = fromWei(balanceWei.minus(shareWei));
+    const harvest = fromWei(balanceWei.minus(shareWei).toFixed(18));
     const share = fromWei(shareWei)
     const gton = fromWei(await balance(userAddress, tokenMap.gton.address))
 
@@ -86,16 +100,17 @@ const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) =
 
   const token = TokenName === "harvest" ? tokenMap.sgton : tokenMap[TokenName]
   if (!token) throw Error("Available tokens are: gton, sgton, harvest");
-  const Balance = (await balance(userAddress, token.address));
+  const Balance = Big(await balance(userAddress, token.address));
+  
   let CoinBalance;
 
   if (TokenName === "harvest") {
     const share = await userShare(userAddress);
-    CoinBalance = fromWei(Balance.minus(share));
+    CoinBalance = fromWei(Balance.minus(share).toFixed(18));
   } else if (TokenName === "sgton") {
     CoinBalance = fromWei(await userShare(userAddress))
   } else {
-    CoinBalance = fromWei(Balance);
+    CoinBalance = fromWei(Balance.toFixed(18));
   }
   const res = messages.balance(CoinBalance.toFixed(18));
   print([textLine({ words: [textWord({ characters: res })] })]);
@@ -119,12 +134,23 @@ const FaucetWorker = createWorker(async ({ print }, token) => {
   print([textLine({ words: [textWord({ characters: messages.faucetDeposit })] })]);
 })
 
+
+const PriceWorker = createWorker(async ({ print }) => {
+    const urlPrice = "https://pw.gton.capital/rpc/base-to-usdc-price";
+
+    const result = await axios.get(urlPrice);
+    
+    print([textLine({words:[textWord({ characters: `$GTON price right now: ${result.data.result}` })]})]);
+}, "The request failed, please try again later.")
+
+
 const commonOperators = {
   faucet: FaucetWorker,
   add: AddTokenWorker,
   balance: BalanceWorker,
   switch: SwitchWorker,
-  join: ConnectMetamaskWorker
+  join: ConnectMetamaskWorker,
+  price: PriceWorker
 }
 
 export function printLink(print, text, link) {
@@ -141,7 +167,7 @@ export function parser(operands) {
     try {
       // Handle incorrect command
       if (!(Command in operands)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
-      operands[Command](queue.handlers, Arg.toLowerCase(), state);
+      operands[Command](queue.handlers, Arg, state);
     }
     catch (err) {
       print([textLine({ words: [textWord({ characters: err.message })] })]);

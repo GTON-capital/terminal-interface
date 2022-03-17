@@ -32,6 +32,29 @@ export const getBondingByBondId = async (id: string): Promise<string> => {
   return address;
 }
 
+export const separateBonds = async (ids: number[]): Promise<Array<string[]>> => {
+  const web3 = new Web3(window.ethereum);
+  const storage = new web3.eth.Contract(STORAGE as AbiItem[], storageAddress);
+  const contractsProm = ids.map(e => storage.methods.issuedBy(e).call())
+  const contracts = await Promise.all(contractsProm)
+  const isActiveArrayProm = ids.map((e, i) => {
+    const bonding = new web3.eth.Contract(BONDING as AbiItem[], contracts[i]);
+    const id = ids[i]
+    return bonding.methods.isActiveBond (id).call();
+  })
+  const isActiveArray = await Promise.all(isActiveArrayProm);
+  const active = [];
+  const claimed = [];
+  isActiveArray.forEach((e, i) => {
+    if(e) {
+      active.push(ids[i])
+    } else {
+      claimed.push(ids[i])
+    }
+  })
+  return [active, claimed]
+}
+
 interface BondInfo {
   isActive: boolean;
   issueTimestamp: number;

@@ -62,6 +62,7 @@ const commonCommands =
   ${Prefix.PREFIX}${Commands.HELP} - this output
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
   ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.PRICE} - get current gton price in USDC pool
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | usdc - add tokens to metamask
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`
 
@@ -99,7 +100,6 @@ const messages = {
   ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
   ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
-  ${Prefix.PREFIX}${Commands.PRICE} - get current gton price in USDC pool
   ${cdHelp}
   `,
   bondingHelpText: `
