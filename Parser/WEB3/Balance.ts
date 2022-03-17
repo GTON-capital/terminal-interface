@@ -10,9 +10,9 @@ import {
 
 declare const window: any;
 
-const balance = async (userAddress: string, gtonAddress: string): Promise<Big> => {
+const balance = async (userAddress: string, gtonAddress: string, rpc: any = window.ethereum): Promise<Big> => {
   await validate();
-  const web3 = new Web3(window.ethereum);
+  const web3 = new Web3(rpc);
   const contract = new web3.eth.Contract(ERC20_ABI as AbiItem[], gtonAddress);
   const userBalance: string = await contract.methods.balanceOf(userAddress).call()
   return Big(userBalance);

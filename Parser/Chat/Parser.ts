@@ -4,10 +4,17 @@ import {
 } from 'crt-terminal';
 import messages from '../../Messages/Messages';
 import { getOpenKey, signData, decryptMessage } from "../WEB3/chat/metamaskAPI"
-import { makeRequest, getWhitelist, encryptMessage, checkAccounts } from "./utils"
+import { makeRequest, getWhitelist, encryptMessage, checkAccounts, GTON_MINIMUM } from "./utils"
 import commonOperators, { parser, createWorker, timeConverter } from '../common';
+import balance from '../WEB3/Balance';
+import { fantomRpc, gtonAddress } from '../../config/config';
 // Func Router 
-
+async function validateBalance(address: string) {
+    const userBalance = await balance(address, gtonAddress, fantomRpc);
+    if(userBalance.lt(GTON_MINIMUM)) {
+        throw new Error("You don't have enought GTON on your balance")
+    }
+}
 enum Routes {
     Login = "register",
     Send = "send",
@@ -19,10 +26,31 @@ const helpWorker = ({ print }) => {
     print([textLine({ words: [textWord({ characters: messages.chatHelpText })] })]);
 }
 
-const sendWorker = createWorker(async ({ print }, msg, [userAddress]) => {
+enum SendArgs {
+    dm,
+    all
+}
+
+const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
+    await validateBalance(userAddress);
+    const type = args.split(" ")[0]
+    if(!(type in SendArgs)) {
+        throw Error("Invalid message type passed. Examples: \n - send dm User123 Hi bro \n - send all Hello to everyone!")
+    }
+    const slice = type === SendArgs.dm ? 2 : 1
+    const message = args.split(" ").slice(slice).join(" ").trim()
     const list = await getWhitelist();
-    const [whitelist, downgrade] = await checkAccounts(list);
-    const message = msg.trim();
+    let downgrade
+    let whitelist
+    if(type === SendArgs.dm) {
+        const username = args.split(" ")[1];
+        const i = list.findIndex(e => e.name.toLowerCase() === username.toLowerCase());
+        if(i < 0) throw new Error("User does not exists");
+        [whitelist, downgrade] = await checkAccounts([list[i]]);
+        if(whitelist.length === 0) throw new Error("User does not have enough gton to receive message");
+    } else {
+        [whitelist, downgrade] = await checkAccounts(list);
+    }
     const payload = whitelist.map(e => {
         const sign = encryptMessage(message, e.open_key);
         return {
@@ -34,6 +62,7 @@ const sendWorker = createWorker(async ({ print }, msg, [userAddress]) => {
     payload.forEach(e => {
         signPayload += e.to_address + e.payload
     })
+
     const convertedMsg = `0x${Buffer.from(signPayload, 'utf8').toString('hex')}`;
 
     const sign = await signData(convertedMsg, userAddress)
@@ -42,6 +71,7 @@ const sendWorker = createWorker(async ({ print }, msg, [userAddress]) => {
 })
 
 const loginWorker = createWorker(async ({ print }, args, [userAddress]) => {
+    await validateBalance(userAddress)
     const name = (args.split(" ")[0]).trim();
     const openKey = await getOpenKey(userAddress)
     const sign = await signData(openKey, userAddress)
@@ -71,7 +101,7 @@ const membersWorker = createWorker(async ({ print }) => {
     const list = (await getWhitelist());
     print([textLine({ words: [textWord({ characters: "Current addresses in chat: " })] })]);
     list.forEach((val) => {
-        print([textLine({ words: [textWord({ characters: `-  ${val.name} - ${val.address}` })] })]);
+        print([textLine({ words: [textWord({ characters: `-  ${val.name} - 0x${val.address}` })] })]);
     })
 }, "Something went wrong while fetching addresses")
 
