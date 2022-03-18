@@ -18,7 +18,10 @@ async function validateBalance(address: string) {
 enum Routes {
     Login = "register",
     Send = "send",
+    SendPrivate = "send_private",
     Get = "get",
+    GetPrivate = "get_private",
+    FromUser = "from_users",
     List = "whitelist"
 }
 
@@ -27,8 +30,8 @@ const helpWorker = ({ print }) => {
 }
 
 enum SendArgs {
-    dm,
-    all
+    dm = "dm",
+    all = "all"
 }
 
 const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
@@ -66,7 +69,11 @@ const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const convertedMsg = `0x${Buffer.from(signPayload, 'utf8').toString('hex')}`;
 
     const sign = await signData(convertedMsg, userAddress)
-    await makeRequest(Routes.Send, { downgrade, sign: sign.substring(2), payload })
+    if(type === SendArgs.dm) {
+        await makeRequest(Routes.SendPrivate, { sign: sign.substring(2), payload: payload[0] })
+    } else {
+        await makeRequest(Routes.Send, { downgrade, sign: sign.substring(2), payload })
+    }
     print([textLine({ words: [textWord({ characters: "Succesfully sent message" })] })]);
 })
 
@@ -80,8 +87,18 @@ const loginWorker = createWorker(async ({ print }, args, [userAddress]) => {
 }, "Something went wrong while registering")
 
 const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
-    const limit = Number(args);
-    const res = await makeRequest(Routes.Get, { address: userAddress.substring(2), limit })
+    const argArray = args.split(" ");
+    const [type, lim] = argArray
+    if(!(type in SendArgs)) {
+        throw Error("Invalid message type passed. Examples: \n - send dm User123 Hi bro \n - send all Hello to everyone!")
+    }
+    const limit = Number(lim);
+    let res
+    if(type === SendArgs.dm) {
+        res = await makeRequest(Routes.GetPrivate, { address: userAddress.substring(2), limit })
+    } else {
+        res = await makeRequest(Routes.Get, { address: userAddress.substring(2), limit })
+    }
     if (res.length > 0) {
         print([textLine({ words: [textWord({ characters: `Last ${limit} messages:` })] })]);
         res.map(async (val) => {
