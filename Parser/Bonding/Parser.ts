@@ -29,11 +29,11 @@ const validateAmount = (amount: any) => {
 function validateArgs([token, type]: string[]) {
     const tokens = Object.keys(BondTokens)
     if (!(tokens.includes(token))) {
-        throw new Error("Incorrect token name, avalable: " + tokens.toString())
+        throw new Error(`Incorrect token name, avalable: ${tokens.toString()}` )
     }
     const types = Object.keys(BondTypes)
     if (!(types.includes(type))) {
-        throw new Error("Incorrect bond type, avalable: " + types.toString())
+        throw new Error(`Incorrect bond type, avalable: ${types.toString()}`)
     }
     if (token === BondTokens.usdc) {
         throw new Error("Only FTM bonding is available for now, USDC coming soon")

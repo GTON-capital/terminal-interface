@@ -25,7 +25,7 @@ const Projects =
   Chat: "chat"
 }
 
-let CurrentDirectory = Projects.Bonding;
+let CurrentDirectory = Projects.Chat;
 
 export default function Web() {
 

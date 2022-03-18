@@ -126,9 +126,15 @@ const bondingContracts = {
     [BondTypes.quarter]: "0x0d479c7a1099f59D9489cae9E452498A736A3221",
   }
 }
+
+const fantomRpc = 'https://rpc.testnet.fantom.network/'
+const testnetFantomRpc = 'https://rpc.testnet.fantom.network/'
+
 export {
   BondTokens,
   BondTypes,
+  fantomRpc,
+  testnetFantomRpc,
   tokenAddresses,
   WFTMAddress,
   GTONAddress,

@@ -2,16 +2,20 @@ import {
     encrypt,
 } from 'eth-sig-util';
 import { ethers } from "ethers";
+import { gtonAddress } from '../../config/config';
+import { toWei } from '../WEB3/API/balance';
+import balance from '../WEB3/Balance';
 
+export const GTON_THERSHOLD = toWei(1)
 export const messengerUrl = "https://mailbox.cli.gton.capital/api/mailbox/"
 const headers = {
     "Content-type": "application/json"
 }
+export type ListItem = { id: number, address: string, open_key: string, name: string }
+
 function stringifiableToHex(value) {
     return ethers.utils.hexlify(Buffer.from(JSON.stringify(value)));
 }
-
-export type User = { id: number, address: string, open_key: string, name: string }
 
 export const encryptMessage = (message: string, openKey: string): string => {
     const res = stringifiableToHex(
@@ -34,8 +38,23 @@ export const makeRequest = async (route: string, body: Record<string, any>) => {
     return resBody
 }
 
-export const getWhitelist = async (): Promise<User[]> => {
+export const getWhitelist = async (): Promise<ListItem[]> => {
     const res = await makeRequest("whitelist", {});
     return res;
+}
+
+export const checkAccounts = async (list: ListItem[]): Promise<Array<ListItem[] | string[]>> => {
+    const req = list.map(e => balance(`0x${e.address}`, gtonAddress))
+    const res = await Promise.all(req)
+    const downgrade = []
+    const whitelist = []
+    res.forEach((item, index) => {
+        if (item.gte(GTON_THERSHOLD)) {
+            whitelist.push(list[index])
+        } else {
+            downgrade.push(list[index].address)
+        }
+    })
+    return [whitelist, downgrade];
 }
 
