@@ -4,24 +4,22 @@ import {
 } from 'crt-terminal';
 import messages from '../../Messages/Messages';
 import { getOpenKey, signData, decryptMessage } from "../WEB3/chat/metamaskAPI"
-import { makeRequest, getWhitelist, encryptMessage, checkAccounts, GTON_MINIMUM, ListItem } from "./utils"
+import { makeRequest, getWhitelist, encryptMessage, checkAccounts, GTON_THERSHOLD, ListItem } from "./utils"
 import commonOperators, { parser, createWorker, timeConverter } from '../common';
 import balance from '../WEB3/Balance';
 import { fantomRpc, gtonAddress } from '../../config/config';
 // Func Router 
 async function validateBalance(address: string) {
     const userBalance = await balance(address, gtonAddress, fantomRpc);
-    if(userBalance.lt(GTON_MINIMUM)) {
+    if (userBalance.lt(GTON_THERSHOLD)) {
         throw new Error("You don't have enought GTON on your balance")
     }
 }
 
 function getUserByUsername(list: ListItem[], username: string): ListItem {
     const i = list.findIndex(e => e.name.toLowerCase() === username.toLowerCase())
-    console.log(list);
-    console.log(username);
-    
-    if(i < 0) throw new Error("User does not exists");
+
+    if (i < 0) throw new Error("User does not exists");
     return list[i]
 }
 
@@ -47,7 +45,7 @@ enum SendArgs {
 const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
     await validateBalance(userAddress);
     const type = args.split(" ")[0]
-    if(!(type in SendArgs)) {
+    if (!(type in SendArgs)) {
         throw Error("Invalid message type passed. Examples: \n - send dm User123 Hi bro \n - send all Hello to everyone!")
     }
     const slice = type === SendArgs.dm ? 2 : 1
@@ -55,11 +53,11 @@ const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const list = await getWhitelist();
     let downgrade
     let whitelist
-    if(type === SendArgs.dm) {
+    if (type === SendArgs.dm) {
         const username = args.split(" ")[1];
         const user = getUserByUsername(list, username);
         [whitelist, downgrade] = await checkAccounts([user]);
-        if(whitelist.length === 0) throw new Error("User does not have enough gton to receive message");
+        if (whitelist.length === 0) throw new Error("User does not have enough gton to receive message");
     } else {
         [whitelist, downgrade] = await checkAccounts(list);
     }
@@ -78,7 +76,7 @@ const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const convertedMsg = `0x${Buffer.from(signPayload, 'utf8').toString('hex')}`;
 
     const sign = await signData(convertedMsg, userAddress)
-    if(type === SendArgs.dm) {
+    if (type === SendArgs.dm) {
         await makeRequest(Routes.SendPrivate, { sign: sign.substring(2), payload: payload[0] })
     } else {
         await makeRequest(Routes.Send, { downgrade, sign: sign.substring(2), payload })
@@ -98,12 +96,12 @@ const loginWorker = createWorker(async ({ print }, args, [userAddress]) => {
 const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const argArray = args.split(" ");
     const [type, lim] = argArray
-    if(!(type in SendArgs)) {   
+    if (!(type in SendArgs)) {
         throw Error("Invalid message type passed. Examples: \n - send dm User123 Hi bro \n - send all Hello to everyone!")
     }
     const limit = Number(lim);
     let res
-    if(type === SendArgs.dm) {
+    if (type === SendArgs.dm) {
         const list = await getWhitelist();
         const username = argArray[2];
         const user = getUserByUsername(list, username);
