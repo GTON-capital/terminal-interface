@@ -118,7 +118,7 @@ const messages = {
   Available commands:
   ${commonCommands}
   ${Prefix.PREFIX}${ChatCommands.Login} <name> - logs in connected account, provide your <name>
-  ${Prefix.PREFIX}${ChatCommands.Load} all <amount> - load and print last <amount> messages in all chat
+  ${Prefix.PREFIX}${ChatCommands.Load} all <amount> - load and print last <amount> messages in angels' chat
   ${Prefix.PREFIX}${ChatCommands.Load} dm <amount> <username> - load and print last received <amount> messages from <user>
   ${Prefix.PREFIX}${ChatCommands.Send} all <message> - sends message to all in the chat
   ${Prefix.PREFIX}${ChatCommands.Send} dm <username> <message> - sends message to the user with specified name
