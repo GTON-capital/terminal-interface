@@ -23,6 +23,13 @@ function getUserByUsername(list: ListItem[], username: string): ListItem {
     return list[i]
 }
 
+function getUserByAddress(list: ListItem[], address: string): ListItem {
+    const i = list.findIndex(e => e.address.toLowerCase() === address.substring(2).toLowerCase())
+    if (i < 0) throw new Error("You are not whitelisted. Login first");
+
+    return list[i]
+}
+
 enum Routes {
     Login = "register",
     Send = "send",
@@ -55,8 +62,9 @@ const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
     let whitelist
     if (type === SendArgs.dm) {
         const username = args.split(" ")[1];
-        const user = getUserByUsername(list, username);
-        [whitelist, downgrade] = await checkAccounts([user]);
+        const receiver = getUserByUsername(list, username);
+        const sender = getUserByAddress(list, userAddress);
+        [whitelist, downgrade] = await checkAccounts([receiver, sender]);
         if (whitelist.length === 0) throw new Error("User does not have enough gton to receive message");
     } else {
         [whitelist, downgrade] = await checkAccounts(list);
@@ -76,11 +84,7 @@ const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const convertedMsg = `0x${Buffer.from(signPayload, 'utf8').toString('hex')}`;
 
     const sign = await signData(convertedMsg, userAddress)
-    if (type === SendArgs.dm) {
-        await makeRequest(Routes.SendPrivate, { sign: sign.substring(2), payload: payload[0] })
-    } else {
-        await makeRequest(Routes.Send, { downgrade, sign: sign.substring(2), payload })
-    }
+    await makeRequest(Routes.Send, { downgrade, sign: sign.substring(2), chat_name: type === SendArgs.dm ? "private" : "angels", payload })
     print([textLine({ words: [textWord({ characters: "Succesfully sent message" })] })]);
 })
 
@@ -105,9 +109,9 @@ const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
         const list = await getWhitelist();
         const username = argArray[2];
         const user = getUserByUsername(list, username);
-        res = await makeRequest(Routes.GetPrivate, { address_to: userAddress.substring(2), address_from: user.address, limit })
+        res = await makeRequest(Routes.Get, { address: userAddress.substring(2), chat_name: "private", address_from: user.address, limit })
     } else {
-        res = await makeRequest(Routes.Get, { address: userAddress.substring(2), limit })
+        res = await makeRequest(Routes.Get, { address: userAddress.substring(2), limit, chat_name: "angels", })
     }
     if (res.length > 0) {
         print([textLine({ words: [textWord({ characters: `Last ${limit} messages:` })] })]);
