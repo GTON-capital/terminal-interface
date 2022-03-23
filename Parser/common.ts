@@ -73,7 +73,7 @@ export async function connect(state) {
 
 const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
   const address = await connect(state)
-  print([textLine({ words: [textWord({ characters: `Connected succefuly: ${address}` })] })]);
+  print([textLine({ words: [textWord({ characters: `Connected successfuly: ${address}` })] })]);
 
 }, "Error while connecting metamask, please try again")
 
