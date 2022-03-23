@@ -67,7 +67,8 @@ const bondingContracts = {
   }
 }
 
-const fantomRpc = 'https://rpc.testnet.fantom.network/'
+const fantomRpc = 'https://rpc.fantom.network/'
+const gtonMainnetAddress = "0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4"
 const testnetFantomRpc = 'https://rpc.testnet.fantom.network/'
 
 export {
@@ -97,4 +98,5 @@ export {
   usdcAddress,
   isDev,
   isLive,
+  gtonMainnetAddress
 };

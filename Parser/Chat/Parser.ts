@@ -7,10 +7,10 @@ import { getOpenKey, signData, decryptMessage } from "../WEB3/chat/metamaskAPI"
 import { makeRequest, getWhitelist, encryptMessage, checkAccounts, GTON_THERSHOLD, ListItem } from "./utils"
 import commonOperators, { parser, createWorker, timeConverter } from '../common';
 import balance from '../WEB3/Balance';
-import { fantomRpc, gtonAddress } from '../../config/config';
+import { fantomRpc, gtonMainnetAddress } from '../../config/config';
 // Func Router 
 async function validateBalance(address: string) {
-    const userBalance = await balance(address, gtonAddress, fantomRpc);
+    const userBalance = await balance(address, gtonMainnetAddress, fantomRpc);
     if (userBalance.lt(GTON_THERSHOLD)) {
         throw new Error("You don't have enought GTON on your balance")
     }
