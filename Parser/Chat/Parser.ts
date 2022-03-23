@@ -30,6 +30,10 @@ function getUserByAddress(list: ListItem[], address: string): ListItem {
     return list[i]
 }
 
+function generatePrivateChat(first: string, second: string): string {
+    return first > second ? first + second : second + first;
+}
+
 enum Routes {
     Login = "register",
     Send = "send",
@@ -60,10 +64,12 @@ const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const list = await getWhitelist();
     let downgrade
     let whitelist
+    let chatName = "angels"
     if (type === SendArgs.dm) {
         const username = args.split(" ")[1];
         const receiver = getUserByUsername(list, username);
         const sender = getUserByAddress(list, userAddress);
+        chatName = generatePrivateChat(sender.address, receiver.address);
         [whitelist, downgrade] = await checkAccounts([receiver, sender]);
         if (whitelist.length === 0) throw new Error("User does not have enough gton to receive message");
     } else {
@@ -84,7 +90,7 @@ const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const convertedMsg = `0x${Buffer.from(signPayload, 'utf8').toString('hex')}`;
 
     const sign = await signData(convertedMsg, userAddress)
-    await makeRequest(Routes.Send, { downgrade, sign: sign.substring(2), chat_name: type === SendArgs.dm ? "private" : "angels", payload })
+    await makeRequest(Routes.Send, { downgrade, sign: sign.substring(2), chat_name: chatName, payload })
     print([textLine({ words: [textWord({ characters: "Succesfully sent message" })] })]);
 })
 
@@ -95,7 +101,7 @@ const loginWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const sign = await signData(openKey, userAddress)
     await makeRequest(Routes.Login, { open_key: openKey, sign: sign.substring(2), name })
     print([textLine({ words: [textWord({ characters: "Succesfully logged in" })] })]);
-}, "Something went wrong while registering")
+})
 
 const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const argArray = args.split(" ");
@@ -104,12 +110,16 @@ const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
         throw Error("Invalid message type passed. Examples: \n - send dm User123 Hi bro \n - send all Hello to everyone!")
     }
     const limit = Number(lim);
+    if(!limit) {
+        throw Error("Please specify the amount")
+    }
     let res
     if (type === SendArgs.dm) {
         const list = await getWhitelist();
         const username = argArray[2];
         const user = getUserByUsername(list, username);
-        res = await makeRequest(Routes.Get, { address: userAddress.substring(2), chat_name: "private", address_from: user.address, limit })
+        const chatName = generatePrivateChat(userAddress.substring(2), user.address);
+        res = await makeRequest(Routes.Get, { address: userAddress.substring(2), chat_name: chatName, address_from: user.address, limit })
     } else {
         res = await makeRequest(Routes.Get, { address: userAddress.substring(2), limit, chat_name: "angels", })
     }
