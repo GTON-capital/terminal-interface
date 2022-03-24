@@ -2,7 +2,7 @@ import {
     encrypt,
 } from 'eth-sig-util';
 import { ethers } from "ethers";
-import { gtonAddress } from '../../config/config';
+import { gtonMainnetAddress, fantomRpc } from '../../config/config';
 import { toWei } from '../WEB3/API/balance';
 import balance from '../WEB3/Balance';
 
@@ -44,7 +44,7 @@ export const getWhitelist = async (): Promise<ListItem[]> => {
 }
 
 export const checkAccounts = async (list: ListItem[]): Promise<Array<ListItem[] | string[]>> => {
-    const req = list.map(e => balance(`0x${e.address}`, gtonAddress))
+    const req = list.map(e => balance(`0x${e.address}`, gtonMainnetAddress, fantomRpc))
     const res = await Promise.all(req)
     const downgrade = []
     const whitelist = []
