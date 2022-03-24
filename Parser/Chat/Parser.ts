@@ -31,7 +31,8 @@ function getUserByAddress(list: ListItem[], address: string): ListItem {
 }
 
 function generatePrivateChat(first: string, second: string): string {
-    return first > second ? first + second : second + first;
+    console.log(first.toLowerCase() > second.toLowerCase() ? first + second : second + first);
+    return first.toLowerCase() > second.toLowerCase() ? first + second : second + first;
 }
 
 enum Routes {
@@ -114,14 +115,15 @@ const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
         throw Error("Please specify the amount")
     }
     let res
+    const sender = userAddress.substring(2).toLowerCase()
     if (type === SendArgs.dm) {
         const list = await getWhitelist();
         const username = argArray[2];
-        const user = getUserByUsername(list, username);
-        const chatName = generatePrivateChat(userAddress.substring(2), user.address);
-        res = await makeRequest(Routes.Get, { address: userAddress.substring(2), chat_name: chatName, address_from: user.address, limit })
+        const receiver = getUserByUsername(list, username);
+        const chatName = generatePrivateChat(sender, receiver.address);
+        res = await makeRequest(Routes.Get, { address: sender, chat_name: chatName, address_from: receiver.address, limit })
     } else {
-        res = await makeRequest(Routes.Get, { address: userAddress.substring(2), limit, chat_name: "angels", })
+        res = await makeRequest(Routes.Get, { address: sender, limit, chat_name: "angels", })
     }
     if (res.length > 0) {
         print([textLine({ words: [textWord({ characters: `Last ${limit} messages:` })] })]);
