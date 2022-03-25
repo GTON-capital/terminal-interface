@@ -5,7 +5,7 @@ import {
 import messages from '../../Messages/Messages';
 import { getOpenKey, signData, decryptMessage } from "../WEB3/chat/metamaskAPI"
 import { makeRequest, getWhitelist, encryptMessage, checkAccounts, GTON_THERSHOLD, ListItem } from "./utils"
-import commonOperators, { parser, createWorker, timeConverter } from '../common';
+import commonOperators, { parser, createWorker, timeConverter, printLink } from '../common';
 import balance from '../WEB3/Balance';
 import { fantomRpc, gtonMainnetAddress } from '../../config/config';
 // Func Router 
@@ -16,8 +16,10 @@ async function validateBalance(address: string) {
     }
 }
 
-function getUserByUsername(list: ListItem[], username: string): ListItem {
-    const i = list.findIndex(e => e.name.toLowerCase() === username.toLowerCase())
+function getUserByArg(list: ListItem[], arg: string): ListItem {
+    const lowerArg = arg.toLowerCase()
+    const i = list.findIndex(e => e.name.toLowerCase() === lowerArg
+         || e.address.toLowerCase() === lowerArg.substring(2))
 
     if (i < 0) throw new Error("User does not exists");
     return list[i]
@@ -31,7 +33,6 @@ function getUserByAddress(list: ListItem[], address: string): ListItem {
 }
 
 function generatePrivateChat(first: string, second: string): string {
-    console.log(first.toLowerCase() > second.toLowerCase() ? first + second : second + first);
     return first.toLowerCase() > second.toLowerCase() ? first + second : second + first;
 }
 
@@ -47,6 +48,14 @@ enum Routes {
 
 const helpWorker = ({ print }) => {
     print([textLine({ words: [textWord({ characters: messages.chatHelpText })] })]);
+}
+
+const angelWorker = ({ print }) => {
+    print([textLine({ words: [textWord({ characters: `To participate in angel program complete the steps below
+    1. Register in cli chat via command ‘login <name>’
+    2. Fill the form on the link below
+    3.  Chech for your invitation via command ‘load dm 1000 gton_angels’ you will receive it if you are a valid candidate to a program` })] })]);
+    printLink(print, "Form", " https://3dgmrit6mlr.typeform.com/to/T8WQmpx1 ")
 }
 
 enum SendArgs {
@@ -67,8 +76,8 @@ const sendWorker = createWorker(async ({ print }, args, [userAddress]) => {
     let whitelist
     let chatName = "angels"
     if (type === SendArgs.dm) {
-        const username = args.split(" ")[1];
-        const receiver = getUserByUsername(list, username);
+        const arg = args.split(" ")[1];
+        const receiver = getUserByArg(list, arg);
         const sender = getUserByAddress(list, userAddress);
         chatName = generatePrivateChat(sender.address, receiver.address);
         [whitelist, downgrade] = await checkAccounts([receiver, sender]);
@@ -118,8 +127,8 @@ const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const sender = userAddress.substring(2).toLowerCase()
     if (type === SendArgs.dm) {
         const list = await getWhitelist();
-        const username = argArray[2];
-        const receiver = getUserByUsername(list, username);
+        const arg = argArray[2];
+        const receiver = getUserByArg(list, arg);
         const chatName = generatePrivateChat(sender, receiver.address);
         res = await makeRequest(Routes.Get, { address: sender, chat_name: chatName, address_from: receiver.address, limit })
     } else {
@@ -131,7 +140,7 @@ const loadWorker = createWorker(async ({ print }, args, [userAddress]) => {
             const message = await decryptMessage(val.payload, userAddress);
             const date = timeConverter(val.ts)
             print([textLine({ words: [textWord({ characters: `Date - ${date}` })] })]);
-            print([textLine({ words: [textWord({ characters: `Sender -  ${val.name} (Address - ${val.from_address})` })] })]);
+            print([textLine({ words: [textWord({ characters: `Sender -  ${val.name} (Address - 0x${val.from_address})` })] })]);
             print([textLine({ words: [textWord({ characters: `Message -   ${message}` })] })]);
             print([textLine({ words: [textWord({ characters: "--------------------------------------------" })] })]);
         })
@@ -152,6 +161,7 @@ const membersWorker = createWorker(async ({ print }) => {
 const ChatMap =
 {
     help: helpWorker,
+    angels: angelWorker,
     login: loginWorker,
     send: sendWorker,
     load: loadWorker,
