@@ -30,7 +30,8 @@ enum ChatCommands {
   Send = "send",
   Load = "load",
   Login = "login",
-  Members = "members"
+  Members = "members",
+  Angels = "angels"
 }
 
 enum OptionalActions {
@@ -119,10 +120,11 @@ const messages = {
   ${commonCommands}
   ${Prefix.PREFIX}${ChatCommands.Login} <name> - logs in connected account, provide your <name>
   ${Prefix.PREFIX}${ChatCommands.Load} all <amount> - load and print last <amount> messages in angels' chat
-  ${Prefix.PREFIX}${ChatCommands.Load} dm <amount> <username> - load and print last received <amount> messages from <user>
+  ${Prefix.PREFIX}${ChatCommands.Load} dm <amount> <username or address> - load and print last received <amount> messages from <user>
   ${Prefix.PREFIX}${ChatCommands.Send} all <message> - sends message to all in the chat
-  ${Prefix.PREFIX}${ChatCommands.Send} dm <username> <message> - sends message to the user with specified name
+  ${Prefix.PREFIX}${ChatCommands.Send} dm <username or address> <message> - sends message to the user with specified name
   ${Prefix.PREFIX}${ChatCommands.Members} - prints addresses that are registered in the chat
+  ${Prefix.PREFIX}${ChatCommands.Angels} - prints info about angels program
   
   ${cdHelp}
   `,
