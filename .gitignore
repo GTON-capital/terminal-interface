@@ -1,5 +1,6 @@
 /node_modules
 /.next
 package-lock.json
+yarn.lock
 .vscode/settings.json
 .DS_Store
