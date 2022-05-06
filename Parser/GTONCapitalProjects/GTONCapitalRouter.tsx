@@ -1,6 +1,7 @@
 import {
   textLine,
   textWord,
+  anchorWord,
 } from 'crt-terminal';
 import Big from 'big.js';
 import Web3 from 'web3';
@@ -16,7 +17,7 @@ import {
 } from '../../config/config';
 import commonOperators, { printLink } from "../common";
 import notFoundStrings from '../../Errors/notfound-strings'
-import { stake, unstake } from '../WEB3/Stake';
+import { stake, unstake, claim } from '../WEB3/Stake';
 import { harvest } from '../WEB3/harvest';
 import balance, { userShare } from '../WEB3/Balance';
 import { toWei } from '../WEB3/API/balance';
@@ -24,6 +25,8 @@ import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import buy from '../WEB3/buyGTON';
 import erc20 from '../WEB3/ABI/erc20.json';
+
+declare const window: any;
 
 enum ErrorCodes {
   INVALID_ARGUMENT = "INVALID_ARGUMENT",
@@ -50,6 +53,8 @@ const HelpWorker = ({ print }) => {
 }
 
 const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
+  print([textLine({words:[textWord({ characters: "Temporarily disabled." })]})]);
+  return
   try {
     lock(true);
     loading(true);
@@ -99,6 +104,8 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
 }
 
 const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
+  print([textLine({words:[textWord({ characters: "Temporarily disabled." })]})]);
+  return
   try {
     if (Amount === 0) throw new Error('You cant unstake less than 0 $GTON');
     lock(true);
@@ -138,6 +145,8 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
 }
 
 const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
+  print([textLine({words:[textWord({ characters: "Temporarily disabled." })]})]);
+  return
   try {
     lock(true);
     loading(true);
@@ -175,6 +184,37 @@ const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
     else {
       print([textLine({ words: [textWord({ characters: err.message })] })]);
     }
+    loading(false);
+    lock(false);
+  }
+}
+
+const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress]) => 
+{
+  try
+  {
+    lock(true);
+    loading(true);
+
+    const secondTxn = await claim();
+
+    print([textLine({words:[textWord({ characters: messages.claim })]})]);
+    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
+  
+    loading(false);
+    lock(false);
+  }
+  catch(err)
+  {
+    if (err.code in ErrorCodes)
+    {
+      ErrorHandler(print, err.code, "stake");
+    }
+    else
+    {
+      print([textLine({words:[textWord({ characters: err.message })]})]);
+    }
+    
     loading(false);
     lock(false);
   }
@@ -257,6 +297,7 @@ const Commands =
     "faucet",
     "harvest",
     "buy",
+    "claim",
   ]
 
 const GTONRouterMap =
@@ -266,6 +307,7 @@ const GTONRouterMap =
   "unstake": UnStakeWorker,
   "harvest": HarvestWorker,
   "buy": BuyWorker,
+  "claim": ClaimPostAuditWorker,
   ...commonOperators
 }
 
@@ -298,5 +340,5 @@ async function Parse(eventQueue, state, command) {
   }
 }
 
-export { HarvestWorker, UnStakeWorker, StakeWorker, GTONRouterMap }
+export { GTONRouterMap }
 export default Parse;
