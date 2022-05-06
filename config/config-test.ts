@@ -13,6 +13,8 @@ const FTMGTONSwapPath = ['0xD0011dE099E514c2094a510dd0109F91bf8791Fa', '0xc4d0a7
 
 const usdcAddress = "0xA2DCeFfc29003101b4bca24134dd1437106A7f81";
 const stakingAddress = '0x314650ac2876c6B6f354499362Df8B4DC95E4750';
+const claimAddress = '0xB48327cC1804A0DCf2F85A09e0fBBB5e4d8f4830';
+
 const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
 const gtonAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
 const fantomNet = 
@@ -93,6 +95,7 @@ export {
   fantomTestnet,
   stakingAddress,
   storageAddress,
+  claimAddress,
   faucetAddress,
   gtonAddress,
   usdcAddress,

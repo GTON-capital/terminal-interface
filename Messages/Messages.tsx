@@ -13,6 +13,7 @@ enum Commands
     FAUCET = "faucet",
     HARVEST = "harvest",
     BUY = "buy",
+    CLAIM = "claim",
     PRICE = "price",
 }
 
@@ -95,12 +96,13 @@ const messages = {
 
   stakingHelpText: `
   Available commands:
-  ${commonCommands}
-  ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
-  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
-  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
+  ${Prefix.PREFIX}${Commands.CLAIM} - claim gton and harvest reward from paused staking contract
+  [DISABLED] ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
+  [DISABLED] ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
+  [DISABLED] ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
   ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
+  ${commonCommands}
   ${cdHelp}
   `,
   bondingHelpText: `
@@ -152,6 +154,11 @@ const messages = {
   approve: `
       You have succesfully approved your funds!
       Transaction approve: 
+    `
+  ,
+  claim: `
+      You have succesfully claimed your funds!
+      Transaction hash: 
     `
   ,
   stake(type: string, amount: string) {
