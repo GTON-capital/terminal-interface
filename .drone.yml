@@ -14,9 +14,9 @@ pipeline:
       from_secret: ssh_port
     script:
       - cd /var/www/terminal-interface
-      - ls
       - npm install
       - whoami
+      - ll
 
     when:
       branch:
