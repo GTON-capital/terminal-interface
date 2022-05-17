@@ -16,7 +16,7 @@ pipeline:
       - cd /var/www/terminal-interface
       - npm install
       - whoami
-      - ll
+      - ls
 
     when:
       branch:
