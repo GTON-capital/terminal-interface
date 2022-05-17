@@ -15,7 +15,7 @@ pipeline:
     script:
       - cd /var/www/terminal-interface
       - node --version
-      - whoami
+      - npm i
       - git pull
 
     when:
