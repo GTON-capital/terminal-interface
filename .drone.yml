@@ -17,6 +17,7 @@ pipeline:
       - node --version
       - whoami
       - ls
+      - npm -v
       - npm install
 
     when:
