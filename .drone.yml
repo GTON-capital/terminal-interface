@@ -14,9 +14,11 @@ pipeline:
       from_secret: ssh_port
     script:
       - cd /var/www/terminal-interface
-      - npm install
+      - node --version
       - whoami
       - ls
+      - npm -v
+      - npm install
 
     when:
       branch:
@@ -24,5 +26,4 @@ pipeline:
 
 trigger:
   branch:
-    - develop
     - drone-integrate
