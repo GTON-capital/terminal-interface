@@ -13,11 +13,7 @@ pipeline:
     port:
       from_secret: ssh_port
     script:
-      - cd /var/www/terminal-interface
-      - node --version
-      - npm i
-      - git pull
-
+      - cd /var/www/terminal-interface && bash ./.drone/deploy.sh
     when:
       branch:
         - drone-integrate
