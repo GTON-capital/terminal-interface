@@ -16,7 +16,7 @@ pipeline:
       - cd /var/www/terminal-interface
       - node --version
       - whoami
-      - ls
+      - git pull
 
     when:
       branch:
