@@ -13,7 +13,9 @@ pipeline:
     port:
       from_secret: ssh_port
     script:
-      - cd /var/www/terminal-interface && bash deploy.sh
+      - cd /var/www/terminal-interface
+      - npm i 
+      - npm run dev
 
     when:
       branch:
