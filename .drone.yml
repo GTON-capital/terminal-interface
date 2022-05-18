@@ -23,10 +23,12 @@ pipeline:
     script:
       #  - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
       - cd /var/www/terminal-interface
+        - ls
+        - git remote -v
 #       - git clean -fd
 #       - git reset --hard
 #       - git pull
-      - npm install
+        - npm install
 #       - npm run build
 #       - npm run start
     when:
