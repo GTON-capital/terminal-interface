@@ -6,4 +6,5 @@ git clean -fd
 git reset --hard
 git pull
 npm i
-npm run dev
+npm run build
+npm run start
