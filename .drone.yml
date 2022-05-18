@@ -12,7 +12,7 @@ pipeline:
       event:
         - pull_request
   deployment:
-    image: 12pavelshttp/cli-image
+    image: appleboy/drone-ssh
     host: test.cli.gton.capital
     settings:
       username: root
