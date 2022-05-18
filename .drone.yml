@@ -26,7 +26,8 @@ pipeline:
 #       - git clean -fd
 #       - git reset --hard
 #       - git pull
-      - npm i
+      - node --version
+      - npm install
       # - npm run dev
     when:
       branch:
