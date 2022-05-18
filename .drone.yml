@@ -3,6 +3,14 @@ type: docker
 name: terminal-interface
 
 pipeline:
+  run-test:
+    image: node
+    commands:
+      - node --version
+      - nvm --version
+    when:
+      event:
+        - pull_request
   deployment:
     image: appleboy/drone-ssh
     host: test.cli.gton.capital
@@ -17,6 +25,8 @@ pipeline:
     when:
       branch:
         - drone-integrate
+      event:
+        - push
 
 trigger:
   branch:
