@@ -34,9 +34,8 @@ pipeline:
     when:
       branch:
         - drone-integrate
-      event:
-        - push
-# .
+#       event:
+#         - push
 trigger:
   branch:
     - drone-integrate
