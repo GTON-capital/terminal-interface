@@ -9,3 +9,6 @@ export NVM_DIR=~/.nvm
 source ~/.nvm/nvm.sh
 npm i
 npm run dev
+
+
+
