@@ -27,7 +27,8 @@ pipeline:
       - git reset --hard
       - git pull origin drone-integrate
       - npm i
-      - npm run dev
+      - npm run build
+      - npm run generate
     when:
       branch:
         - drone-integrate
