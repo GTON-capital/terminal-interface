@@ -24,7 +24,7 @@ pipeline:
       #  - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
       - cd /var/www/terminal-interface
         - ls
-        - git remote -v
+        - git remote
 #       - git clean -fd
 #       - git reset --hard
 #       - git pull
