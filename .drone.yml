@@ -23,6 +23,7 @@ pipeline:
     # script:
     # - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
     commands:
+      - cd /var/www/terminal-interface
       - git pull
       - npm i
     when:
