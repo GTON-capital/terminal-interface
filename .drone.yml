@@ -26,6 +26,7 @@ pipeline:
       - git clean -fd
       - git reset --hard
       - git pull
+      - nvm use 14.18.1
       - npm i
       # - npm run dev
     when:
