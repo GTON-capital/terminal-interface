@@ -10,7 +10,6 @@ set -e
 # npm i
 # npm run dev
 
-
 git clean -fd
 git reset --hard
 git pull
