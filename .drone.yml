@@ -21,22 +21,15 @@ pipeline:
     port:
       from_secret: ssh_port
     script:
-#     - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
-      - cd /var/www/terminal-interface
-      - git clean -fd
-      - git reset --hard
-      - git pull
-      - nvm use 14.18.1
-      - npm i
-      # - npm run dev
+     - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
+
     when:
       branch:
         - drone-integrate
-      # event:
-      #   - push
+      event:
+        - push
 
 trigger:
   branch:
     - drone-integrate
 
-# comment
