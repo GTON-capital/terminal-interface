@@ -27,7 +27,7 @@ pipeline:
         - drone-integrate
       event:
         - push
-
+# .
 trigger:
   branch:
     - drone-integrate
