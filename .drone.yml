@@ -23,7 +23,11 @@ pipeline:
     script:
 #     - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
       - cd /var/www/terminal-interface
+      - git clean -fd
+      - git reset --hard
       - git pull
+      - npm i
+      - npm run dev
     when:
       branch:
         - drone-integrate
