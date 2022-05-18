@@ -21,12 +21,14 @@ pipeline:
     port:
       from_secret: ssh_port
     script:
-      - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
+#     - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
+      - cd /var/www/terminal-interface
+      - git pull
     when:
       branch:
         - drone-integrate
-      event:
-        - push
+      # event:
+      #   - push
 
 trigger:
   branch:
