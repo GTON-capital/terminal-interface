@@ -25,7 +25,7 @@ pipeline:
     commands:
       - git clean -fd
       - git reset --hard
-      - git pull
+      - git pull origin drone-integrate
       - npm i
       - npm run dev
     when:
