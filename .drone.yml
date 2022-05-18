@@ -12,7 +12,7 @@ pipeline:
       event:
         - pull_request
   deployment:
-    image: appleboy/drone-ssh
+    image: node
     host: test.cli.gton.capital
     settings:
       username: root
@@ -21,8 +21,7 @@ pipeline:
     port:
       from_secret: ssh_port
     script:
-     - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
-
+    - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
     when:
       branch:
         - drone-integrate
@@ -32,4 +31,3 @@ pipeline:
 trigger:
   branch:
     - drone-integrate
-
