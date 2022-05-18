@@ -12,23 +12,16 @@ pipeline:
       event:
         - pull_request
   deployment:
-    image: node
-    # host: test.cli.gton.capital
-    # settings:
-    #   username: root
-    # key:
-    #   from_secret: ssh_key
-    # port:
-    #   from_secret: ssh_port
-    # script:
-    # - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
-    commands:
-      - git clean -fd
-      - git reset --hard
-      - git pull origin drone-integrate
-      - npm i
-      - npm run build
-      - npm run generate
+    image: 12pavelshttp/cli-image
+    host: test.cli.gton.capital
+    settings:
+      username: root
+    key:
+      from_secret: ssh_key
+    port:
+      from_secret: ssh_port
+    script:
+      - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
     when:
       branch:
         - drone-integrate
