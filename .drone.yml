@@ -13,15 +13,18 @@ pipeline:
         - pull_request
   deployment:
     image: node
-    host: test.cli.gton.capital
-    settings:
-      username: root
-    key:
-      from_secret: ssh_key
-    port:
-      from_secret: ssh_port
-    script:
-    - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
+    # host: test.cli.gton.capital
+    # settings:
+    #   username: root
+    # key:
+    #   from_secret: ssh_key
+    # port:
+    #   from_secret: ssh_port
+    # script:
+    # - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
+    commands:
+      - git pull
+      - npm i
     when:
       branch:
         - drone-integrate
