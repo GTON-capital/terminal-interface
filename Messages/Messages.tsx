@@ -13,6 +13,7 @@ enum Commands
     FAUCET = "faucet",
     HARVEST = "harvest",
     BUY = "buy",
+    CLAIM = "claim",
     PRICE = "price",
 }
 
@@ -64,20 +65,17 @@ const messages = {
 
   helpText: `
   Available commands:
+  ${Prefix.PREFIX}${Commands.CLAIM} - claim gton and harvest reward from paused staking contract
   ${Prefix.PREFIX}${Commands.HELP} - this output
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
-  ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
-  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
-  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
+  ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds - paused
+  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds - paused
+  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward - paused
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
-  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
-  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton - add tokens to metamask
+  ${Prefix.PREFIX}${Commands.BALANCE} gton - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton - add tokens to metamask
   ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
-  ${Prefix.PREFIX}${Commands.PRICE} - get current gton price in USDC pool
   ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
-
-  ${Prefix.PREFIX}${Commands.CD}  ogswap | candyshop | staking- change project
-
   `,
   links: `
   Empty command rn

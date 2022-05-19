@@ -68,6 +68,8 @@ const HelpWorker = (eventQueue) =>
 const StakeWorker = async (eventQueue, Amount) => 
 {
   const { lock, loading, print } = eventQueue.handlers;
+  print([textLine({words:[textWord({ characters: "Temporarily disabled." })]})]);
+  return
   try
   {
     lock(true);
@@ -125,6 +127,8 @@ const StakeWorker = async (eventQueue, Amount) =>
 const UnStakeWorker = async (eventQueue, Amount) => 
 {
   const { lock, loading, print } = eventQueue.handlers;
+  print([textLine({words:[textWord({ characters: "Temporarily disabled." })]})]);
+  return
   try
   {
     if(Amount == 0) throw new Error('You cant unstake less than 0 $GTON');
@@ -171,6 +175,8 @@ const UnStakeWorker = async (eventQueue, Amount) =>
 const HarvestWorker = async (eventQueue, Amount) => 
 {
   const { lock, loading, print } = eventQueue.handlers;
+  print([textLine({words:[textWord({ characters: "Temporarily disabled." })]})]);
+  return
   try
   {
     lock(true);
@@ -260,6 +266,17 @@ const SwitchWorker = async (eventQueue) =>
     loading(false);
     lock(false);
   }
+}
+
+const ClaimAnnouncementWorker = async (eventQueue) =>
+{
+  const { lock, loading, print } = eventQueue.handlers;
+  print([textLine({words:[textWord({ characters: "Please follow these instructions to claim your gton from staking with harvest rewards up until pause timestamp. " +
+    "You can ignore sGTON token going forward and remove it from the wallet."
+  })]})]);
+  print([textLine({words:[anchorWord({ className: "link-padding", characters: "Open claims instructions",  onClick: () => {window.open("https://mirror.xyz/0x8c8b81208C7B7F71CD3279A31F48F1A37bda5df0/pZHUg7xzQpCsHCPmaDnRFyA-LKK5i3AnnXtjFNdT6s0");} })]})]);
+  loading(false);
+  lock(false);
 }
 
 const BalanceWorker = async (eventQueue, TokenName) => 
@@ -482,6 +499,7 @@ const GTONRouterMap =
   "faucet": FaucetWorker,
   "harvest": HarvestWorker,
   "buy": BuyWorker,
+  "claim": ClaimAnnouncementWorker,
   "price": PriceWorker,
 }
 
