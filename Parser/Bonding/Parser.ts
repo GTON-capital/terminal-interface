@@ -42,7 +42,7 @@ function validateArgs([token, type]: string[]) {
 // Func Router 
 
 const helpWorker = ({ print }) => {
-    print([textLine({ words: [textWord({ characters: messages.bondingHelpText })] })]);
+    print([textLine({ words: [textWord({ characters: messages.stakingHelpText })] })]);
 }
 
 const typesWorker = ({ print }) => {
@@ -170,7 +170,7 @@ const BondingMap =
     bonds: bondsWorker,
     types: typesWorker,
     mint: mintWorker,
-    claim: claimWorker,
+    claimBond: claimWorker,
     info: infoWorker,
     ...commonOperators
 }
