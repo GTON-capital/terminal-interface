@@ -22,7 +22,7 @@ pipeline:
       from_secret: ssh_port
     script:
       #  - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
-        - cd /var/www/terminal-interface
+        - cd /var/www/drone-terminal-interface
         - ls
         - git remote -v
 #       - git clean -fd
