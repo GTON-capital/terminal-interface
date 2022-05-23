@@ -28,7 +28,7 @@ pipeline:
 #       - git clean -fd
 #       - git reset --hard
 #       - git pull
-        - npm install
+        - npm install -g
 #       - npm run build
 #       - npm run start
     when:
