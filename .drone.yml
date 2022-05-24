@@ -1,41 +1,29 @@
 kind: pipeline
-type: docker
+type: ssh
 name: terminal-interface
 
-pipeline:
-  run-test:
-    image: node
-    commands:
-      - node --version
-      - nvm --version
-    when:
-      event:
-        - pull_request
-  deployment:
-    image: appleboy/drone-ssh
-    host: test.cli.gton.capital
-    settings:
-      username: root
-    key:
-      from_secret: ssh_key
-    port:
-      from_secret: ssh_port
-    script:
-      #  - cd /var/www/terminal-interface && sh ./.drone/deploy.sh
-        - cd /var/www/drone-terminal-interface
-        - ls
-        - git remote -v
-#       - git clean -fd
-#       - git reset --hard
-#       - git pull
-        - npm install -g
-#       - npm run build
-#       - npm run start
-    when:
-      branch:
+server: 
+  host: test.cli.gton.capital
+  key: 
+    from_secret: ssh_key
+  port: 
+    from_secret: ssh_port
+  user: root
+  
+steps: 
+  - name: clone
+    commands: 
+      - cd cd /var/www/drone-terminal-interface
+      - git pull
+  - name: build
+    commands: 
+      - docker build -t drone-image .
+      - docker run -d -p 6001:3000 --name drone-container drone-image
+    when: 
+      branch: 
         - drone-integrate
-#       event:
-#         - push
-trigger:
-  branch:
+      event: 
+        - push
+trigger: 
+  branch: 
     - drone-integrate
