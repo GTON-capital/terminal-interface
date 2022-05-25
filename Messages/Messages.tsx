@@ -99,7 +99,7 @@ const messages = {
   [DISABLED] ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
   [DISABLED] ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
   [DISABLED] ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
-  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
+  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to ${isTestnet? 'Ropsten' : 'Ethereum'}
   ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
   ${commonCommands}
   `,
@@ -179,7 +179,7 @@ const messages = {
     `
   ,
   chainSwitch: `
-  Successfully switched to Fantom ${isTestnet? 'Testnet' : ''}.
+  Successfully switched to ${isTestnet? 'Ropsten' : 'Ethereum'}.
   `,
   faucetDeposit: `
   Succesfully airdropped token.

@@ -9,7 +9,7 @@ import userBondIds, { getBondingByBondId, bondInfo, separateBonds } from '../WEB
 import getAmountOut, { getDiscount } from '../WEB3/bonding/amountOut';
 import { fromWei, toWei } from '../WEB3/API/balance';
 import balance, { getEthBalance } from '../WEB3/Balance';
-import { BondTypes, BondTokens, bondingContracts, tokenAddresses, ftmscanUrl, storageAddress } from '../../config/config';
+import { BondTypes, BondTokens, bondingContracts, tokenAddresses, explorerUrl, storageAddress } from '../../config/config';
 import { allowance, approve } from '../WEB3/approve';
 import { mint, mintFTM } from '../WEB3/bonding/mint';
 import { claim } from '../WEB3/bonding/claim';
@@ -103,7 +103,7 @@ const mintWorker = createWorker(async ({ print }, args, [userAddress]) => {
     const id = tx.events.Mint.returnValues.tokenId;
     const txHash = tx.transactionHash
     print([textLine({ words: [textWord({ characters: `You have successfully issued bond with id ${id}` })] })]);
-    printLink(print, messages.viewTxn, ftmscanUrl + txHash)
+    printLink(print, messages.viewTxn, explorerUrl + txHash)
 })
 
 const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
@@ -124,7 +124,7 @@ const claimWorker = createWorker(async ({ print }, bondId, [userAddress]) => {
     const tx = await claim(userAddress, contractAddress, bondId);
     const txHash = tx.transactionHash
     print([textLine({ words: [textWord({ characters: `You have successfully claimed bond with id ${bondId}` })] })]);
-    printLink(print, messages.viewTxn, ftmscanUrl + txHash)
+    printLink(print, messages.viewTxn, explorerUrl + txHash)
 
 })
 

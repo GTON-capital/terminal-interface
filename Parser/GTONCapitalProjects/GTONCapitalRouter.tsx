@@ -10,7 +10,7 @@ import messages from '../../Messages/Messages';
 import {
   gtonAddress,
   stakingAddress,
-  ftmscanUrl,
+  explorerUrl,
   WFTMAddress,
   GTONAddress,
   spiritswappooladdress,
@@ -78,14 +78,14 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
       const firstTxn = await approve(userAddress, gtonAddress, stakingAddress, amount)
 
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-      printLink(print, messages.viewTxn, ftmscanUrl + firstTxn)
+      printLink(print, messages.viewTxn, explorerUrl + firstTxn)
 
     }
 
     const secondTxn = await stake(userAddress, amount);
 
     print([textLine({ words: [textWord({ characters: messages.stake("staked", Amount) })] })]);
-    printLink(print, messages.viewTxn, ftmscanUrl + secondTxn)
+    printLink(print, messages.viewTxn, explorerUrl + secondTxn)
 
     loading(false);
     lock(false);
@@ -127,7 +127,7 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
     const TxnHash = await unstake(userAddress, amount);
 
     print([textLine({ words: [textWord({ characters: messages.stake("unstaked", Amount) })] })]);
-    printLink(print, messages.viewTxn, ftmscanUrl + TxnHash)
+    printLink(print, messages.viewTxn, explorerUrl + TxnHash)
 
     loading(false);
     lock(false);
@@ -173,7 +173,7 @@ const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
     const TxnHash = await harvest(userAddress, amount);
 
     print([textLine({ words: [textWord({ characters: messages.harvested(Amount) })] })]);
-    printLink(print, messages.viewTxn, ftmscanUrl + TxnHash)
+    printLink(print, messages.viewTxn, explorerUrl + TxnHash)
     loading(false);
     lock(false);
   }
@@ -199,7 +199,7 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
     const secondTxn = await claim();
 
     print([textLine({words:[textWord({ characters: messages.claim })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
+    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: explorerUrl+secondTxn })]})]);
   
     loading(false);
     lock(false);
@@ -268,7 +268,7 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     print([textLine({ words: [textWord({ characters: "You have successfully purchased $GTON!" })] })]);
     print([textLine({ words: [textWord({ characters: "#WA𝔾MI ⚜️" })] })]);
     print([textLine({ words: [textWord({ characters: "Transaction:" })] })]);
-    printLink(print, messages.viewTxn, ftmscanUrl + tx)
+    printLink(print, messages.viewTxn, explorerUrl + tx)
 
     loading(false);
     lock(false);

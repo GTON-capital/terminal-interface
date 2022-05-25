@@ -1,44 +1,34 @@
 
-const network = '4002';
+const network = '3'; // Ropsten
 const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = true;
 
-const WFTMAddress = "0xd0011de099e514c2094a510dd0109f91bf8791fa";
-const GTONAddress = "0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d";
+const WFTMAddress = "0xc778417e063141139fce010982780140aa0cd5ab";
+const GTONAddress = "0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6";
 
 const spiritswaprouteraddress = '0x3c4925b50e337aecc2cf4b9e4767b43dcfbad286';
 const spiritswappooladdress = '0x131ee332febf8d2aa5f18f0d2c444e99411462e5';
 const FTMGTONSwapPath = ['0xD0011dE099E514c2094a510dd0109F91bf8791Fa', '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d']
 
-const usdcAddress = "0xA2DCeFfc29003101b4bca24134dd1437106A7f81";
-const stakingAddress = '0x314650ac2876c6B6f354499362Df8B4DC95E4750';
-const claimAddress = '0xB48327cC1804A0DCf2F85A09e0fBBB5e4d8f4830';
+const usdcAddress = "0x46aff14b22e4717934edc2cb99bcb5ea1185a5e8";
+const stakingAddress = '0x2061489A2AE30D0ced15F4721c0bb53f30DE175c';
+const claimAddress = '0xB48327cC1804A0DCf2F85A09e0fBBB5e4d8f4830'; // Fantom network, not eth
 
-const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22';
-const gtonAddress = '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d';
+const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22'; // Inactive contract, need on Ropsten
+const gtonAddress = '0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6';
 const fantomNet = 
 {
-  chainId: '4002',
-  chainIdHex: '0xFA2',
-  chainName: 'Fantom Testnet',
+  chainId: '3',
+  chainIdHex: '3',
+  chainName: 'Ropsten',
   rpcUrls: ['https://rpc.testnet.fantom.network/'],
-  nativeCurrency: { name: 'FTM', decimals: 18, symbol: 'FTM' },
-  blockExplorerUrls: ['https://testnet.ftmscan.com/'],
+  nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
+  blockExplorerUrls: ['https://ropsten.etherscan.io/'],
 };
 
-const fantomTestnet = 
-{
-  chainId: '4002',
-  chainIdHex: '0xFA2',
-  chainName: 'Fantom Testnet',
-  rpcUrls: ['https://rpc.testnet.fantom.network/'],
-  nativeCurrency: { name: 'FTM', decimals: 18, symbol: 'FTM' },
-  blockExplorerUrls: ['https://testnet.ftmscan.com/'],
-};
-
-const ftmscanUrl = "https://testnet.ftmscan.com/tx/"
-const faucetLink = "https://faucet.fantom.network/"
+const explorerUrl = "https://ropsten.etherscan.io/tx/"
+const faucetLink = "https://faucet.egorfine.com/"
 const gcLink = "https://gton.capital/"
 
 const storageAddress = "0x9E8bcf8360Da63551Af0341A67538c918ba81007";
@@ -69,9 +59,9 @@ const bondingContracts = {
   }
 }
 
-const fantomRpc = 'https://rpc.fantom.network/'
-const gtonMainnetAddress = "0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4"
-const testnetFantomRpc = 'https://rpc.testnet.fantom.network/'
+const fantomRpc = 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161/'
+const gtonMainnetAddress = "0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d"
+const testnetFantomRpc = 'https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161/'
 
 export {
   BondTokens,
@@ -89,10 +79,9 @@ export {
   bondingContracts,
   gcLink,
   network,
-  ftmscanUrl,
+  explorerUrl,
   isTestnet,
   fantomNet,
-  fantomTestnet,
   stakingAddress,
   storageAddress,
   claimAddress,
