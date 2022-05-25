@@ -8,26 +8,30 @@ const GTONAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
 
 const spiritswaprouteraddress = '0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52';
 const spiritswappooladdress = '0x25f5b3840d414a21c4fc46d21699e54d48f75fdd';
-const FTMGTONSwapPath = ['0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', '0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4']
+const FTMGTONSwapPath = [
+  '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
+  '0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4',
+];
 
 const stakingAddress = '0xeff66b4a84c8a6b69b99eb1c5e39af8fc35d13db';
 const claimAddress = '0xbceb65916a02804acfc32983a52b07f07e1c5477'; // Fantom
 
 const faucetAddress = '';
 const gtonAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
-const usdcAddress = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const usdcAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+
 const fantomNet = {
   chainId: '1',
-  chainIdHex: '1',
+  chainIdHex: '0x1',
   chainName: 'Ethereum',
   rpcUrls: ['https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
   nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
   blockExplorerUrls: ['https://etherscan.io/'],
 };
 
-const explorerUrl = "https://etherscan.io/tx/"
-const faucetLink = "https://faucet.fantom.network/"
-const gcLink = "https://gton.capital/"
+const explorerUrl = 'https://etherscan.io/tx/';
+const faucetLink = 'https://faucet.fantom.network/';
+const gcLink = 'https://gton.capital/';
 
 export {
   WFTMAddress,
