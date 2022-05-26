@@ -7,9 +7,9 @@ const switchChain = async (network: string): Promise<void> => {
   if (!window.ethereum || !window.ethereum!.isMetaMask) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
-  if (!window.ethereum.request) {
-    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  }
+  // if (!window.ethereum.request) {
+  //   throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
+  // }
   const { chainIdHex, chainName, rpcUrls, nativeCurrency, blockExplorerUrls } = mmChains[network];
 
   if (chainIdHex === '0x1') {
