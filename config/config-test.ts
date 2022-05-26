@@ -4,7 +4,7 @@ const isLive = 'true';
 const isTestnet = true;
 
 // WFTMAddress -> wTokenAddress
-const WFTMAddress = '0xc778417e063141139fce010982780140aa0cd5ab';
+const wTokenAddress = '0xc778417e063141139fce010982780140aa0cd5ab';
 const GTONAddress = '0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6';
 
 // spiritswaprouteraddress -> routeraddress
@@ -78,7 +78,7 @@ export {
   fantomRpc,
   testnetFantomRpc,
   tokenAddresses,
-  WFTMAddress,
+  wTokenAddress,
   GTONAddress,
   spiritswappooladdress,
   spiritswaprouteraddress,

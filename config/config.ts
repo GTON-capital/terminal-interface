@@ -6,7 +6,7 @@ const isLive = 'true';
 const isTestnet = false;
 
 // WFTMAddress -> wTokenAddress
-const WFTMAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+const wTokenAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 const GTONAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
 
 // spiritswaprouteraddress -> routeraddress
@@ -44,7 +44,7 @@ const faucetLink = 'https://faucet.fantom.network/';
 const gcLink = 'https://gton.capital/';
 
 export {
-  WFTMAddress,
+  wTokenAddress,
   GTONAddress,
   spiritswappooladdress,
   FTMGTONSwapPath,
