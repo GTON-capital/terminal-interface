@@ -3,6 +3,7 @@ import Web3 from 'web3';
 import Big from 'big.js';
 import STAKING_ABI from './ABI/staking.json';
 import CLAIM_ABI from './ABI/claimGtonPostAudit.json';
+import switchChain from '../WEB3/Switch';
 import { stakingAddress, claimAddress } from '../../config/config';
 import { validate } from './validate';
 
@@ -31,13 +32,9 @@ export const unstake = async (userAddress: string, amount: Big): Promise<string>
 export const claim = async (): Promise<void> => {
   await validate();
   const web3 = new Web3(window.ethereum);
-  let currentChainId = await web3.eth.net.getId();
-  if (currentChainId !== 250) {
-    throw new Error('Current chain is not Fantom');
-  } else {
-    const signer = (await web3.eth.getAccounts())[0];
-    const contract = new web3.eth.Contract(CLAIM_ABI as AbiItem[], claimAddress);
-    const txn = await contract.methods.withdrawGton().send({ from: signer });
-    return txn.transactionHash;
-  }
+  await switchChain('fantom');
+  const signer = (await web3.eth.getAccounts())[0];
+  const contract = new web3.eth.Contract(CLAIM_ABI as AbiItem[], claimAddress);
+  const txn = await contract.methods.withdrawGton().send({ from: signer });
+  return txn.transactionHash;
 };
