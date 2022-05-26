@@ -15,8 +15,8 @@ const routeraddress = '0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52';
 // spiritswappooladdress -> poolAddress
 const poolAddress = '0x25f5b3840d414a21c4fc46d21699e54d48f75fdd';
 
-// FTMGTONSwapPath -> swapPath
-const FTMGTONSwapPath = [
+// FTMGTONSwapPath -> pairSwapPath
+const pairSwapPath = [
   '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
   '0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4',
 ];
@@ -47,7 +47,7 @@ export {
   wTokenAddress,
   GTONAddress,
   poolAddress,
-  FTMGTONSwapPath,
+  pairSwapPath,
   network,
   gcLink,
   faucetLink,
