@@ -76,7 +76,7 @@ const messages = {
                                                        
                           ⚜️ Welcome to GTON CAPITAL (𝔾ℂ) CLI UI 📺!
 
-      This dApp allows to interact with GTON Capital staking smart contracts on Fantom${
+      This dApp allows to interact with GTON Capital staking smart contracts on Ethereum${
         isTestnet ? ' Testnet' : ''
       }.
                                     ${isTestnet ? 'Mainnet coming soon!' : ''}
