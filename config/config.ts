@@ -10,7 +10,7 @@ const wTokenAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 const GTONAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
 
 // spiritswaprouteraddress -> routeraddress
-const spiritswaprouteraddress = '0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52';
+const routeraddress = '0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52';
 
 // spiritswappooladdress -> poolAddress
 const spiritswappooladdress = '0x25f5b3840d414a21c4fc46d21699e54d48f75fdd';
@@ -53,7 +53,7 @@ export {
   faucetLink,
   explorerUrl,
   isTestnet,
-  spiritswaprouteraddress,
+  routeraddress,
   chain,
   stakingAddress,
   claimAddress,
