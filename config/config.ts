@@ -13,7 +13,7 @@ const GTONAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
 const routeraddress = '0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52';
 
 // spiritswappooladdress -> poolAddress
-const spiritswappooladdress = '0x25f5b3840d414a21c4fc46d21699e54d48f75fdd';
+const poolAddress = '0x25f5b3840d414a21c4fc46d21699e54d48f75fdd';
 
 // FTMGTONSwapPath -> swapPath
 const FTMGTONSwapPath = [
@@ -46,7 +46,7 @@ const gcLink = 'https://gton.capital/';
 export {
   wTokenAddress,
   GTONAddress,
-  spiritswappooladdress,
+  poolAddress,
   FTMGTONSwapPath,
   network,
   gcLink,

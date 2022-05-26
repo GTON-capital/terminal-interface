@@ -9,7 +9,7 @@ import {
   explorerUrl,
   wTokenAddress,
   GTONAddress,
-  spiritswappooladdress,
+  poolAddress,
 } from '../../config/config';
 import commonOperators, { printLink } from '../common';
 import notFoundStrings from '../../Errors/notfound-strings';
@@ -250,12 +250,8 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
         const WFTMContract = new web3.eth.Contract(erc20 as AbiItem[], wTokenAddress);
         const GTONContract = new web3.eth.Contract(erc20 as AbiItem[], GTONAddress);
 
-        const wftmPoolValue: string = await WFTMContract.methods
-          .balanceOf(spiritswappooladdress)
-          .call();
-        const gtonPoolValue: string = await GTONContract.methods
-          .balanceOf(spiritswappooladdress)
-          .call();
+        const wftmPoolValue: string = await WFTMContract.methods.balanceOf(poolAddress).call();
+        const gtonPoolValue: string = await GTONContract.methods.balanceOf(poolAddress).call();
 
         const wftm = Big(wftmPoolValue);
         const gton = Big(gtonPoolValue);
