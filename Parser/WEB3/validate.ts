@@ -16,7 +16,7 @@ export async function validate() {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
   const chainId: string = await window.ethereum.request({ method: 'net_version' });
-  if (chainId !== network) {
-    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  }
+  // if (chainId !== network) {
+  //   throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
+  // }
 }

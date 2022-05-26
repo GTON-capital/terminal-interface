@@ -10,7 +10,9 @@ import {
   wTokenAddress,
   GTONAddress,
   poolAddress,
+  network,
 } from '../../config/config';
+import switchChain from '../WEB3/Switch';
 import commonOperators, { printLink } from '../common';
 import notFoundStrings from '../../Errors/notfound-strings';
 import { stake, unstake, claim } from '../WEB3/Stake';
@@ -191,7 +193,11 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
   try {
     lock(true);
     loading(true);
-
+    const web3 = new Web3(window.ethereum);
+    let currentChainId = await web3.eth.net.getId();
+    if (currentChainId !== 250) {
+      throw new Error('Wrong network. Switch to Fantom Opera, please');
+    }
     const secondTxn = await claim();
 
     print([textLine({ words: [textWord({ characters: messages.claim })] })]);

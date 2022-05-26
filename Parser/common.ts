@@ -89,7 +89,15 @@ const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
 
 const SwitchWorker = createWorker(async ({ print }, network) => {
   await switchChain(network);
-  print([textLine({ words: [textWord({ characters: messages.chainSwitch })] })]);
+  print([
+    textLine({
+      words: [
+        textWord({
+          characters: ` Successfully switched to ${network[0].toUpperCase() + network.slice(1)}`,
+        }),
+      ],
+    }),
+  ]);
 }, 'Error while switching chain, make sure metamask are connected.');
 
 const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {

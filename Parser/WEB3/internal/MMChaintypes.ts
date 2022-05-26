@@ -9,7 +9,6 @@ interface NativeCurrency {
 }
 
 export interface MMChain {
-  evm: boolean;
   chainId: string | number;
   chainIdHex: string;
   chainName: string;

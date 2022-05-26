@@ -7,34 +7,42 @@ const switchChain = async (network: string): Promise<void> => {
   if (!window.ethereum || !window.ethereum!.isMetaMask) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
-  // if (!window.ethereum.request) {
-  //   throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  // }
+  if (!window.ethereum.request) {
+    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
+  }
   const { chainIdHex, chainName, rpcUrls, nativeCurrency, blockExplorerUrls } = mmChains[network];
 
   if (chainIdHex === '0x1') {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [
+          {
+            chainId: chainIdHex,
+          },
+        ],
+      });
+      return;
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+  try {
     await window.ethereum.request({
-      method: 'wallet_switchEthereumChain',
+      method: 'wallet_addEthereumChain',
       params: [
         {
           chainId: chainIdHex,
+          chainName,
+          rpcUrls,
+          nativeCurrency,
+          blockExplorerUrls,
         },
       ],
     });
-    return;
+  } catch (e) {
+    throw new Error(e);
   }
-  await window.ethereum.request({
-    method: 'wallet_addEthereumChain',
-    params: [
-      {
-        chainId: chainIdHex,
-        chainName,
-        rpcUrls,
-        nativeCurrency,
-        blockExplorerUrls,
-      },
-    ],
-  });
 };
 
 export default switchChain;
