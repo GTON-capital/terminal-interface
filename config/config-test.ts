@@ -14,7 +14,7 @@ const routeraddress = '0x3c4925b50e337aecc2cf4b9e4767b43dcfbad286';
 const poolAddress = '0x131ee332febf8d2aa5f18f0d2c444e99411462e5';
 
 // FTMGTONSwapPath -> swapPath
-const FTMGTONSwapPath = [
+const pairSwapPath = [
   '0xD0011dE099E514c2094a510dd0109F91bf8791Fa',
   '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d',
 ];
@@ -82,7 +82,7 @@ export {
   GTONAddress,
   poolAddress,
   routeraddress,
-  FTMGTONSwapPath,
+  pairSwapPath,
   bondingETHAddress,
   faucetLink,
   bondingContracts,

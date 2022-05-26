@@ -1,7 +1,7 @@
 import Big from 'big.js';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
-import { FTMGTONSwapPath as path, routeraddress } from '../../config/config';
+import { pairSwapPath as path, routeraddress } from '../../config/config';
 import SpiritSwapRouterABI from './ABI/SpiritSwapRouter.json';
 import { validate } from './validate';
 
