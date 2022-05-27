@@ -65,12 +65,13 @@ const HelpWorker = ({ print }) => {
 };
 
 const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
-  print([textLine({ words: [textWord({ characters: 'Temporarily disabled.' })] })]);
-  return;
+  // print([textLine({ words: [textWord({ characters: 'Temporarily disabled.' })] })]);
+  // return;
   try {
     lock(true);
     loading(true);
 
+    await isCurrentChain(network);
     if (Amount === 0) throw new Error('You cant stake less than 0 $GTON');
 
     let amount;
@@ -112,12 +113,14 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
 };
 
 const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
-  print([textLine({ words: [textWord({ characters: 'Temporarily disabled.' })] })]);
-  return;
+  // print([textLine({ words: [textWord({ characters: 'Temporarily disabled.' })] })]);
+  // return;
   try {
-    if (Amount === 0) throw new Error('You cant unstake less than 0 $GTON');
     lock(true);
     loading(true);
+
+    await isCurrentChain(network);
+    if (Amount === 0) throw new Error('You cant unstake less than 0 $GTON');
 
     let amount;
     let userBalance;
@@ -150,11 +153,12 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
 };
 
 const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
-  print([textLine({ words: [textWord({ characters: 'Temporarily disabled.' })] })]);
-  return;
+  // print([textLine({ words: [textWord({ characters: 'Temporarily disabled.' })] })]);
+  // return;
   try {
     lock(true);
     loading(true);
+    await isCurrentChain(network);
 
     if (Amount === 0) throw new Error('You cant harvest less than 0 $GTON');
 

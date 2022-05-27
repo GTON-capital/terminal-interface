@@ -1,6 +1,7 @@
 import { textLine, textWord, anchorWord } from 'crt-terminal';
 import axios from 'axios';
 import Big from 'big.js';
+import { network } from '../config/config';
 import connectMetamask from './WEB3/ConnectMetamask';
 import switchChain from './WEB3/Switch';
 import addToken from './WEB3/addTokenToMM';
@@ -10,6 +11,8 @@ import balance, { userShare } from './WEB3/Balance';
 import { fromWei } from './WEB3/API/balance';
 import tokenMap, { tokens } from './WEB3/API/addToken';
 import notFoundStrings from '../Errors/notfound-strings';
+import { isCurrentChain } from '../Parser/WEB3/validate';
+import { mmChains } from './WEB3/chains';
 
 enum ErrorCodes {
   INVALID_ARGUMENT = 'INVALID_ARGUMENT',
@@ -101,6 +104,23 @@ const SwitchWorker = createWorker(async ({ print }, network) => {
 }, 'Error while switching chain, make sure metamask are connected.');
 
 const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {
+  console.log('Star of work');
+
+  try {
+    await isCurrentChain(network);
+  } catch (e) {
+    print([
+      textLine({
+        words: [
+          textWord({
+            characters: `Wrong network. Switch to ${mmChains[network].chainName}, please.`,
+          }),
+        ],
+      }),
+    ]);
+    return;
+  }
+  console.log('After check network');
   if (TokenName === 'all') {
     const token = tokenMap.sgton;
     const balanceWei = Big(await balance(userAddress, token.address));
