@@ -1,7 +1,7 @@
 import { MMChains } from '../WEB3/internal/MMChaintypes';
 
 export const mmChains: MMChains = {
-  1: {
+  ethereum: {
     chainId: '1',
     chainIdHex: '0x1',
     chainName: 'Ethereum',
@@ -9,7 +9,7 @@ export const mmChains: MMChains = {
     nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
     blockExplorerUrls: ['https://etherscan.io'],
   },
-  250: {
+  fantom: {
     chainId: '250',
     chainIdHex: '0xFA',
     chainName: 'Fantom',
@@ -17,7 +17,7 @@ export const mmChains: MMChains = {
     nativeCurrency: { name: 'FTM', decimals: 18, symbol: 'FTM' },
     blockExplorerUrls: ['https://ftmscan.com/'],
   },
-  3: {
+  ropsten: {
     chainId: '3',
     chainIdHex: '0x3',
     chainName: 'Ropsten',

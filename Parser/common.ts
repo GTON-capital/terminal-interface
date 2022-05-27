@@ -94,7 +94,7 @@ const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
 
 const SwitchWorker = createWorker(async ({ print }, id) => {
   try {
-    isNaN(id) ? (id = network) : id;
+    console.log(id in mmChains ? id : (id = chain.chainName));
     await switchChain(id);
   } catch (e) {
     throw new Error(e);
@@ -104,7 +104,7 @@ const SwitchWorker = createWorker(async ({ print }, id) => {
     textLine({
       words: [
         textWord({
-          characters: ` Successfully switched to ${mmChains[id].chainName}`,
+          characters: ` Successfully switched to ${id[0].toUpperCase() + id.slice(1)}`,
         }),
       ],
     }),
