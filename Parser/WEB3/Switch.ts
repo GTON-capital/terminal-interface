@@ -3,7 +3,7 @@ import { TerminalError } from '../../Errors/ErrorCodes';
 import { mmChains } from '../WEB3/chains';
 declare const window: any;
 
-const switchChain = async (network: string): Promise<void> => {
+const switchChain = async (network: string = chain.chainId): Promise<void> => {
   if (!window.ethereum || !window.ethereum!.isMetaMask) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }

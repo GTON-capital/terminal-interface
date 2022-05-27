@@ -104,8 +104,6 @@ const SwitchWorker = createWorker(async ({ print }, network) => {
 }, 'Error while switching chain, make sure metamask are connected.');
 
 const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {
-  console.log('Star of work');
-
   try {
     await isCurrentChain(network);
   } catch (e) {
@@ -120,7 +118,7 @@ const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) =
     ]);
     return;
   }
-  console.log('After check network');
+
   if (TokenName === 'all') {
     const token = tokenMap.sgton;
     const balanceWei = Big(await balance(userAddress, token.address));

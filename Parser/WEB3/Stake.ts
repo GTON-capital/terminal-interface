@@ -3,7 +3,6 @@ import Web3 from 'web3';
 import Big from 'big.js';
 import STAKING_ABI from './ABI/staking.json';
 import CLAIM_ABI from './ABI/claimGtonPostAudit.json';
-import switchChain from '../WEB3/Switch';
 import { stakingAddress, claimAddress } from '../../config/config';
 import { validate } from './validate';
 
