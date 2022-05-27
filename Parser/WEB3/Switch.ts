@@ -13,38 +13,48 @@ const switchChain = async (network: string): Promise<void> => {
   network = network.toLowerCase();
 
   const { chainIdHex, chainName, rpcUrls, nativeCurrency, blockExplorerUrls } = mmChains[network];
-
-  if (chainIdHex === '0x1' || chainIdHex === '0x3') {
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [
-          {
-            chainId: chainIdHex,
-          },
-        ],
-      });
-      return;
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  }
   try {
     await window.ethereum.request({
-      method: 'wallet_addEthereumChain',
+      method: 'wallet_switchEthereumChain',
       params: [
         {
           chainId: chainIdHex,
-          chainName,
-          rpcUrls,
-          nativeCurrency,
-          blockExplorerUrls,
         },
       ],
     });
-    return;
   } catch (e) {
-    throw new Error(e.message);
+    if (e.code === 4902) {
+      // 4902 is the error code for attempting to switch to an unrecognized chainId
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: chainIdHex,
+              chainName,
+              rpcUrls,
+              nativeCurrency,
+              blockExplorerUrls,
+            },
+          ],
+        });
+      } catch (e) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [
+              {
+                chainId: chainIdHex,
+              },
+            ],
+          });
+        } catch (e) {
+          throw new Error(e.message);
+        }
+      }
+    } else {
+      throw new Error(e.message);
+    }
   }
 };
 

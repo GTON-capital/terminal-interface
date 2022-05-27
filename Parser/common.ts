@@ -94,7 +94,7 @@ const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
 
 const SwitchWorker = createWorker(async ({ print }, id) => {
   try {
-    console.log(id in mmChains ? id : (id = chain.chainName));
+    id === 'switch' ? (id = chain.chainName) : id;
     await switchChain(id);
   } catch (e) {
     throw new Error(e);

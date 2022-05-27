@@ -1,5 +1,5 @@
 import { TerminalError } from '../../Errors/ErrorCodes';
-import { network, claimNetwork } from '../../config/config';
+import { network, claimNetwork, chain } from '../../config/config';
 import Web3 from 'web3';
 import { mmChains } from '../WEB3/chains';
 declare const window: any;
@@ -26,6 +26,8 @@ export async function isCurrentChain(chainId: string): Promise<void> {
   const web3 = new Web3(window.ethereum);
   let currentChainId = await web3.eth.net.getId();
   if (currentChainId !== +chainId) {
-    throw new Error(`Wrong network. Switch to Fantom Opera, please.`);
+    throw new Error(
+      `Wrong network. Switch to ${+chainId === 250 ? 'Fantom Opera' : chain.chainName}, please.`,
+    );
   }
 }

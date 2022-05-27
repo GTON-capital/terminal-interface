@@ -3,6 +3,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = true;
 
+const claimNetwork = '250';
 // WFTMAddress -> wTokenAddress
 const wTokenAddress = '0xc778417e063141139fce010982780140aa0cd5ab';
 const GTONAddress = '0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6';
@@ -29,7 +30,7 @@ const gtonAddress = '0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6';
 // fantomNet -> network
 const chain = {
   chainId: '3',
-  chainIdHex: '3',
+  chainIdHex: '0x3',
   chainName: 'Ropsten',
   rpcUrls: ['https://rpc.testnet.fantom.network/'],
   nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
@@ -88,6 +89,7 @@ export {
   bondingContracts,
   gcLink,
   network,
+  claimNetwork,
   explorerUrl,
   isTestnet,
   chain,
