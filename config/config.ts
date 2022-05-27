@@ -5,6 +5,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = false;
 
+const claimNetwork = '250';
 // WFTMAddress -> wTokenAddress
 const wTokenAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 const GTONAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
@@ -49,6 +50,7 @@ export {
   poolAddress,
   pairSwapPath,
   network,
+  claimNetwork,
   gcLink,
   faucetLink,
   explorerUrl,
