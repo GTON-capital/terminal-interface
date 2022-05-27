@@ -89,7 +89,7 @@ const messages = {
 
        #WA𝔾MI ⚜️
   `,
-  faucet: 'Get free testnet $FTMs',
+  faucet: 'Get free testnet $ETHs',
   gc: 'Find more info about GC',
 
   stakingHelpText: `
