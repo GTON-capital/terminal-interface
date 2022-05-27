@@ -1,15 +1,22 @@
+import { ChainId } from 'spiritswap-sdk';
 import { chain } from '../../config/config';
 import { TerminalError } from '../../Errors/ErrorCodes';
 import { mmChains } from '../WEB3/chains';
 declare const window: any;
 
-const switchChain = async (network: string = chain.chainId): Promise<void> => {
+const switchChain = async (network: string): Promise<void> => {
   if (!window.ethereum || !window.ethereum!.isMetaMask) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
   if (!window.ethereum.request) {
     throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
   }
+
+  // Default version of chainId from config
+  if (!parseInt(network)) {
+    network = chain.chainId;
+  }
+
   const { chainIdHex, chainName, rpcUrls, nativeCurrency, blockExplorerUrls } = mmChains[network];
 
   if (chainIdHex === '0x1') {
@@ -24,7 +31,7 @@ const switchChain = async (network: string = chain.chainId): Promise<void> => {
       });
       return;
     } catch (e) {
-      throw new Error(e);
+      throw new Error(e.message);
     }
   }
   try {
@@ -40,8 +47,9 @@ const switchChain = async (network: string = chain.chainId): Promise<void> => {
         },
       ],
     });
+    return;
   } catch (e) {
-    throw new Error(e);
+    throw new Error(e.message);
   }
 };
 

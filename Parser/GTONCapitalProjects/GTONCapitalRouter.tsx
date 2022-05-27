@@ -14,7 +14,6 @@ import {
   claimNetwork,
 } from '../../config/config';
 import { isCurrentChain } from '../WEB3/validate';
-import switchChain from '../WEB3/Switch';
 import commonOperators, { printLink } from '../common';
 import notFoundStrings from '../../Errors/notfound-strings';
 import { stake, unstake, claim } from '../WEB3/Stake';

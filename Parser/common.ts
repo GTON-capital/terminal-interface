@@ -1,7 +1,7 @@
 import { textLine, textWord, anchorWord } from 'crt-terminal';
 import axios from 'axios';
 import Big from 'big.js';
-import { network } from '../config/config';
+import { chain, network } from '../config/config';
 import connectMetamask from './WEB3/ConnectMetamask';
 import switchChain from './WEB3/Switch';
 import addToken from './WEB3/addTokenToMM';
@@ -70,8 +70,10 @@ export function createWorker(
       } else if (err.code in ErrorCodes) {
         message = errorStrings[err.code];
       } else {
-        message = errMessage || err.message;
+        message = err.message || errMessage;
       }
+      console.log(err);
+
       print([textLine({ words: [textWord({ characters: message })] })]);
       loading(false);
       lock(false);
@@ -90,13 +92,19 @@ const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
   print([textLine({ words: [textWord({ characters: `Connected successfuly: ${address}` })] })]);
 }, 'Error while connecting metamask, please try again');
 
-const SwitchWorker = createWorker(async ({ print }, network) => {
-  await switchChain(network);
+const SwitchWorker = createWorker(async ({ print }, id) => {
+  try {
+    isNaN(id) ? (id = network) : id;
+    await switchChain(id);
+  } catch (e) {
+    throw new Error(e);
+  }
+
   print([
     textLine({
       words: [
         textWord({
-          characters: ` Successfully switched to ${network[0].toUpperCase() + network.slice(1)}`,
+          characters: ` Successfully switched to ${mmChains[id].chainName}`,
         }),
       ],
     }),
