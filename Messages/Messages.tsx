@@ -1,43 +1,41 @@
 import { isTestnet } from '../config/config';
 
-enum Commands 
-{
-    CD = "cd",
-    HELP = "help",
-    JOIN = "join",
-    STAKE = "stake",
-    UNSTAKE = "unstake",
-    SWITCH = "switch",
-    BALANCE = "balance",
-    ADD_TOKEN = "add",
-    FAUCET = "faucet",
-    HARVEST = "harvest",
-    BUY = "buy",
-    CLAIM = "claim",
-    PRICE = "price",
+enum Commands {
+  CD = 'cd',
+  HELP = 'help',
+  JOIN = 'join',
+  STAKE = 'stake',
+  UNSTAKE = 'unstake',
+  BALANCE = 'balance',
+  ADD_TOKEN = 'add',
+  FAUCET = 'faucet',
+  HARVEST = 'harvest',
+  BUY = 'buy',
+  CLAIM = 'claim',
+  PRICE = 'price',
 }
 
 enum BondingCommands {
-  Tokens = "tokens",
-  Mint = "mint",
-  Claim = "claimBond",
-  Info = "info",
-  Bonds = "bonds",
-  Preview = "preview",
-  Types = "types"
+  Tokens = 'tokens',
+  Mint = 'mint',
+  Claim = 'claimBond',
+  Info = 'info',
+  Bonds = 'bonds',
+  Preview = 'preview',
+  Types = 'types',
 }
 
 enum ChatCommands {
-  Send = "send",
-  Load = "load",
-  Login = "login",
-  Members = "members",
-  Angels = "angels"
+  Send = 'send',
+  Load = 'load',
+  Login = 'login',
+  Members = 'members',
+  Angels = 'angels',
 }
 
 enum OptionalActions {
   YES = 'yes',
-  NO = 'no'
+  NO = 'no',
 }
 
 enum Prompt {
@@ -54,18 +52,16 @@ enum Links {
   CLAIM = 'https://medium.com/gearbox-protocol/credit-account-mining-guide-fueling-up-for-the-launch-abc17fbddbad',
 }
 
-const cdHelp =  
-`
+const cdHelp = `
   ${Prefix.PREFIX}${Commands.CD} bonding | staking - change project
-`
+`;
 
-const commonCommands = 
-`
+const commonCommands = `
   ${Prefix.PREFIX}${Commands.HELP} - this output
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
   ${Prefix.PREFIX}${Commands.BALANCE} gton - get actual erc20 token balance
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | usdc - add tokens to metamask
-  ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`
+  ${isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`;
 
 const messages = {
   banner: `
@@ -77,10 +73,12 @@ const messages = {
       ╚██████╔╝   ██║   ╚██████╔╝██║ ╚████║    ╚██████╗██║  ██║██║     ██║   ██║   ██║  ██║███████╗
        ╚═════╝    ╚═╝    ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝
                                                        
-                          ⚜️ Welcome to GTON CAPITAL (𝔾ℂ) CLI UI 📺!
+                          ⚜️ Welcome to GTON CAPITAL CLI UI 📺!
 
-      This dApp allows to interact with GTON Capital staking smart contracts on Fantom${isTestnet? ' Testnet' : ''}.
-                                    ${isTestnet? 'Mainnet coming soon!' : ''}
+      This dApp allows to interact with GTON Capital staking smart contracts on Ethereum${
+        isTestnet ? ' Testnet' : ''
+      }.
+                                    ${isTestnet ? 'Mainnet coming soon!' : ''}
       The old-school console-based user interface was forked from Gearbox protocol. 
                           
       Kudos for the inspiration to the intricate brain of ivangbi and the Gearbox team 
@@ -90,7 +88,7 @@ const messages = {
 
        #WA𝔾MI ⚜️
   `,
-  faucet: 'Get free testnet $FTMs',
+  faucet: 'Get free testnet $ETH',
   gc: 'Find more info about GC',
 
   stakingHelpText: `
@@ -99,7 +97,6 @@ const messages = {
   [DISABLED] ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
   [DISABLED] ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
   [DISABLED] ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
-  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to ${isTestnet? 'Ropsten' : 'Ethereum'}
   ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
   ${commonCommands}
   `,
@@ -131,8 +128,7 @@ const messages = {
   links: `
   Empty command rn
   `,
-  LINKS: 
-  `
+  LINKS: `
   TODO
   `,
   viewTxn: 'View transaction',
@@ -152,35 +148,29 @@ const messages = {
   approve: `
       You have succesfully approved your funds!
       Transaction approve: 
-    `
-  ,
+    `,
   claim: `
       You have succesfully claimed your funds!
       Transaction hash: 
-    `
-  ,
+    `,
   stake(type: string, amount: string) {
     return `
     You have succesfully ${type} your funds!
     Amount: ${amount},
     Transaction stake:`;
-   },
+  },
   harvested(amount: string) {
     return `
     You have succesfully harvested your reward!
     Amount: ${amount},
     Transaction:`;
-   },
+  },
   accountsMined: (n: number) => `
   Accounts mined: ${n}
   `,
   balance: (n: string) => `
       Token balance: ${n}
-    `
-  ,
-  chainSwitch: `
-  Successfully switched to ${isTestnet? 'Ropsten' : 'Ethereum'}.
-  `,
+    `,
   faucetDeposit: `
   Succesfully airdropped token.
   `,
