@@ -32,8 +32,8 @@ export default function Web() {
   return (
     <Layout
       layoutParams={{
-        title: 'CLI UI | GTON Capital (𝔾ℂ)',
-        description: 'An inovative way of USER <-> SC interaction for 𝔾ℂEco products.',
+        title: 'CLI UI | GTON Capital',
+        description: 'An inovative way of USER <-> SC interaction for GTON ecosystem products.',
         keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
         url: 'https://test.cli.gton.capital/',
       }}

@@ -303,7 +303,6 @@ const Commands = [
   'join',
   'stake',
   'unstake',
-  'switch',
   'balance',
   'add',
   'faucet',

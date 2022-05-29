@@ -6,7 +6,6 @@ enum Commands {
   JOIN = 'join',
   STAKE = 'stake',
   UNSTAKE = 'unstake',
-  SWITCH = 'switch',
   BALANCE = 'balance',
   ADD_TOKEN = 'add',
   FAUCET = 'faucet',
@@ -74,7 +73,7 @@ const messages = {
       ╚██████╔╝   ██║   ╚██████╔╝██║ ╚████║    ╚██████╗██║  ██║██║     ██║   ██║   ██║  ██║███████╗
        ╚═════╝    ╚═╝    ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝
                                                        
-                          ⚜️ Welcome to GTON CAPITAL (𝔾ℂ) CLI UI 📺!
+                          ⚜️ Welcome to GTON CAPITAL CLI UI 📺!
 
       This dApp allows to interact with GTON Capital staking smart contracts on Ethereum${
         isTestnet ? ' Testnet' : ''
@@ -89,7 +88,7 @@ const messages = {
 
        #WA𝔾MI ⚜️
   `,
-  faucet: 'Get free testnet $ETHs',
+  faucet: 'Get free testnet $ETH',
   gc: 'Find more info about GC',
 
   stakingHelpText: `
@@ -98,7 +97,6 @@ const messages = {
   [DISABLED] ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
   [DISABLED] ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
   [DISABLED] ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
-  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to ${isTestnet ? 'Ropsten' : 'Ethereum'}
   ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
   ${commonCommands}
   `,
@@ -173,9 +171,6 @@ const messages = {
   balance: (n: string) => `
       Token balance: ${n}
     `,
-  chainSwitch: `
-  Successfully switched to ${isTestnet ? 'Ropsten' : 'Ethereum'}.
-  `,
   faucetDeposit: `
   Succesfully airdropped token.
   `,

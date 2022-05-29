@@ -3,7 +3,6 @@ import axios from 'axios';
 import Big from 'big.js';
 import { chain, network } from '../config/config';
 import connectMetamask from './WEB3/ConnectMetamask';
-import switchChain from './WEB3/Switch';
 import addToken from './WEB3/addTokenToMM';
 import faucet from './WEB3/Faucet';
 import messages from '../Messages/Messages';
@@ -91,25 +90,6 @@ const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
   const address = await connect(state);
   print([textLine({ words: [textWord({ characters: `Connected successfuly: ${address}` })] })]);
 }, 'Error while connecting metamask, please try again');
-
-const SwitchWorker = createWorker(async ({ print }, id) => {
-  try {
-    id === 'switch' ? (id = chain.chainName) : id;
-    await switchChain(id);
-  } catch (e) {
-    throw new Error(e);
-  }
-
-  print([
-    textLine({
-      words: [
-        textWord({
-          characters: ` Successfully switched to ${id[0].toUpperCase() + id.slice(1)}`,
-        }),
-      ],
-    }),
-  ]);
-}, 'Error while switching chain, make sure metamask are connected.');
 
 const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {
   try {
@@ -204,7 +184,6 @@ const commonOperators = {
   faucet: FaucetWorker,
   add: AddTokenWorker,
   balance: BalanceWorker,
-  switch: SwitchWorker,
   join: ConnectMetamaskWorker,
   price: PriceWorker,
 };

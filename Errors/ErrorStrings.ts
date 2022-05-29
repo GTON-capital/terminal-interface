@@ -34,7 +34,7 @@ import notFoundStrings from './notfound-strings';
     Failed to connect to Metamask. Try again.
     `,
     METAMASK_WRONG_NETWORK: `
-    Please switch to Fantom ${isTestnet? 'Testnet' : ''}.
+    Please switch to ${isTestnet? 'Ropsten' : 'Ethereum'}.
     `,
     METAMASK_CORRECT_NETWORK: `
     You are currently on Fantom ${isTestnet? 'Testnet' : ''}.

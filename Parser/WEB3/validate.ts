@@ -26,7 +26,7 @@ export async function isCurrentChain(chainId: string): Promise<void> {
   let currentChainId = await web3.eth.net.getId();
   if (currentChainId !== +chainId) {
     throw new Error(
-      `Wrong network. Switch to ${+chainId === 250 ? 'Fantom Opera' : chain.chainName}, please.`,
+      `Wrong network. Switch to ${chain.chainName}, please.`,
     );
   }
 }
