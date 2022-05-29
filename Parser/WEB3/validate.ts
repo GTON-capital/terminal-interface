@@ -1,7 +1,6 @@
 import { TerminalError } from '../../Errors/ErrorCodes';
 import { network, claimNetwork, chain } from '../../config/config';
 import Web3 from 'web3';
-import { mmChains } from '../WEB3/chains';
 declare const window: any;
 
 export async function validate() {
