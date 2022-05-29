@@ -16,11 +16,7 @@ function Header() {
       <a href="https://gton.capital/faq" target="_blank" className={classes.headerTextWrap}>
         FAQ
       </a>
-      <a
-        href="https://snapshot.org/#/ftm.gton.eth"
-        target="blank"
-        className={classes.headerTextWrap}
-      >
+      <a href="https://snapshot.org/#/gton.eth" target="blank" className={classes.headerTextWrap}>
         Voting
       </a>
       <div className={classes.child}>
