@@ -1,7 +1,9 @@
 import React from 'react';
 import classes from './header.module.scss';
 import { chain } from '../../config/config';
-
+import { isCurrentChain } from '../../Parser/WEB3/validate';
+let cc;
+isCurrentChain(chain.chainId).then((i) => (cc = i));
 function Header() {
   return (
     <div className={classes.headerWrap}>
@@ -37,7 +39,7 @@ function Header() {
       >
         Voting
       </a>
-      <div className={classes.btn}>{chain.chainName}</div>
+      <div className={classes.btn}>{cc ? chain.chainName : 'Wrong network'}</div>
     </div>
   );
 }

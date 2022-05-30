@@ -9,7 +9,8 @@ import BondingParser from '../Parser/Bonding/Parser';
 import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
 import { connect, printLink } from '../Parser/common';
-import { currentChainId } from '../Parser/WEB3/validate';
+import { isCurrentChain } from '../Parser/WEB3/validate';
+import Header from '../components/Header/Header';
 
 declare const window: any;
 const Projects = {
@@ -27,8 +28,6 @@ export default function Web() {
   const { print } = eventQueue.handlers;
   const state = useState(null);
 
-  // let isCurrentChainId = await currentChainId();
-
   // it's necessary update state if wallet is available
   useEffect(() => {
     connect(state).then();
@@ -44,6 +43,7 @@ export default function Web() {
     >
       <main className={classes.mainContainer}>
         <DisableMobile>
+          <Header />
           <Terminal
             queue={eventQueue}
             onCommand={(command) => {
@@ -166,7 +166,7 @@ export default function Web() {
                   }),
                   // textWord({
                   //   className: 'link-padding-btn',
-                  //   characters: { isCurrentChainId } ? chain.chainName : 'Wrong Network',
+                  //   characters: { isCC } ? chain.chainName : 'Wrong Network',
                   // }),
                 ],
               }),
