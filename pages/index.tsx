@@ -22,12 +22,12 @@ const Projects = {
 
 let CurrentDirectory = Projects.Staking;
 
-export default async function Web() {
+export default function Web() {
   const eventQueue = useEventQueue();
   const { print } = eventQueue.handlers;
   const state = useState(null);
 
-  let isCurrentChainId = await currentChainId();
+  // let isCurrentChainId = await currentChainId();
 
   // it's necessary update state if wallet is available
   useEffect(() => {
@@ -164,10 +164,10 @@ export default async function Web() {
                     href: messages.header[3].href,
                     dataAttribute: 'target: _blank',
                   }),
-                  textWord({
-                    className: 'link-padding-btn',
-                    characters: { isCurrentChainId } ? chain.chainName : 'Wrong Network',
-                  }),
+                  // textWord({
+                  //   className: 'link-padding-btn',
+                  //   characters: { isCurrentChainId } ? chain.chainName : 'Wrong Network',
+                  // }),
                 ],
               }),
               textLine({ words: [textWord({ characters: messages.banner })] }),

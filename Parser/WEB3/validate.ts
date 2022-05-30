@@ -29,5 +29,5 @@ export async function currentChainId(): Promise<number> {
 export async function isCurrentChain(chainId: string): Promise<Boolean> {
   const web3 = new Web3(window.ethereum);
   let currentChainId = await web3.eth.net.getId();
-  return currentChainId !== +chainId;
+  return currentChainId == +chainId;
 }
