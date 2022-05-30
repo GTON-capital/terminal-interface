@@ -21,12 +21,13 @@ export async function validate() {
   }
 }
 
-export async function isCurrentChain(chainId: string): Promise<void> {
+export async function currentChainId(): Promise<number> {
+  const web3 = new Web3(window.ethereum);
+  return web3.eth.net.getId();
+}
+
+export async function isCurrentChain(chainId: string): Promise<Boolean> {
   const web3 = new Web3(window.ethereum);
   let currentChainId = await web3.eth.net.getId();
-  if (currentChainId !== +chainId) {
-    throw new Error(
-      `Wrong network. Switch to ${chain.chainName}, please.`,
-    );
-  }
+  return currentChainId !== +chainId;
 }

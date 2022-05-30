@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Terminal, useEventQueue, textLine, textWord, anchorWord } from 'crt-terminal';
-import Header from '../components/Header/Header';
 import Layout from '../components/Layout/Layout';
 import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';
-import { faucetLink, gcLink, isTestnet } from '../config/config';
+import { faucetLink, gcLink, isTestnet, chain } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
 import BondingParser from '../Parser/Bonding/Parser';
 import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
 import { connect, printLink } from '../Parser/common';
+import { currentChainId } from '../Parser/WEB3/validate';
 
+declare const window: any;
 const Projects = {
   Staking: 'staking',
   Candyshop: 'candyshop',
@@ -21,10 +22,13 @@ const Projects = {
 
 let CurrentDirectory = Projects.Staking;
 
-export default function Web() {
+export default async function Web() {
   const eventQueue = useEventQueue();
   const { print } = eventQueue.handlers;
   const state = useState(null);
+
+  let isCurrentChainId = await currentChainId();
+
   // it's necessary update state if wallet is available
   useEffect(() => {
     connect(state).then();
@@ -35,12 +39,11 @@ export default function Web() {
         title: 'CLI UI | GTON Capital',
         description: 'An inovative way of USER <-> SC interaction for GTON ecosystem products.',
         keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
-        url: 'https://test.cli.gton.capital/',
+        url: isTestnet ? 'https://test.cli.gton.capital/' : 'https://cli.gton.capital/',
       }}
     >
       <main className={classes.mainContainer}>
         <DisableMobile>
-          <Header />
           <Terminal
             queue={eventQueue}
             onCommand={(command) => {
@@ -137,6 +140,36 @@ export default function Web() {
             }}
             prompt={'/' + CurrentDirectory + ' $ '}
             banner={[
+              textLine({
+                className: 'relative',
+                words: [
+                  anchorWord({
+                    className: 'link-padding',
+                    characters: messages.header[0].name,
+                    href: messages.header[0].href,
+                  }),
+                  anchorWord({
+                    className: 'link-padding',
+                    characters: messages.header[1].name,
+                    href: messages.header[1].href,
+                  }),
+                  anchorWord({
+                    className: 'link-padding',
+                    characters: messages.header[2].name,
+                    href: messages.header[2].href,
+                  }),
+                  anchorWord({
+                    className: 'link-padding',
+                    characters: messages.header[3].name,
+                    href: messages.header[3].href,
+                    dataAttribute: 'target: _blank',
+                  }),
+                  textWord({
+                    className: 'link-padding-btn',
+                    characters: { isCurrentChainId } ? chain.chainName : 'Wrong Network',
+                  }),
+                ],
+              }),
               textLine({ words: [textWord({ characters: messages.banner })] }),
               textLine({
                 words: [
