@@ -65,8 +65,6 @@ const HelpWorker = ({ print }) => {
 };
 
 const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
-  // print([textLine({ words: [textWord({ characters: 'Temporarily disabled.' })] })]);
-  // return;
   try {
     lock(true);
     loading(true);
@@ -115,8 +113,6 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
 };
 
 const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
-  // print([textLine({ words: [textWord({ characters: 'Temporarily disabled.' })] })]);
-  // return;
   try {
     lock(true);
     loading(true);
@@ -157,8 +153,6 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
 };
 
 const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
-  // print([textLine({ words: [textWord({ characters: 'Temporarily disabled.' })] })]);
-  // return;
   try {
     lock(true);
     loading(true);
@@ -239,6 +233,7 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
 };
 
 const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
+  return // Waiting for 1inch implementation
   try {
     loading(true);
     lock(true);

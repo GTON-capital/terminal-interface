@@ -93,11 +93,10 @@ const messages = {
 
   stakingHelpText: `
   Available commands:
-  ${Prefix.PREFIX}${Commands.CLAIM} - claim gton and harvest reward from paused staking contract
-  [DISABLED] ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
-  [DISABLED] ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
-  [DISABLED] ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
-  ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
+  ${Prefix.PREFIX}${Commands.CLAIM} - claim gton and harvest reward from V1 staking contract (Fantom)
+  ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
+  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
+  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
   ${commonCommands}
   `,
   bondingHelpText: `
