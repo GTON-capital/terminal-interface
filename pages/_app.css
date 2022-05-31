@@ -12,7 +12,6 @@ body {
 
 * {
   box-sizing: border-box;
-  
 }
 .index_mainContainer__DkU7y {
   max-width: 1280px !important;
@@ -38,17 +37,19 @@ body {
   overflow: hidden !important;
 }
 
-.terminal-module_terminal__4qfYI  {
+.terminal-module_terminal__4qfYI {
   -webkit-box-shadow: 0 0 1px 3px rgba(10, 10, 10, 0.7) !important;
   background: linear-gradient(#888 50%, #000 50%) !important;
   z-index: 21 !important;
-  color: #FFFF00 !important;
+  color: #ffff00 !important;
   line-height: 1.25 !important;
   font-size: 1.25vw !important;
   font-weight: 600;
   margin: 30px;
-  -webkit-box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%), inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
-  box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%), inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
+  -webkit-box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%),
+    inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
+  box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%),
+    inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
   text-shadow: none !important;
   border: none !important;
   border-radius: 1em !important;
@@ -56,14 +57,16 @@ body {
   overflow: hidden !important;
 }
 .crt-terminal {
-  background: rgb(255,140,0, 0.68) !important;
+  background: rgb(255, 140, 0, 0.68) !important;
   width: 90vw;
   height: 95vh;
   overflow: hidden !important;
 }
-.index_mainContainer__DkU7y{
-  -webkit-box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%), inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
-  box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%), inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
+.index_mainContainer__DkU7y {
+  -webkit-box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%),
+    inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
+  box-shadow: inset 0.25em 0.25em 2px rgb(255 255 255 / 40%),
+    inset -0.25em -0.25em 2px rgb(0 0 0 / 40%) !important;
   padding: 27px !important;
   border: none !important;
   border-radius: 1em !important;
@@ -74,7 +77,13 @@ body {
 .overlay-module_overlay__zbWt1 {
   z-index: 21;
   opacity: 0.25;
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(100%, #888), color-stop(0%, #000));
+  background: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(100%, #888),
+    color-stop(0%, #000)
+  );
   background: -webkit-linear-gradient(#888 0%, #000 100%);
   background: linear-gradient(#888 0%, #000 100%);
   background-size: 100% 4px;
@@ -108,4 +117,21 @@ body {
 
 .link-padding {
   padding-left: 80px;
+}
+
+.link-padding-btn {
+  border: 1px solid #ff0;
+  padding: 5px;
+  text-align: center;
+  margin-left: 300px;
+}
+
+.relative {
+  margin-top: 15px;
+  position: sticky !important;
+  top: -41px;
+  z-index: 22 !important;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }

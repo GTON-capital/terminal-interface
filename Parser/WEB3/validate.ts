@@ -1,6 +1,7 @@
 import { TerminalError } from '../../Errors/ErrorCodes';
 import { network, claimNetwork, chain } from '../../config/config';
 import Web3 from 'web3';
+
 declare const window: any;
 
 export async function validate() {
@@ -21,12 +22,9 @@ export async function validate() {
   }
 }
 
-export async function isCurrentChain(chainId: string): Promise<void> {
+//'https://mainnet.infura.io/v3/a0ac7126b5af4519ad7c2b62f98d6139'
+export async function isCurrentChain(chainId: string): Promise<Boolean> {
   const web3 = new Web3(window.ethereum);
   let currentChainId = await web3.eth.net.getId();
-  if (currentChainId !== +chainId) {
-    throw new Error(
-      `Wrong network. Switch to ${chain.chainName}, please.`,
-    );
-  }
+  return currentChainId == +chainId;
 }

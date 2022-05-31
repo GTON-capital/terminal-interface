@@ -12,6 +12,7 @@ import {
   poolAddress,
   network,
   claimNetwork,
+  chain,
 } from '../../config/config';
 import { isCurrentChain } from '../WEB3/validate';
 import commonOperators, { printLink } from '../common';
@@ -70,7 +71,9 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
     lock(true);
     loading(true);
 
-    await isCurrentChain(network);
+    if (!(await isCurrentChain(network))) {
+      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    }
     if (Amount === 0) throw new Error('You cant stake less than 0 $GTON');
 
     let amount;
@@ -118,7 +121,9 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
     lock(true);
     loading(true);
 
-    await isCurrentChain(network);
+    if (!(await isCurrentChain(network))) {
+      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    }
     if (Amount === 0) throw new Error('You cant unstake less than 0 $GTON');
 
     let amount;
@@ -157,7 +162,9 @@ const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
   try {
     lock(true);
     loading(true);
-    await isCurrentChain(network);
+    if (!(await isCurrentChain(network))) {
+      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    }
 
     if (Amount === 0) throw new Error('You cant harvest less than 0 $GTON');
 
@@ -198,8 +205,10 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
   try {
     lock(true);
     loading(true);
+    if (!(await isCurrentChain(claimNetwork))) {
+      throw new Error('Wrong network, switch on Fantom Opera, please.');
+    }
 
-    await isCurrentChain(claimNetwork);
     const secondTxn = await claim();
 
     print([textLine({ words: [textWord({ characters: messages.claim })] })]);
