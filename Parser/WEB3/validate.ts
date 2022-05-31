@@ -22,7 +22,6 @@ export async function validate() {
   }
 }
 
-//'https://mainnet.infura.io/v3/a0ac7126b5af4519ad7c2b62f98d6139'
 export async function isCurrentChain(chainId: string): Promise<Boolean> {
   const web3 = new Web3(window.ethereum);
   let currentChainId = await web3.eth.net.getId();
