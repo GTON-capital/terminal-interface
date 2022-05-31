@@ -1,8 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import classes from './header.module.scss';
-import { chain, network } from '../../config/config';
-import { isCurrentChain } from '../../Parser/WEB3/validate';
+import { chain, claimNetwork } from '../../config/config';
 import Web3 from 'web3';
 declare const window: any;
 
@@ -62,7 +61,11 @@ function Header() {
         Voting
       </a>
       <div className={classes.btn}>
-        {isCurrentChainId === chain.chainId ? chain.chainName : 'Wrong network'}
+        {isCurrentChainId === chain.chainId
+          ? chain.chainName
+          : isCurrentChainId === claimNetwork
+          ? 'Fantom'
+          : 'Wrong network'}
       </div>
     </div>
   );
