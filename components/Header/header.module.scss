@@ -1,9 +1,10 @@
 .headerWrap {
   z-index: 999999;
   position: absolute;
-  top: 6%;
+  margin-top: 15px;
+  top: 1%;
   left: 50%;
-  transform: translate(-50%, 6%);
+  transform: translate(-50%, 1%);
   padding: 0px 45px;
   display: flex;
   flex-wrap: wrap;
@@ -20,8 +21,8 @@
 }
 .btn {
   font-family: 'Courier New', courier, monospace;
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 13px;
+  // line-height: 1.5;
   text-shadow: 0 0 1.1428571429rem #d0fc7e, 0 0 1.7142857143rem #d0fc7e;
   color: #d0fc7e;
   margin: 0;
@@ -29,12 +30,6 @@
   display: inline-block;
   background-color: #0000;
   border: 1px solid #d0fc7e;
-  cursor: pointer;
-  &:hover {
-    color: #111010;
-    background-color: #d0fc7e;
-    border: 1px solid #d0fc7e;
-  }
 }
 
 .headerTextWrap {

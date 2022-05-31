@@ -13,6 +13,7 @@ import { isCurrentChain } from '../Parser/WEB3/validate';
 import Header from '../components/Header/Header';
 
 declare const window: any;
+
 const Projects = {
   Staking: 'staking',
   Candyshop: 'candyshop',
@@ -43,7 +44,6 @@ export default function Web() {
     >
       <main className={classes.mainContainer}>
         <DisableMobile>
-          <Header />
           <Terminal
             queue={eventQueue}
             onCommand={(command) => {
@@ -140,36 +140,6 @@ export default function Web() {
             }}
             prompt={'/' + CurrentDirectory + ' $ '}
             banner={[
-              textLine({
-                className: 'relative',
-                words: [
-                  anchorWord({
-                    className: 'link-padding',
-                    characters: messages.header[0].name,
-                    href: messages.header[0].href,
-                  }),
-                  anchorWord({
-                    className: 'link-padding',
-                    characters: messages.header[1].name,
-                    href: messages.header[1].href,
-                  }),
-                  anchorWord({
-                    className: 'link-padding',
-                    characters: messages.header[2].name,
-                    href: messages.header[2].href,
-                  }),
-                  anchorWord({
-                    className: 'link-padding',
-                    characters: messages.header[3].name,
-                    href: messages.header[3].href,
-                    dataAttribute: 'target: _blank',
-                  }),
-                  // textWord({
-                  //   className: 'link-padding-btn',
-                  //   characters: { isCC } ? chain.chainName : 'Wrong Network',
-                  // }),
-                ],
-              }),
               textLine({ words: [textWord({ characters: messages.banner })] }),
               textLine({
                 words: [
@@ -196,7 +166,8 @@ export default function Web() {
                   })
                 : null,
             ]}
-          />
+          ></Terminal>
+          <Header />
         </DisableMobile>
       </main>
     </Layout>

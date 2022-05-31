@@ -1,10 +1,21 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 import classes from './header.module.scss';
 import { chain } from '../../config/config';
 import { isCurrentChain } from '../../Parser/WEB3/validate';
-let cc;
-isCurrentChain(chain.chainId).then((i) => (cc = i));
+import Web3 from 'web3';
+declare const window: any;
+
 function Header() {
+  let isCurrentNetwork = false;
+
+  React.useEffect(() => {
+    async () => {
+      await isCurrentChain(chain.chainId);
+    };
+  }),
+    [isCurrentNetwork];
+
   return (
     <div className={classes.headerWrap}>
       <a
@@ -39,7 +50,7 @@ function Header() {
       >
         Voting
       </a>
-      <div className={classes.btn}>{cc ? chain.chainName : 'Wrong network'}</div>
+      <div className={classes.btn}>{isCurrentNetwork ? chain.chainName : 'Wrong Network'}</div>
     </div>
   );
 }

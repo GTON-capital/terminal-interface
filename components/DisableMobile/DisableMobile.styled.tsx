@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 const DisableWrap = styled.div`
+  position: relative;
   padding: 0 12px;
   display: flex;
   flex-wrap: wrap;
