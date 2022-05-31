@@ -7,6 +7,7 @@ declare const window: any;
 
 function Header() {
   let chainId;
+
   useEffect(() => {
     chainId = async () => {
       const web3 = new Web3(window.ethereum);
@@ -15,16 +16,28 @@ function Header() {
   });
 
   let [isCurrentChainId, setChain] = useState(chainId);
-  console.log(isCurrentChainId);
 
   useEffect(() => {
     if (window.ethereum) {
-      window.ethereum.on('networkChanged', function (networkId) {
-        setChain(networkId);
-        console.log(chainId);
+      window.ethereum.on('chainChanged', function (networkId) {
+        const id = parseInt(networkId.toString(16)).toString()
+        setChain(id);
+        console.log(id);
       });
     }
   });
+
+  useEffect(() => {
+    // Set initial chain
+    const getChain = async () => {
+      const web3 = new Web3(window.ethereum);
+      const currentChainId = await (await web3.eth.net.getId()).toString();
+      setChain(currentChainId);
+    }
+
+    getChain()
+      .catch(console.error);
+  }, []);
 
   return (
     <div className={classes.headerWrap}>
