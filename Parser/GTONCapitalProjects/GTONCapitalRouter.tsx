@@ -233,7 +233,7 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
 };
 
 const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
-  return // Waiting for 1inch implementation
+  return; // Waiting for 1inch implementation
   try {
     loading(true);
     lock(true);

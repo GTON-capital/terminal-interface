@@ -40,4 +40,7 @@
   font-size: 1.25vw !important;
   font-weight: 600;
   font-family: 'Courier New', courier, monospace;
+  &:hover {
+    color: #fff;
+  }
 }
