@@ -1,20 +1,31 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import classes from './header.module.scss';
-import { chain } from '../../config/config';
+import { chain, network } from '../../config/config';
 import { isCurrentChain } from '../../Parser/WEB3/validate';
 import Web3 from 'web3';
 declare const window: any;
 
 function Header() {
-  let isCurrentNetwork = false;
-
-  React.useEffect(() => {
-    async () => {
-      await isCurrentChain(chain.chainId);
+  let chainId;
+  useEffect(() => {
+    chainId = async () => {
+      const web3 = new Web3(window.ethereum);
+      return await web3.eth.net.getId();
     };
-  }),
-    [isCurrentNetwork];
+  });
+
+  let [isCurrentChainId, setChain] = useState(chainId);
+  console.log(isCurrentChainId);
+
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on('networkChanged', function (networkId) {
+        setChain(networkId);
+        console.log(chainId);
+      });
+    }
+  });
 
   return (
     <div className={classes.headerWrap}>
@@ -50,7 +61,9 @@ function Header() {
       >
         Voting
       </a>
-      <div className={classes.btn}>{isCurrentNetwork ? chain.chainName : 'Wrong Network'}</div>
+      <div className={classes.btn}>
+        {isCurrentChainId === chain.chainId ? chain.chainName : 'Wrong network'}
+      </div>
     </div>
   );
 }
