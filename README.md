@@ -1,6 +1,6 @@
 [![NPM](https://img.shields.io/npm/v/react-select.svg)](https://www.npmjs.com/package/crt-terminal)
 
-# CRT terminal
+## CRT terminal
 
 Simple retro styled React-hooks-based terminal shell.
 

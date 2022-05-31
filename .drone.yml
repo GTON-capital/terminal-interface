@@ -1,29 +1,12 @@
 kind: pipeline
-type: ssh
-name: terminal-interface
 
-server: 
-  host: test.cli.gton.capital
-  key: 
-    from_secret: ssh_key
-  port: 
-    from_secret: ssh_port
-  user: root
-  
-steps: 
-  - name: clone
-    commands: 
-      - cd cd /var/www/drone-terminal-interface
-      - git pull
-  - name: build
-    commands: 
-      - docker build -t drone-image .
-      - docker run -d -p 6001:3000 --name drone-container drone-image
-    when: 
-      branch: 
-        - drone-integrate
-      event: 
-        - push
-trigger: 
-  branch: 
-    - drone-integrate
+steps:
+  - name: build & check
+  - image: node
+  - commands:
+    - npm i
+    - npm run build
+    - npm run start
+    when:
+      event:
+        - pull_request
