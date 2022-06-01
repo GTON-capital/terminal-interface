@@ -1,4 +1,4 @@
-import { AddTokenWorker, BalanceWorker, SwitchWorker, ConnectMetamaskWorker, HarvestWorker, UnStakeWorker, StakeWorker, GTONRouterMap } from "./GTONCapitalProjects/GTONCapitalRouter"
+import { GTONRouterMap } from "./GTONCapitalProjects/GTONCapitalRouter"
 
 const ParsePreset = (eventQueue, Search: string): void =>
 {
