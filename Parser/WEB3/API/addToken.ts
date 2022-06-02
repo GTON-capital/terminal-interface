@@ -12,19 +12,19 @@ const tokenMap: Record<string, Token> = {
     address: gtonAddress,
     symbol: 'GTON',
     decimals: 18,
-    image: 'https://alpha.graviton.one/img/gton-metamask.png',
+    image: '',
   },
   sgton: {
     address: stakingAddress,
     symbol: 'sGTON',
     decimals: 18,
-    image: 'https://alpha.graviton.one/img/gton-metamask.png',
+    image: '',
   },
   harvest: {
     address: stakingAddress,
     symbol: 'sGTON',
     decimals: 18,
-    image: 'https://alpha.graviton.one/img/gton-metamask.png',
+    image: '',
   },
   usdc: {
     address: usdcAddress,
