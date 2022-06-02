@@ -1,390 +1,240 @@
-import {
-  textLine,
-  textWord,
-  anchorWord
-} from 'crt-terminal';
-import BigNumber from 'bignumber.js';
+import { textLine, textWord, anchorWord } from 'crt-terminal';
+import Big from 'big.js';
+import Web3 from 'web3';
+import { AbiItem } from 'web3-utils';
 import messages from '../../Messages/Messages';
-import axios from 'axios';
 import {
-  tokenAddress,
+  gtonAddress,
   stakingAddress,
-  ftmscanUrl,
-  fantomNet,
-  WFTMAddress,
+  explorerUrl,
+  wTokenAddress,
   GTONAddress,
-  spiritswappooladdress,
+  poolAddress,
+  network,
+  claimNetwork,
+  chain,
 } from '../../config/config';
-import notFoundStrings from '../../Errors/notfound-strings'
-import { stake, unstake } from '../WEB3/Stake';
-import connectMetamask from '../WEB3/ConnectMetamask';
-import switchChain from '../WEB3/Switch';
-import {harvest} from '../WEB3/harvest';
-import balance, {userShare} from '../WEB3/Balance';
-import addToken from '../WEB3/addTokenToMM';
+import { isCurrentChain } from '../WEB3/validate';
+import commonOperators, { printLink } from '../common';
+import notFoundStrings from '../../Errors/notfound-strings';
+import { stake, unstake, claim } from '../WEB3/Stake';
+import { harvest } from '../WEB3/harvest';
+import balance, { userShare } from '../WEB3/Balance';
+import { toWei } from '../WEB3/API/balance';
 import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
-import faucet from '../WEB3/Faucet';
-import { fromWei, toWei } from '../WEB3/API/balance';
 import buy from '../WEB3/buyGTON';
 import erc20 from '../WEB3/ABI/erc20.json';
-const ethers = require('ethers');  
 
-const url = fantomNet.rpcUrls[0];
-const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
+declare const window: any;
 
-enum ErrorCodes 
-{
-  INVALID_ARGUMENT = "INVALID_ARGUMENT",
+enum ErrorCodes {
+  INVALID_ARGUMENT = 'INVALID_ARGUMENT',
   USER_DECLINED_TRANSACTION = 3,
-  NOT_ENOUGHT_FUNDS = -32000
+  NOT_ENOUGHT_FUNDS = -32000,
 }
 
-const ErrorHandler = (eventQueue, Code, Operation) =>
-{
-  const { print } = eventQueue.handlers;
-  if(Code == ErrorCodes.INVALID_ARGUMENT) 
-  {
-    print([textLine({words:[textWord({ characters: "It looks like you specified the quantity incorrectly, for example: " + Operation + " 20, or " + Operation + " all" })]})]);
+const ErrorHandler = (print, Code, Operation) => {
+  if (Code === ErrorCodes.INVALID_ARGUMENT) {
+    print([
+      textLine({
+        words: [
+          textWord({
+            characters: `It looks like you specified the quantity incorrectly, for example: ${Operation} 20, or ${Operation} all`,
+          }),
+        ],
+      }),
+    ]);
   }
-  if(Code == ErrorCodes.USER_DECLINED_TRANSACTION) 
-  {
-    print([textLine({words:[textWord({ characters: "User declined transaction" })]})]);
+  if (Code === ErrorCodes.USER_DECLINED_TRANSACTION) {
+    print([textLine({ words: [textWord({ characters: 'User declined transaction' })] })]);
   }
-  if(Code == ErrorCodes.NOT_ENOUGHT_FUNDS) 
-  {
-    print([textLine({words:[textWord({ characters: "You don't have enough funds to buy that many GTON" })]})]);
+  if (Code === ErrorCodes.NOT_ENOUGHT_FUNDS) {
+    print([
+      textLine({
+        words: [textWord({ characters: "You don't have enough funds to buy that many GTON" })],
+      }),
+    ]);
   }
-}
+};
 
-// Func Router 
+// Func Router
 
-const HelpWorker = (eventQueue) =>
-{
-  const { print } = eventQueue.handlers;
-  print([textLine({words:[textWord({ characters: messages.helpText })]})]);
-}
+const HelpWorker = ({ print }) => {
+  print([textLine({ words: [textWord({ characters: messages.stakingHelpText })] })]);
+};
 
-const StakeWorker = async (eventQueue, Amount) => 
-{
-  const { lock, loading, print } = eventQueue.handlers;
-  print([textLine({words:[textWord({ characters: "Temporarily disabled." })]})]);
-  return
-  try
-  {
+const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
+  try {
     lock(true);
     loading(true);
 
-    if(Amount == 0) throw new Error('You cant stake less than 0 $GTON');
+    if (!(await isCurrentChain(network))) {
+      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    }
+    if (Amount === '0') throw new Error('You can\'t stake less than 0 $GTON');
 
-    let amount, userBalance;
+    let amount;
+    let userBalance;
 
-    if(Amount == 'all')
-    {
-      userBalance = await balance(tokenMap['gton'].address);
+    if (Amount === 'all') {
+      userBalance = await balance(userAddress, tokenMap.gton.address);
       amount = userBalance;
-    }
-    else
-    {
-      amount = toWei(new BigNumber(Amount))
-      userBalance = await balance(tokenAddress);
-      if(amount.gt(userBalance)) throw Error("Insufficient amount")
-    }
-
-    const userAllowance = await allowance();
-    if(amount.gt(userAllowance)) {
-      const firstTxn = await approve(tokenAddress, stakingAddress, amount)
-
-      print([textLine({words:[textWord({ characters: messages.approve })]})]);
-      print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+firstTxn})]})]);
-      
-    }
-
-    const secondTxn = await stake(amount);
-
-    print([textLine({words:[textWord({ characters: messages.stake("staked", Amount) })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn, href: ftmscanUrl+secondTxn })]})]);
-  
-    loading(false);
-    lock(false);
-  }
-  catch(err)
-  {
-    if (err.code in ErrorCodes)
-    {
-      ErrorHandler(eventQueue, err.code, "stake");
-    }
-    else
-    {
-      print([textLine({words:[textWord({ characters: err.message })]})]);
-    }
-    
-    loading(false);
-    lock(false);
-  }
-}
-
-const UnStakeWorker = async (eventQueue, Amount) => 
-{
-  const { lock, loading, print } = eventQueue.handlers;
-  print([textLine({words:[textWord({ characters: "Temporarily disabled." })]})]);
-  return
-  try
-  {
-    if(Amount == 0) throw new Error('You cant unstake less than 0 $GTON');
-    lock(true);
-    loading(true);
-
-    let amount, userBalance, TxnHash;
-
-    if(Amount === "all")
-    {
-      userBalance = await userShare();
-      amount = userBalance;
-    }
-    else 
-    {
-      amount = toWei(new BigNumber(Amount))
-      userBalance = await balance(stakingAddress);
-    }
-
-    if(amount.gt(userBalance)) throw Error("Insufficient amount")
-    TxnHash = await unstake(amount);
-
-    print([textLine({words:[textWord({ characters: messages.stake("unstaked", Amount) })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
-  
-    loading(false);
-    lock(false);
-  }
-  catch(err)
-  {
-    if (err.code in ErrorCodes)
-    {
-      ErrorHandler(eventQueue, err.code, "unstake");
-    }
-    else
-    {
-      print([textLine({words:[textWord({ characters: err.message })]})]);
-    }
-    loading(false);
-    lock(false);
-  }
-}
-
-const HarvestWorker = async (eventQueue, Amount) => 
-{
-  const { lock, loading, print } = eventQueue.handlers;
-  print([textLine({words:[textWord({ characters: "Temporarily disabled." })]})]);
-  return
-  try
-  {
-    lock(true);
-    loading(true);
-
-    if(Amount == 0) throw new Error('You cant harvest less than 0 $GTON')
-
-    let TxnHash, amount, balanceUser, userStake
-
-    if(Amount == 'all')
-    {
-      const token = tokenMap['sgton']
-      const Balance = (await balance(token.address));
-
-      amount = Balance.minus(await userShare())
-    }
-    else
-    {
-      amount = toWei(new BigNumber(Amount))
-      userStake = await userShare();
-      balanceUser = await balance(stakingAddress);
-      if(amount.gt(balanceUser.minus(userStake))) throw Error("Insufficient amount")
-    }
-
-    TxnHash = await harvest(amount);
-
-    print([textLine({words:[textWord({ characters: messages.harvested(Amount) })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+TxnHash, '_blank');} })]})]);
-  
-    loading(false);
-    lock(false);
-  }
-  catch(err)
-  {
-    if (err.code in ErrorCodes)
-    {
-      ErrorHandler(eventQueue, err.code, "harvest");
-    }
-    else
-    {
-      print([textLine({words:[textWord({ characters: err.message })]})]);
-    }
-    loading(false);
-    lock(false);
-  }
-}
-
-const ConnectMetamaskWorker = async (eventQueue) =>
-{
-  const { lock, loading, print } = eventQueue.handlers;
-  try
-  {
-    lock(true);
-    loading(true);
-
-    const address = await connectMetamask();
-    print([textLine({words:[textWord({ characters: "Connected succefuly: " + address })]})]);
-
-    loading(false);
-    lock(false);
-  }
-  catch(err)
-  {
-    print([textLine({words:[textWord({ characters: "Error while connecting metamask, please try again" })]})]);
-    loading(false);
-    lock(false);
-  }
-}
-
-const SwitchWorker = async (eventQueue) =>
-{
-  const { lock, loading, print } = eventQueue.handlers;
-  try
-  {
-    lock(true);
-    loading(true);
-
-    await switchChain();
-    print([textLine({words:[textWord({ characters: messages.chainSwitch })]})]);
-
-    loading(false);
-    lock(false);
-  }
-  catch(err)
-  {
-    print([textLine({words:[textWord({ characters: "Error while switching chain, make sure metamask are connected." })]})]);
-    loading(false);
-    lock(false);
-  }
-}
-
-const ClaimAnnouncementWorker = async (eventQueue) =>
-{
-  const { lock, loading, print } = eventQueue.handlers;
-  print([textLine({words:[textWord({ characters: "Please follow these instructions to claim your gton from staking with harvest rewards up until pause timestamp. " +
-    "You can ignore sGTON token going forward and remove it from the wallet."
-  })]})]);
-  print([textLine({words:[anchorWord({ className: "link-padding", characters: "Open claims instructions",  onClick: () => {window.open("https://mirror.xyz/0x8c8b81208C7B7F71CD3279A31F48F1A37bda5df0/pZHUg7xzQpCsHCPmaDnRFyA-LKK5i3AnnXtjFNdT6s0");} })]})]);
-  loading(false);
-  lock(false);
-}
-
-const BalanceWorker = async (eventQueue, TokenName) => 
-{
-  const { lock, loading, print } = eventQueue.handlers;
-
-  try
-  {
-    lock(true);
-    loading(true);
-
-    if(TokenName == "all")
-    {
-      const token = tokenMap['sgton']
-      const Balance = (await balance(token.address));
-
-      const harvest = fromWei(Balance.minus(await userShare()));
-      const share = fromWei(await userShare())
-      const gton = fromWei(await balance(tokenMap['gton'].address))
-
-      print([textLine({words:[textWord({ characters: "Harvest: " + harvest.toFixed(4).replace(/0*$/,"") })]})]);
-      print([textLine({words:[textWord({ characters: "SGTON:   " + share.toFixed(4).replace(/0*$/,"") })]})]);
-      print([textLine({words:[textWord({ characters: "GTON:    " + gton.toFixed(4).replace(/0*$/,"") })]})]);
-
-      loading(false);
-      lock(false);
-      return
-    }
-
-    const token = TokenName === "harvest" ? tokenMap.sgton : tokenMap[TokenName]
-    if(!token) throw Error("Available tokens are: gton, sgton, harvest");
-    const Balance = (await balance(token.address));
-    let CoinBalance;
-
-    if(TokenName === "harvest") {
-      const share = await userShare();
-      CoinBalance = fromWei(Balance.minus(share));
-    } else if(TokenName === "sgton") {
-      CoinBalance = fromWei(await userShare())
     } else {
-      CoinBalance = fromWei(Balance);
+      amount = toWei(Amount);
+      userBalance = await balance(userAddress, gtonAddress);
+      if (amount.gt(userBalance)) throw Error('Insufficient amount');
     }
-    const res = messages.balance(CoinBalance.toFixed(18));
-    print([textLine({words:[textWord({ characters: res })]})]);
+    const userAllowance = await allowance(gtonAddress, stakingAddress);
+    if (amount.gt(userAllowance)) {
+      const firstTxn = await approve(userAddress, gtonAddress, stakingAddress, amount);
+
+      print([textLine({ words: [textWord({ characters: messages.approve })] })]);
+      printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+    }
+
+    const secondTxn = await stake(userAddress, amount);
+
+    print([textLine({ words: [textWord({ characters: messages.stake('staked', Amount) })] })]);
+    printLink(print, messages.viewTxn, explorerUrl + secondTxn);
+
+    loading(false);
+    lock(false);
+  } catch (err) {
+    if (err.code in ErrorCodes) {
+      ErrorHandler(print, err.code, 'stake');
+    } else {
+      print([textLine({ words: [textWord({ characters: err.message })] })]);
+    }
 
     loading(false);
     lock(false);
   }
-  catch(err)
-  {
-    print([textLine({words:[textWord({ characters: "Something went wrong, please try again" })]})]);
-    loading(false);
-    lock(false);
-  }
-}
+};
 
-const AddTokenWorker = async (eventQueue, TokenName) =>
-{
-  const { lock, loading, print } = eventQueue.handlers;
-
-  try
-  {
-    lock(true);
-    loading(true);
-    const token = tokenMap[TokenName]
-    if(!token) throw Error("Available tokens are: gton, sgton");
-    await addToken(token);
-    print([textLine({words:[textWord({ characters: messages.addToken })]})]);
-
-    loading(false);
-    lock(false);
-  }
-  catch(err)
-  {
-    print([textLine({words:[textWord({ characters: "Error while add token to metamask" })]})]);
-    loading(false);
-    lock(false);
-  }
-}
-
-const FaucetWorker = async (eventQueue) => 
-{
-  const { lock, loading, print } = eventQueue.handlers;
-  try
-  {
+const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
+  try {
     lock(true);
     loading(true);
 
-    await faucet();
-    print([textLine({words:[textWord({ characters: messages.faucetDeposit })]})]);
+    if (!(await isCurrentChain(network))) {
+      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    }
+    if (Amount === '0') throw new Error('You can\'t unstake less than 0 $GTON');
+
+    let amount;
+    let userBalance;
+
+    if (Amount === 'all') {
+      userBalance = await userShare(userAddress);
+      amount = userBalance;
+    } else {
+      amount = toWei(Amount);
+      userBalance = await balance(userAddress, stakingAddress);
+    }
+
+    if (amount.gt(userBalance)) throw Error('Insufficient amount');
+    const TxnHash = await unstake(userAddress, amount);
+
+    print([textLine({ words: [textWord({ characters: messages.stake('unstaked', Amount) })] })]);
+    printLink(print, messages.viewTxn, explorerUrl + TxnHash);
+
+    loading(false);
+    lock(false);
+  } catch (err) {
+    if (err.code in ErrorCodes) {
+      ErrorHandler(print, err.code, 'unstake');
+    } else {
+      print([textLine({ words: [textWord({ characters: err.message })] })]);
+    }
+    loading(false);
+    lock(false);
+  }
+};
+
+const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
+  try {
+    lock(true);
+    loading(true);
+    if (!(await isCurrentChain(network))) {
+      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    }
+
+    if (Amount === '0') throw new Error('You can\'t harvest less than 0 $GTON');
+
+    let amount;
+    let balanceUser;
+    let userStake;
+
+    if (Amount === 'all') {
+      const token = tokenMap.sgton;
+      const Balance = await balance(userAddress, token.address);
+
+      amount = new Big(Balance).minus(await userShare(userAddress));
+    } else {
+      amount = toWei(Amount);
+      userStake = await userShare(userAddress);
+      balanceUser = await balance(userAddress, stakingAddress);
+      if (amount.gt(balanceUser.minus(userStake))) throw Error('Insufficient amount');
+    }
+
+    const TxnHash = await harvest(userAddress, amount);
+
+    print([textLine({ words: [textWord({ characters: messages.harvested(Amount) })] })]);
+    printLink(print, messages.viewTxn, explorerUrl + TxnHash);
+    loading(false);
+    lock(false);
+  } catch (err) {
+    if (err.code in ErrorCodes) {
+      ErrorHandler(print, err.code, 'harvest');
+    } else {
+      print([textLine({ words: [textWord({ characters: err.message })] })]);
+    }
+    loading(false);
+    lock(false);
+  }
+};
+
+const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
+  try {
+    lock(true);
+    loading(true);
+    if (!(await isCurrentChain(claimNetwork))) {
+      throw new Error('Wrong network, switch on Fantom Opera, please.');
+    }
+
+    const secondTxn = await claim();
+
+    print([textLine({ words: [textWord({ characters: messages.claim })] })]);
+    print([
+      textLine({
+        words: [
+          anchorWord({
+            className: 'link-padding',
+            characters: messages.viewTxn,
+            href: explorerUrl + secondTxn,
+          }),
+        ],
+      }),
+    ]);
+
+    loading(false);
+    lock(false);
+  } catch (err) {
+    if (err.code in ErrorCodes) {
+      ErrorHandler(print, err.code, 'stake');
+    } else {
+      print([textLine({ words: [textWord({ characters: err.message })] })]);
+    }
 
     loading(false);
     lock(false);
   }
-  catch(err)
-  {
-    print([textLine({words:[textWord({ characters: "" })]})]);
-    loading(false);
-    lock(false);
-  }
-}
+};
 
-const BuyWorker = async (eventQueue, Args) =>
-{
-  const { lock, loading, print } = eventQueue.handlers;
-
-  try 
-  {
+const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
+  return; // Waiting for 1inch implementation
+  try {
     loading(true);
     lock(true);
 
@@ -392,148 +242,115 @@ const BuyWorker = async (eventQueue, Args) =>
 
     const Token1 = tmpARGS[0]; // GTON amount
     const Token2 = tmpARGS[2]; // FTM, USDC, etc
+    const token = toWei(Token1);
 
-    if(Token1 == 0)         throw new Error('You cant buy 0 $GTON')
-    if(Token1 < 0)          throw new Error('You cant buy less than 0 $GTON')
-    if(Token2 == undefined) throw new Error("Apparently you did not specify for which token you want to buy $GTON, example: buy 1 with ftm")
+    if (Token1 === 0) throw new Error('You cant buy 0 $GTON');
+    if (Token1 < 0) throw new Error('You cant buy less than 0 $GTON');
+    if (Token2 === undefined)
+      throw new Error(
+        'Apparently you did not specify for which token you want to buy $GTON, example: buy 1 with ftm',
+      );
 
-    let tx, TradePrice;
-
-    switch (Token2) // Find pairs on spirit
-    {
-      case 'ftm': // By default, buy for native FTM
-      {
+    let TradePrice;
+    const web3 = new Web3(window.ethereum);
+    switch (
+      Token2 // Find pairs on spirit
+    ) {
+      case 'ftm': {
+        // By default, buy for native FTM
         // Get tokens contract, for executing balanceOf, so we can calculate price later
-        const WFTMContract = await new ethers.Contract(WFTMAddress, erc20, customHttpProvider); 
-        const GTONContract = await new ethers.Contract(GTONAddress, erc20, customHttpProvider);
+        const WFTMContract = new web3.eth.Contract(erc20 as AbiItem[], wTokenAddress);
+        const GTONContract = new web3.eth.Contract(erc20 as AbiItem[], GTONAddress);
 
-        let wftmPoolValue : BigNumber = await WFTMContract.balanceOf(spiritswappooladdress);
-        let gtonPoolValue : BigNumber = await GTONContract.balanceOf(spiritswappooladdress);
+        const wftmPoolValue: string = await WFTMContract.methods.balanceOf(poolAddress).call();
+        const gtonPoolValue: string = await GTONContract.methods.balanceOf(poolAddress).call();
 
-        const wftm = ethers.utils.formatEther(wftmPoolValue.toString()).toString()
-        const gton = ethers.utils.formatEther(gtonPoolValue.toString()).toString()
+        const wftm = Big(wftmPoolValue);
+        const gton = Big(gtonPoolValue);
+        const priceRN = wftm.div(gton); // price right now
+        const ExecFTM = wftm.plus(priceRN.mul(token)); // how much ftm be in the pool
+        const ExecGTON = gton.minus(token); // how much gton be in the pool
 
-        const priceRN = (+wftm / +gton);                        // price right now
-        const ExecFTM = +wftm + (+priceRN * +Token1);           // how much ftm be in the pool
-        const ExecGTON = +gton - +Token1;                       // how much gton be in the pool
-
-        TradePrice = ExecFTM / ExecGTON;
-        TradePrice = TradePrice + (TradePrice * 0.003) // slippage
+        TradePrice = ExecFTM.div(ExecGTON);
+        TradePrice = TradePrice.add(TradePrice.mul(0.003)); // slippage
+        console.log(TradePrice.toFixed());
         break;
       }
+      default: {
+        throw new Error('Incorrect payment token');
+      }
     }
-    tx = await buy(+Token1, TradePrice);
+    const tx = await buy(token, TradePrice, userAddress);
 
-    print([textLine({words:[textWord({ characters: "You have successfully purchased $GTON!" })]})]);
-    print([textLine({words:[textWord({ characters: "#WA𝔾MI ⚜️" })]})]);
-    print([textLine({words:[textWord({ characters: "Transaction:" })]})]);
-    print([textLine({words:[anchorWord({ className: "link-padding", characters: messages.viewTxn,  onClick: () => {window.open(ftmscanUrl+tx, '_blank');} })]})]);
+    print([
+      textLine({ words: [textWord({ characters: 'You have successfully purchased $GTON!' })] }),
+    ]);
+    print([textLine({ words: [textWord({ characters: '#WA𝔾MI ⚜️' })] })]);
+    print([textLine({ words: [textWord({ characters: 'Transaction:' })] })]);
+    printLink(print, messages.viewTxn, explorerUrl + tx);
 
     loading(false);
     lock(false);
-  }
-  catch (err) 
-  {
-    if (err.code in ErrorCodes)
-    {
-      ErrorHandler(eventQueue, err.code, "Buy");
-    }
-    else
-    {
-      print([textLine({words:[textWord({ characters: err.message })]})]);
+  } catch (err) {
+    if (err.code in ErrorCodes) {
+      ErrorHandler(print, err.code, 'Buy');
+    } else {
+      print([textLine({ words: [textWord({ characters: err.message })] })]);
     }
     loading(false);
     lock(false);
   }
-}
+};
 
-const PriceWorker = async (eventQueue) => 
-{
-  const { lock, loading, print } = eventQueue.handlers;
-  lock(true);
-  loading(true);
+const Commands = [
+  'help',
+  'join',
+  'stake',
+  'unstake',
+  'balance',
+  'add',
+  'faucet',
+  'harvest',
+  'buy',
+  'claim',
+];
 
-  try 
-  {
-    const urlPrice = "https://pw.gton.capital/rpc/base-to-usdc-price";
+const GTONRouterMap = {
+  help: HelpWorker,
+  stake: StakeWorker,
+  unstake: UnStakeWorker,
+  harvest: HarvestWorker,
+  buy: BuyWorker,
+  claim: ClaimPostAuditWorker,
+  ...commonOperators,
+};
 
-    const result = await axios.get(urlPrice);
-    
-    print([textLine({words:[textWord({ characters: `$GTON price right now: ${result.data.result}` })]})]);
-    loading(false);
-    lock(false);
-  }
-  catch (e) 
-  {
-    console.log("errored: " + e.message);
-    print([textLine({words:[textWord({ characters: "The request failed, please try again later." })]})]);
-    lock(false);
-    loading(false);
-  }
-}
+const ArgsFunctions = ['stake', 'unstake', 'harvest', 'buy'];
 
-
-const Commands =
-[
-  "help",
-  "join",
-  "stake",
-  "unstake",
-  "switch",
-  "balance",
-  "add",
-  "faucet",
-  "harvest",
-  "buy",
-]
-
-const GTONRouterMap =
-{
-  "help": HelpWorker,
-  "join": ConnectMetamaskWorker,
-  "stake": StakeWorker,
-  "unstake": UnStakeWorker,
-  "switch": SwitchWorker,
-  "balance": BalanceWorker,
-  "add": AddTokenWorker,
-  "faucet": FaucetWorker,
-  "harvest": HarvestWorker,
-  "buy": BuyWorker,
-  "claim": ClaimAnnouncementWorker,
-  "price": PriceWorker,
-}
-
-const ArgsFunctions = 
-[
-  "stake",
-  "unstake",
-  "harvest",
-  "buy"
-]
-
-async function Parse(eventQueue, command)
-{
+async function Parse(eventQueue, state, command) {
   const { print } = eventQueue.handlers;
   const Command = command.split(' ')[0].trim().toLowerCase();
   // split was replaced by substring because of the buy command, which assumes two parameters
   const Arg = command.substring(command.indexOf(' ')).replace(' ', '');
 
-  try
-  {
-    for (command in Commands) // check if user provided something like stake10 instead of stake 10
-    {
-      if(Command.indexOf(command) !== -1) throw new Error("It looks like you forgot the space in the command, examples: \n stake 10 \n unstake 10 \n harvest 10");
+  try {
+    for (command in Commands) {
+      // check if user provided something like stake10 instead of stake 10
+      if (Command.indexOf(command) !== -1)
+        throw new Error(
+          'It looks like you forgot the space in the command, examples: \n stake 10 \n unstake 10 \n harvest 10',
+        );
     }
     // Handle incorrect command
-    if(!(Command in GTONRouterMap)) throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
-    if(ArgsFunctions.includes(Command) && Arg == Command) throw Error("You should provide args for calling this function. e.g stake 1");
-    GTONRouterMap[Command](eventQueue, Arg.toLowerCase());
-  }
-  catch(err)
-  {
-    print([textLine({words:[textWord({ characters: err.message })]})]);
+    if (!(Command in GTONRouterMap))
+      throw Error(notFoundStrings[Math.floor(Math.random() * notFoundStrings.length)]);
+    if (ArgsFunctions.includes(Command) && Arg == Command)
+      throw Error('You should provide args for calling this function. e.g stake 1');
+    GTONRouterMap[Command](eventQueue.handlers, Arg.toLowerCase(), state);
+  } catch (err) {
+    print([textLine({ words: [textWord({ characters: err.message })] })]);
   }
 }
 
-export { AddTokenWorker, BalanceWorker, SwitchWorker, ConnectMetamaskWorker, HarvestWorker, UnStakeWorker, StakeWorker, GTONRouterMap }
+export { GTONRouterMap };
 export default Parse;

@@ -1,5 +1,7 @@
-import { ethers } from 'ethers';
-import { FTMGTONSwapPath as path, spiritswaprouteraddress } from '../../config/config';
+import Big from 'big.js';
+import Web3 from 'web3';
+import { AbiItem } from 'web3-utils';
+import { pairSwapPath as path, routeraddress } from '../../config/config';
 import SpiritSwapRouterABI from './ABI/SpiritSwapRouter.json';
 import { validate } from './validate';
 
@@ -7,28 +9,20 @@ import { validate } from './validate';
 
 declare const window: any;
 
-const buy = async (amount, gtonftmprice): Promise<string> => 
-{
+const buy = async (amount: Big, gtonftmprice: Big, userAddress: string): Promise<string> => {
   await validate();
-  
-  const CurrentUnixTime = Math.round((new Date()).getTime() / 1000);
+
+  const CurrentUnixTime = Math.round(new Date().getTime() / 1000);
   const Deadline = CurrentUnixTime + 1200; // Current time + 20 minutes
+  const web3 = new Web3(window.ethereum);
+  const contract = new web3.eth.Contract(SpiritSwapRouterABI as AbiItem[], routeraddress);
 
-  const provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
-  const signer = provider.getSigner(0);
-  const contract = new ethers.Contract(spiritswaprouteraddress, SpiritSwapRouterABI, signer);
+  const res = gtonftmprice.mul(amount);
 
-  gtonftmprice = gtonftmprice * amount;
-
-  gtonftmprice =  ethers.utils.parseUnits(gtonftmprice.toString(), 18);
-  amount =        ethers.utils.parseUnits(amount.toString(), 18);
-  
-  const tx = await contract.swapExactETHForTokens(amount.toString(), 
-                                                path, 
-                                                signer.getAddress(), 
-                                                Deadline, { value: gtonftmprice.toString(), })
-  const receipt = await tx.wait();
-  return receipt.transactionHash;
+  const tx = await contract.methods
+    .swapExactETHForTokens(amount.toFixed(), path, userAddress, Deadline)
+    .send({ from: userAddress, value: res.toFixed(0) });
+  return tx.transactionHash;
 };
 
 export default buy;

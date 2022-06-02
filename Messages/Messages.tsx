@@ -1,25 +1,41 @@
 import { isTestnet } from '../config/config';
 
-enum Commands 
-{
-    CD = "cd",
-    HELP = "help",
-    JOIN = "join",
-    STAKE = "stake",
-    UNSTAKE = "unstake",
-    SWITCH = "switch",
-    BALANCE = "balance",
-    ADD_TOKEN = "add",
-    FAUCET = "faucet",
-    HARVEST = "harvest",
-    BUY = "buy",
-    CLAIM = "claim",
-    PRICE = "price",
+enum Commands {
+  CD = 'cd',
+  HELP = 'help',
+  JOIN = 'join',
+  STAKE = 'stake',
+  UNSTAKE = 'unstake',
+  BALANCE = 'balance',
+  ADD_TOKEN = 'add',
+  FAUCET = 'faucet',
+  HARVEST = 'harvest',
+  BUY = 'buy',
+  CLAIM = 'claim',
+  PRICE = 'price',
+}
+
+enum BondingCommands {
+  Tokens = 'tokens',
+  Mint = 'mint',
+  Claim = 'claimBond',
+  Info = 'info',
+  Bonds = 'bonds',
+  Preview = 'preview',
+  Types = 'types',
+}
+
+enum ChatCommands {
+  Send = 'send',
+  Load = 'load',
+  Login = 'login',
+  Members = 'members',
+  Angels = 'angels',
 }
 
 enum OptionalActions {
   YES = 'yes',
-  NO = 'no'
+  NO = 'no',
 }
 
 enum Prompt {
@@ -36,6 +52,16 @@ enum Links {
   CLAIM = 'https://medium.com/gearbox-protocol/credit-account-mining-guide-fueling-up-for-the-launch-abc17fbddbad',
 }
 
+const cdHelp = `
+  ${Prefix.PREFIX}${Commands.CD} bonding | staking - change project
+`;
+
+const commonCommands = `
+  ${Prefix.PREFIX}${Commands.HELP} - this output
+  ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
+  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | usdc - add tokens to metamask
+  ${isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`;
 
 const messages = {
   banner: `
@@ -47,10 +73,12 @@ const messages = {
       ╚██████╔╝   ██║   ╚██████╔╝██║ ╚████║    ╚██████╗██║  ██║██║     ██║   ██║   ██║  ██║███████╗
        ╚═════╝    ╚═╝    ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝
                                                        
-                          ⚜️ Welcome to GTON CAPITAL (𝔾ℂ) CLI UI 📺!
+                          ⚜️ Welcome to GTON CAPITAL CLI UI 📺!
 
-      This dApp allows to interact with GTON Capital staking smart contracts on Fantom${isTestnet? ' Testnet' : ''}.
-                                    ${isTestnet? 'Mainnet coming soon!' : ''}
+      This dApp allows to interact with GTON Capital staking smart contracts on Ethereum${
+        isTestnet ? ' Testnet' : ''
+      }.
+                                    ${isTestnet ? 'Mainnet coming soon!' : ''}
       The old-school console-based user interface was forked from Gearbox protocol. 
                           
       Kudos for the inspiration to the intricate brain of ivangbi and the Gearbox team 
@@ -60,28 +88,46 @@ const messages = {
 
        #WA𝔾MI ⚜️
   `,
-  faucet: 'Get free testnet $FTMs',
+  faucet: 'Get free testnet $ETH',
   gc: 'Find more info about GC',
 
-  helpText: `
+  stakingHelpText: `
   Available commands:
-  ${Prefix.PREFIX}${Commands.CLAIM} - claim gton and harvest reward from paused staking contract
-  ${Prefix.PREFIX}${Commands.HELP} - this output
-  ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
-  ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds - paused
-  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds - paused
-  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward - paused
-  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to Fantom ${isTestnet? 'Testnet' : ''}
-  ${Prefix.PREFIX}${Commands.BALANCE} gton - get actual erc20 token balance
-  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton - add tokens to metamask
-  ${Prefix.PREFIX}${Commands.BUY} <amount> with ftm - buy <amount> of gton via CLI
-  ${ isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} - receive gton airdrop` : ''}
+  ${Prefix.PREFIX}${Commands.CLAIM} - claim gton and harvest reward from V1 staking contract (Fantom)
+  ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
+  ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
+  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
+  ${commonCommands}
+  `,
+  bondingHelpText: `
+  Available commands:
+  ${commonCommands}
+  ${Prefix.PREFIX}${BondingCommands.Tokens} - prints list of tokens, that are available to spend on bond
+  ${Prefix.PREFIX}${BondingCommands.Types} - prints list of available bond types
+  ${Prefix.PREFIX}${BondingCommands.Bonds} - prints bonds ids of connected wallet
+  ${Prefix.PREFIX}${BondingCommands.Mint} <token> <type> <amount> - buy <type> of bond, spending <amount> of <token> via CLI
+  ${Prefix.PREFIX}${BondingCommands.Claim} <bondId> - claim bond with given id
+  ${Prefix.PREFIX}${BondingCommands.Info} <bondId> - prints info about given bond id
+  ${Prefix.PREFIX}${BondingCommands.Preview} <token> <type> <amount> - shows amount gton out after claim
+  ${cdHelp}
+  `,
+  chatHelpText: `
+  Available commands:
+  ${commonCommands}
+  ${Prefix.PREFIX}${ChatCommands.Login} <name> - logs in connected account, provide your <name>
+  ${Prefix.PREFIX}${ChatCommands.Load} all <amount> - load and print last <amount> messages in angels' chat
+  ${Prefix.PREFIX}${ChatCommands.Load} dm <amount> <username or address> - load and print last received <amount> messages from <user>
+  ${Prefix.PREFIX}${ChatCommands.Send} all <message> - sends message to all in the chat
+  ${Prefix.PREFIX}${ChatCommands.Send} dm <username or address> <message> - sends message to the user with specified name
+  ${Prefix.PREFIX}${ChatCommands.Members} - prints addresses that are registered in the chat
+  ${Prefix.PREFIX}${ChatCommands.Angels} - prints info about angels program
+  
+  ${cdHelp}
   `,
   links: `
   Empty command rn
   `,
-  LINKS: 
-  `
+  LINKS: `
   TODO
   `,
   viewTxn: 'View transaction',
@@ -101,36 +147,57 @@ const messages = {
   approve: `
       You have succesfully approved your funds!
       Transaction approve: 
-    `
-  ,
+    `,
+  claim: `
+      You have succesfully claimed your funds!
+      Transaction hash: 
+    `,
   stake(type: string, amount: string) {
     return `
     You have succesfully ${type} your funds!
     Amount: ${amount},
     Transaction stake:`;
-   },
+  },
   harvested(amount: string) {
     return `
     You have succesfully harvested your reward!
     Amount: ${amount},
     Transaction:`;
-   },
+  },
   accountsMined: (n: number) => `
   Accounts mined: ${n}
   `,
   balance: (n: string) => `
       Token balance: ${n}
-    `
-  ,
-  chainSwitch: `
-  Successfully switched to Fantom ${isTestnet? 'Testnet' : ''}.
-  `,
+    `,
   faucetDeposit: `
-  Succesfully airdropped GTON.
+  Succesfully airdropped token.
   `,
   addToken: `
   Successfully added token to the MetaMask.
   `,
+  header: [
+    {
+      name: 'Link',
+      href: '/',
+    },
+    {
+      name: 'Link',
+      href: '/',
+    },
+    {
+      name: 'Link',
+      href: '/',
+    },
+    {
+      name: 'Link',
+      href: '/',
+    },
+    {
+      name: 'Link',
+      href: '/',
+    },
+  ],
 };
 
 export { Prefix, Links, Prompt, Commands, OptionalActions };

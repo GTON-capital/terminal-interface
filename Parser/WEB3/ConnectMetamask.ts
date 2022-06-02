@@ -1,6 +1,5 @@
 import { utils } from 'ethers';
 import { TerminalError } from '../../Errors/ErrorCodes';
-import { network } from '../../config/config';
 
 declare const window: any;
 
@@ -20,12 +19,6 @@ const connectMetamask = async () => {
   }
 
   if (!window.ethereum.request) {
-    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  }
-
-  const chainId: string = await window.ethereum.request({ method: 'net_version' });
-
-  if (chainId !== network) {
     throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
   }
 
