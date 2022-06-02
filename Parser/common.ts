@@ -92,19 +92,8 @@ const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
 }, 'Error while connecting metamask, please try again');
 
 const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {
-  try {
-    await isCurrentChain(network);
-  } catch (e) {
-    print([
-      textLine({
-        words: [
-          textWord({
-            characters: `Wrong network. Switch to ${mmChains[network].chainName}, please.`,
-          }),
-        ],
-      }),
-    ]);
-    return;
+  if (!(await isCurrentChain(network))) {
+    throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
   }
 
   if (TokenName === 'all') {
