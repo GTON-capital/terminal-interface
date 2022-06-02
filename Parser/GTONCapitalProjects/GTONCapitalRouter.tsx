@@ -72,7 +72,7 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
     if (!(await isCurrentChain(network))) {
       throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
     }
-    if (Amount === '0') throw new Error('You can\'t stake less than 0 $GTON');
+    if (Amount === '0') throw new Error("You can't stake less than 0 $GTON");
 
     let amount;
     let userBalance;
@@ -120,7 +120,7 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
     if (!(await isCurrentChain(network))) {
       throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
     }
-    if (Amount === '0') throw new Error('You can\'t unstake less than 0 $GTON');
+    if (Amount === '0') throw new Error("You can't unstake less than 0 $GTON");
 
     let amount;
     let userBalance;
@@ -160,7 +160,7 @@ const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
       throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
     }
 
-    if (Amount === '0') throw new Error('You can\'t harvest less than 0 $GTON');
+    if (Amount === '0') throw new Error("You can't harvest less than 0 $GTON");
 
     let amount;
     let balanceUser;

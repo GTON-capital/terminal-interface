@@ -24,6 +24,12 @@ export async function validate() {
 
 export async function isCurrentChain(chainId: string): Promise<Boolean> {
   const web3 = new Web3(window.ethereum);
-  let currentChainId = await web3.eth.net.getId();
+  let currentChainId;
+  try {
+    currentChainId = await web3.eth.net.getId();
+  } catch (e) {
+    console.error(e);
+    return;
+  }
   return currentChainId == +chainId;
 }
