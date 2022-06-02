@@ -154,7 +154,7 @@ const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) =
 
 const AddTokenWorker = createWorker(async ({ print }, TokenName) => {
   const token = tokenMap[TokenName];
-  if (!token) throw Error('Available tokens are: gton, sgton');
+  if (!token) throw Error('Available tokens are: gton, sgton, usdc');
   await addToken(token);
   print([textLine({ words: [textWord({ characters: messages.addToken })] })]);
 }, 'Error adding token to Meramask');
