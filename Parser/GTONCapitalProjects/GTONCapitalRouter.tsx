@@ -13,11 +13,12 @@ import {
   network,
   claimNetwork,
   chain,
+  fantomStakingAddress,
 } from '../../config/config';
 import { isCurrentChain } from '../WEB3/validate';
 import commonOperators, { printLink } from '../common';
 import notFoundStrings from '../../Errors/notfound-strings';
-import { stake, unstake, claim } from '../WEB3/Stake';
+import { stake, unstake, claim, userDidClaim } from '../WEB3/Stake';
 import { harvest } from '../WEB3/harvest';
 import balance, { userShare } from '../WEB3/Balance';
 import { toWei } from '../WEB3/API/balance';
@@ -202,6 +203,11 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
     if (!(await isCurrentChain(claimNetwork))) {
       throw new Error('Wrong network, switch on Fantom Opera, please.');
     }
+
+    if (await userDidClaim()) throw Error('You already claimed your GTON from V1 staking');
+
+    const stakingBalance = await balance(userAddress, fantomStakingAddress);
+    if (stakingBalance.eq(0)) throw Error('You don\'t have any GTON in V1 staking');
 
     const secondTxn = await claim();
 

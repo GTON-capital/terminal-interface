@@ -36,3 +36,12 @@ export const claim = async (): Promise<void> => {
   const txn = await contract.methods.withdrawGton().send({ from: signer });
   return txn.transactionHash;
 };
+
+export const userDidClaim = async (): Promise<boolean> => {
+  await validate();
+  const web3 = new Web3(window.ethereum);
+  const signer = (await web3.eth.getAccounts())[0];
+  const contract = new web3.eth.Contract(CLAIM_ABI as AbiItem[], claimAddress);
+  const txn = await contract.methods.withdrawals(signer).call();
+  return txn;
+};
