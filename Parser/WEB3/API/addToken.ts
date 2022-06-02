@@ -28,7 +28,7 @@ const tokenMap: Record<string, Token> = {
   },
   usdc: {
     address: usdcAddress,
-    symbol: 'tUSDC',
+    symbol: 'USDC',
     decimals: 18,
     image: '',
   },

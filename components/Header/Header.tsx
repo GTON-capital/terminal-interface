@@ -58,12 +58,12 @@ function Header() {
         Docs
       </a>
       <a
-        href="https://gton.capital/faq"
+        href="https://explorer.testnet.gton.network"
         target="_blank"
         rel="noopener noreferrer"
         className={classes.headerTextWrap}
       >
-        FAQ
+        GTON Chain Explorer
       </a>
       <a
         href="https://snapshot.org/#/gton.eth"
