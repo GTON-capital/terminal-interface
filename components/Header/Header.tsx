@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import classes from './header.module.scss';
-import { chain, claimNetwork } from '../../config/config';
+import { chain, claimNetwork, isTestnet } from '../../config/config';
 import Web3 from 'web3';
 declare const window: any;
 
@@ -20,7 +20,7 @@ function Header() {
   useEffect(() => {
     if (window.ethereum) {
       window.ethereum.on('chainChanged', function (networkId) {
-        const id = parseInt(networkId.toString(16)).toString()
+        const id = parseInt(networkId.toString(16)).toString();
         setChain(id);
         console.log(id);
       });
@@ -33,10 +33,9 @@ function Header() {
       const web3 = new Web3(window.ethereum);
       const currentChainId = await (await web3.eth.net.getId()).toString();
       setChain(currentChainId);
-    }
+    };
 
-    getChain()
-      .catch(console.error);
+    getChain().catch(console.error);
   }, []);
 
   return (
@@ -47,7 +46,7 @@ function Header() {
         rel="noopener noreferrer"
         className={classes.headerTextWrap}
       >
-        Website
+        WEBSITE
       </a>
       <a
         href="https://docs.gton.capital"
@@ -55,7 +54,7 @@ function Header() {
         rel="noopener noreferrer"
         className={classes.headerTextWrap}
       >
-        Docs
+        DOCS
       </a>
       <a
         href="https://explorer.testnet.gton.network"
@@ -63,22 +62,24 @@ function Header() {
         rel="noopener noreferrer"
         className={classes.headerTextWrap}
       >
-        GTON Chain Explorer
+        EXPLORER
       </a>
       <a
-        href="https://snapshot.org/#/gton.eth"
+        href="https://forum.gton.capital"
         target="blank"
         rel="noopener noreferrer"
         className={classes.headerTextWrap}
       >
-        Voting
+        FORUM
       </a>
       <div className={classes.btn}>
-        {isCurrentChainId === chain.chainId
-          ? chain.chainName
+        {isCurrentChainId === chain.chainId && !isTestnet
+          ? 'ETH MAINNET'
+          : isCurrentChainId === chain.chainId && isTestnet
+          ? 'ROPSTEN'
           : isCurrentChainId === claimNetwork
-          ? 'Fantom'
-          : 'Wrong network'}
+          ? 'FANTOM'
+          : 'WRONG NETWORK'}
       </div>
     </div>
   );
