@@ -75,16 +75,17 @@ const messages = {
                                                        
                           ⚜️ Welcome to GTON CAPITAL CLI UI 📺!
 
-      This dApp allows to interact with GTON Capital staking smart contracts on Ethereum${
+      This dApp allows to interact with GTON Capital staking core smart contracts on Ethereum${
         isTestnet ? ' Testnet' : ''
-      }.
-                                    ${isTestnet ? 'Mainnet coming soon!' : ''}
-      The old-school console-based user interface was forked from Gearbox protocol. 
+      }
+      and later on GTON Network.
+      ${isTestnet ? 'Mainnet coming soon!' : ''}
+      GTON Cli is an old-school console-based user interface.
                           
-      Kudos for the inspiration to the intricate brain of ivangbi and the Gearbox team 
+      Kudos for the inspiration to the intricate brain of ivangbi and the Gearbox team
       who came up with the idea of geeky CLI for their launch.
 
-                       Type ${Prefix.PREFIX}${Commands.HELP} to see the list of available commands.
+                        Type ${Prefix.PREFIX}${Commands.HELP} to see the list of available commands.
 
        #WA𝔾MI ⚜️
   `,
