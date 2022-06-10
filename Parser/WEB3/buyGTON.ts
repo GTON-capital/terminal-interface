@@ -19,7 +19,7 @@ export const checkSwapAmount = async (amount: Big): Promise<string> => {
         `https://api.1inch.io/v4.0/1/quote?fromTokenAddress=${usdcAddress}&toTokenAddress=${gtonAddress}&amount=${amount}`,
       );
       return `
-          You will swap ${fromWei(quote.data.fromTokenAmount, 6)} $USDC on ${fromWei(
+      You will swap ${fromWei(quote.data.fromTokenAmount, 6)} $USDC on ${fromWei(
         quote.data.toTokenAmount,
       )} $GTON
             `;

@@ -1,9 +1,6 @@
 import { textLine, textWord, anchorWord } from 'crt-terminal';
 import Big from 'big.js';
-import Web3 from 'web3';
-import { AbiItem, fromWei } from 'web3-utils';
 import messages from '../../Messages/Messages';
-import axios from 'axios';
 import {
   gtonAddress,
   stakingAddress,
@@ -239,14 +236,12 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
 };
 
 const BuyWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
-  if (!(await isCurrentChain(network))) {
-    throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
-  }
-
   try {
     loading(true);
     lock(true);
-
+    if (!(await isCurrentChain(network))) {
+      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    }
     const amount = toWei(Amount, 6); // for usdc
     let userBalance;
     let trx;
@@ -287,9 +282,6 @@ const BuyWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
     } catch (e) {
       throw Error(e);
     }
-    loading(false);
-    lock(false);
-
     loading(false);
     lock(false);
   } catch (err) {
