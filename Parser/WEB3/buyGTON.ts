@@ -1,33 +1,17 @@
 import Big from 'big.js';
 import Web3 from 'web3';
 import axios from 'axios';
-import { AbiItem } from 'web3-utils';
-import { pairSwapPath as path, routeraddress, gtonAddress, usdcAddress } from '../../config/config';
+import { gtonAddress, usdcAddress } from '../../config/config';
 import { fromWei } from '../WEB3/API/balance';
-import SpiritSwapRouterABI from './ABI/SpiritSwapRouter.json';
+
 import { validate } from './validate';
 
-// WFTM -> GTON
+// USDC -> GTON
 
 declare const window: any;
 
-// const buy = async (amount: Big, gtonftmprice: Big, userAddress: string): Promise<string> => {
-//   await validate();
-
-//   const CurrentUnixTime = Math.round(new Date().getTime() / 1000);
-//   const Deadline = CurrentUnixTime + 1200; // Current time + 20 minutes
-//   const web3 = new Web3(window.ethereum);
-//   const contract = new web3.eth.Contract(SpiritSwapRouterABI as AbiItem[], routeraddress);
-
-//   const res = gtonftmprice.mul(amount);
-
-//   const tx = await contract.methods
-//     .swapExactETHForTokens(amount.toFixed(), path, userAddress, Deadline)
-//     .send({ from: userAddress, value: res.toFixed(0) });
-//   return tx.transactionHash;
-// };
-
 export const checkSwapAmount = async (amount: Big): Promise<string> => {
+  await validate();
   try {
     let status = await axios.get('https://api.1inch.io/v4.0/1/healthcheck');
     if (status) {
@@ -49,6 +33,7 @@ export const checkSwapAmount = async (amount: Big): Promise<string> => {
 };
 
 export const buy = async (amount: Big, userAddress: string): Promise<string> => {
+  await validate();
   const web3 = new Web3(window.ethereum);
   try {
     const response = await axios.get(
