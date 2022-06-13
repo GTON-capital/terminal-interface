@@ -235,26 +235,37 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
   }
 };
 
-const BuyWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
+const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
   try {
     loading(true);
     lock(true);
     if (!(await isCurrentChain(network))) {
       throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
     }
+    const tmpARGS = Args.split(' ');
+    if (tmpARGS.length < 3) {
+      throw new Error('Invalid input');
+    }
+    const Amount = tmpARGS[2]; // amount
+    const Token = tmpARGS[3]; // token
+    const token = Token === tokenMap.usdc.symbol.toLocaleLowerCase() ? usdcAddress : '';
+
+    if (!token) {
+      throw new Error('Wrong symbol, available tokens: usdc');
+    }
     const amount = toWei(Amount, 6); // for usdc
     let userBalance;
     let trx;
     let amountBetweenSwap;
 
-    userBalance = await balance(userAddress, usdcAddress);
+    userBalance = await balance(userAddress, token);
 
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
-    const userAllowance = await allowance(usdcAddress, userAddress);
+    const userAllowance = await allowance(token, userAddress);
 
     if (amount.gt(userAllowance)) {
-      const firstTxn = await approve(userAddress, usdcAddress, oneInchRouterAddress, amount);
+      const firstTxn = await approve(userAddress, token, oneInchRouterAddress, amount);
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
       printLink(print, messages.viewTxn, explorerUrl + firstTxn);
     }

@@ -135,7 +135,7 @@ const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) =
   } else if (TokenName === 'sgton') {
     CoinBalance = fromWei(await userShare(userAddress));
   } else {
-    CoinBalance = fromWei(Balance.toFixed(18));
+    CoinBalance = fromWei(Balance.toFixed(18), token.decimals);
   }
   const res = messages.balance(CoinBalance.toFixed(18));
   print([textLine({ words: [textWord({ characters: res })] })]);

@@ -1,10 +1,10 @@
 import { stakingAddress, gtonAddress, usdcAddress } from '../../../config/config';
 
 export type Token = {
-  address: string,
-  symbol: string,
-  decimals: number,
-  image: string,
+  address: string;
+  symbol: string;
+  decimals: number;
+  image: string;
 };
 
 const tokenMap: Record<string, Token> = {
@@ -29,7 +29,7 @@ const tokenMap: Record<string, Token> = {
   usdc: {
     address: usdcAddress,
     symbol: 'USDC',
-    decimals: 18,
+    decimals: 6,
     image: '',
   },
 };
@@ -37,6 +37,6 @@ const tokenMap: Record<string, Token> = {
 export const tokens: Record<string, string> = {
   gton: gtonAddress,
   usdc: usdcAddress,
-}
+};
 
 export default tokenMap;
