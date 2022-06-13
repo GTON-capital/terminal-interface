@@ -271,7 +271,7 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     }
 
     try {
-      amountBetweenSwap = await checkSwapAmount(amount);
+      amountBetweenSwap = await checkSwapAmount(amount, token.address);
       print([
         textLine({
           words: [textWord({ characters: amountBetweenSwap })],
@@ -282,7 +282,7 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     }
 
     try {
-      trx = await buy(amount, userAddress);
+      trx = await buy(amount, userAddress, token.address);
       print([
         textLine({
           words: [textWord({ characters: 'You have successfully purchased $GTON!' })],
