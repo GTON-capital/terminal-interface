@@ -47,7 +47,7 @@ export const buy = async (amount: Big, userAddress: string): Promise<string> => 
       }
     }
   } catch (e) {
-    console.log(e);
+    throw new Error(e.message);
   }
 };
 
