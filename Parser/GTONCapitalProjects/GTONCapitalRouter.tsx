@@ -247,10 +247,10 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
       throw new Error('Invalid input');
     }
     const Amount = tmpARGS[2]; // amount
-    const Token = tmpARGS[3]; // token
-    const token = Token in tokenMap ? tokenMap[Token] : null;
+    const TokenName = tmpARGS[3];
+    const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
 
-    if (token === null) {
+    if (!token) {
       throw new Error('Wrong symbol, available tokens: usdc');
     }
     const amount = toWei(Amount, token.decimals);
