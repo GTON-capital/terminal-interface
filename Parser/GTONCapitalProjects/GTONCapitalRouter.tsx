@@ -248,7 +248,7 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     }
     const Amount = tmpARGS[2]; // amount
     const Token = tmpARGS[3]; // token
-    const token = Token === tokenMap.usdc.symbol.toLocaleLowerCase() ? usdcAddress : '';
+    const token = Token === tokenMap.usdc.symbol.toLowerCase() ? usdcAddress : '';
 
     if (!token) {
       throw new Error('Wrong symbol, available tokens: usdc');
@@ -262,8 +262,8 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
 
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
-    const userAllowance = await allowance(token, userAddress);
-
+    const userAllowance = await allowance(token, oneInchRouterAddress);
+    console.log(userAllowance);
     if (amount.gt(userAllowance)) {
       const firstTxn = await approve(userAddress, token, oneInchRouterAddress, amount);
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
