@@ -180,28 +180,6 @@ const messages = {
   addToken: `
   Successfully added token to the MetaMask.
   `,
-  header: [
-    {
-      name: 'Link',
-      href: '/',
-    },
-    {
-      name: 'Link',
-      href: '/',
-    },
-    {
-      name: 'Link',
-      href: '/',
-    },
-    {
-      name: 'Link',
-      href: '/',
-    },
-    {
-      name: 'Link',
-      href: '/',
-    },
-  ],
 };
 
 export { Prefix, Links, Prompt, Commands, OptionalActions };
