@@ -22,8 +22,6 @@ export const checkSwapAmount = async (
       let quote = await axios.get(
         `https://api.1inch.io/v4.0/1/quote?fromTokenAddress=${fromTokenAddress}&toTokenAddress=${gtonAddress}&amount=${amount}`,
       );
-      console.log(quote.data);
-
       return `
       You will swap ${fromWei(quote.data.fromTokenAmount, decimals)} $${
         quote.data.fromToken.symbol

@@ -63,7 +63,7 @@ const commonCommands = `
   ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | usdc - add tokens to metamask
   ${Prefix.PREFIX}${
   Commands.BUY
-} gton for <amount> <token>  - available tokens: usdc (more coming soon) 
+} gton for <amount> <token>  - available tokens: eth, usdc (more coming soon) 
   ${isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`;
 
 const messages = {
