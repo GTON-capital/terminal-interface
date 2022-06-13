@@ -9,7 +9,6 @@ import {
   claimNetwork,
   chain,
   fantomStakingAddress,
-  usdcAddress,
   oneInchRouterAddress,
 } from '../../config/config';
 import { isCurrentChain } from '../WEB3/validate';
@@ -243,29 +242,30 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
       throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
     }
     const tmpARGS = Args.split(' ');
+
     if (tmpARGS.length < 3) {
       throw new Error('Invalid input');
     }
     const Amount = tmpARGS[2]; // amount
-    const Token = tmpARGS[3]; // token
-    const token = Token === tokenMap.usdc.symbol.toLocaleLowerCase() ? usdcAddress : '';
+    const TokenName = tmpARGS[3];
+    const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
 
     if (!token) {
       throw new Error('Wrong symbol, available tokens: usdc');
     }
-    const amount = toWei(Amount, 6); // for usdc
+    const amount = toWei(Amount, token.decimals);
+
     let userBalance;
     let trx;
     let amountBetweenSwap;
 
-    userBalance = await balance(userAddress, token);
+    userBalance = await balance(userAddress, token.address);
 
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
-    const userAllowance = await allowance(token, userAddress);
-
+    const userAllowance = await allowance(token.address, oneInchRouterAddress);
     if (amount.gt(userAllowance)) {
-      const firstTxn = await approve(userAddress, token, oneInchRouterAddress, amount);
+      const firstTxn = await approve(userAddress, token.address, oneInchRouterAddress, amount);
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
       printLink(print, messages.viewTxn, explorerUrl + firstTxn);
     }
