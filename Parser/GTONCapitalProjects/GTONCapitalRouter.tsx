@@ -263,7 +263,6 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
     const userAllowance = await allowance(token, oneInchRouterAddress);
-    console.log(userAllowance);
     if (amount.gt(userAllowance)) {
       const firstTxn = await approve(userAddress, token, oneInchRouterAddress, amount);
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
