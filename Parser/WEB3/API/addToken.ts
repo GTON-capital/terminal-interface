@@ -5,6 +5,7 @@ export type Token = {
   symbol: string;
   decimals: number;
   image: string;
+  canBeUsedForPurchase: boolean;
 };
 
 const tokenMap: Record<string, Token> = {
@@ -13,24 +14,28 @@ const tokenMap: Record<string, Token> = {
     symbol: 'GTON',
     decimals: 18,
     image: '',
+    canBeUsedForPurchase: false,
   },
   sgton: {
     address: stakingAddress,
     symbol: 'sGTON',
     decimals: 18,
     image: '',
+    canBeUsedForPurchase: false,
   },
   harvest: {
     address: stakingAddress,
     symbol: 'sGTON',
     decimals: 18,
     image: '',
+    canBeUsedForPurchase: false,
   },
   usdc: {
     address: usdcAddress,
     symbol: 'USDC',
     decimals: 6,
     image: '',
+    canBeUsedForPurchase: true,
   },
 };
 

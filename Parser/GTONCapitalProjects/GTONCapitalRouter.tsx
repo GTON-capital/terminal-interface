@@ -250,7 +250,7 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     const TokenName = tmpARGS[3];
     const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
 
-    if (!token) {
+    if (!token || !token.canBeUsedForPurchase) {
       throw new Error('Wrong symbol, available tokens: usdc');
     }
     const amount = toWei(Amount, token.decimals);
