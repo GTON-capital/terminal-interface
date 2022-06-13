@@ -25,7 +25,7 @@ export const checkSwapAmount = async (
       return `
       You will swap ${fromWei(quote.data.fromTokenAmount, decimals)} $${
         quote.data.fromToken.symbol
-      } on ${fromWei(quote.data.toTokenAmount)} $GTON
+      } for ${fromWei(quote.data.toTokenAmount)} $GTON
             `;
     } else {
       return 'Swap is not available at the moment';
