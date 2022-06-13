@@ -10,7 +10,11 @@ import { validate } from './validate';
 
 declare const window: any;
 
-export const checkSwapAmount = async (amount: Big, fromTokenAddress: string): Promise<string> => {
+export const checkSwapAmount = async (
+  amount: Big,
+  fromTokenAddress: string,
+  decimals: number,
+): Promise<string> => {
   await validate();
   try {
     let status = await axios.get('https://api.1inch.io/v4.0/1/healthcheck');
@@ -18,12 +22,13 @@ export const checkSwapAmount = async (amount: Big, fromTokenAddress: string): Pr
       let quote = await axios.get(
         `https://api.1inch.io/v4.0/1/quote?fromTokenAddress=${fromTokenAddress}&toTokenAddress=${gtonAddress}&amount=${amount}`,
       );
+      console.log(quote.data);
+
       return `
-      You will swap ${fromWei(quote.data.fromTokenAmount, 6)} $USDC on ${fromWei(
-        quote.data.toTokenAmount,
-      )} $GTON
+      You will swap ${fromWei(quote.data.fromTokenAmount, decimals)} $${
+        quote.data.fromToken.symbol
+      } on ${fromWei(quote.data.toTokenAmount)} $GTON
             `;
-      // 6 decimals for usdc
     } else {
       return 'Swap is not available at the moment';
     }
