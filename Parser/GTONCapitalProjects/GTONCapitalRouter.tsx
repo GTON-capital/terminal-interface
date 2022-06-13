@@ -1,19 +1,15 @@
 import { textLine, textWord, anchorWord } from 'crt-terminal';
 import Big from 'big.js';
-import Web3 from 'web3';
-import { AbiItem } from 'web3-utils';
 import messages from '../../Messages/Messages';
 import {
   gtonAddress,
   stakingAddress,
   explorerUrl,
-  wTokenAddress,
-  GTONAddress,
-  poolAddress,
   network,
   claimNetwork,
   chain,
   fantomStakingAddress,
+  oneInchRouterAddress,
 } from '../../config/config';
 import { isCurrentChain } from '../WEB3/validate';
 import commonOperators, { printLink } from '../common';
@@ -24,8 +20,7 @@ import balance, { userShare } from '../WEB3/Balance';
 import { toWei } from '../WEB3/API/balance';
 import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
-import buy from '../WEB3/buyGTON';
-import erc20 from '../WEB3/ABI/erc20.json';
+import { buy, checkSwapAmount } from '../WEB3/buyGTON';
 
 declare const window: any;
 
@@ -86,6 +81,7 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
       userBalance = await balance(userAddress, gtonAddress);
       if (amount.gt(userBalance)) throw Error('Insufficient amount');
     }
+
     const userAllowance = await allowance(gtonAddress, stakingAddress);
     if (amount.gt(userAllowance)) {
       const firstTxn = await approve(userAddress, gtonAddress, stakingAddress, amount);
@@ -207,7 +203,7 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
     if (await userDidClaim()) throw Error('You already claimed your GTON from V1 staking');
 
     const stakingBalance = await balance(userAddress, fantomStakingAddress);
-    if (stakingBalance.eq(0)) throw Error('You don\'t have any GTON in V1 staking');
+    if (stakingBalance.eq(0)) throw Error("You don't have any GTON in V1 staking");
 
     const secondTxn = await claim();
 
@@ -239,62 +235,64 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
 };
 
 const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
-  return; // Waiting for 1inch implementation
   try {
     loading(true);
     lock(true);
-
+    if (!(await isCurrentChain(network))) {
+      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    }
     const tmpARGS = Args.split(' ');
 
-    const Token1 = tmpARGS[0]; // GTON amount
-    const Token2 = tmpARGS[2]; // FTM, USDC, etc
-    const token = toWei(Token1);
-
-    if (Token1 === 0) throw new Error('You cant buy 0 $GTON');
-    if (Token1 < 0) throw new Error('You cant buy less than 0 $GTON');
-    if (Token2 === undefined)
-      throw new Error(
-        'Apparently you did not specify for which token you want to buy $GTON, example: buy 1 with ftm',
-      );
-
-    let TradePrice;
-    const web3 = new Web3(window.ethereum);
-    switch (
-      Token2 // Find pairs on spirit
-    ) {
-      case 'ftm': {
-        // By default, buy for native FTM
-        // Get tokens contract, for executing balanceOf, so we can calculate price later
-        const WFTMContract = new web3.eth.Contract(erc20 as AbiItem[], wTokenAddress);
-        const GTONContract = new web3.eth.Contract(erc20 as AbiItem[], GTONAddress);
-
-        const wftmPoolValue: string = await WFTMContract.methods.balanceOf(poolAddress).call();
-        const gtonPoolValue: string = await GTONContract.methods.balanceOf(poolAddress).call();
-
-        const wftm = Big(wftmPoolValue);
-        const gton = Big(gtonPoolValue);
-        const priceRN = wftm.div(gton); // price right now
-        const ExecFTM = wftm.plus(priceRN.mul(token)); // how much ftm be in the pool
-        const ExecGTON = gton.minus(token); // how much gton be in the pool
-
-        TradePrice = ExecFTM.div(ExecGTON);
-        TradePrice = TradePrice.add(TradePrice.mul(0.003)); // slippage
-        console.log(TradePrice.toFixed());
-        break;
-      }
-      default: {
-        throw new Error('Incorrect payment token');
-      }
+    if (tmpARGS.length < 3) {
+      throw new Error('Invalid input');
     }
-    const tx = await buy(token, TradePrice, userAddress);
+    const Amount = tmpARGS[2]; // amount
+    const TokenName = tmpARGS[3];
+    const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
 
-    print([
-      textLine({ words: [textWord({ characters: 'You have successfully purchased $GTON!' })] }),
-    ]);
-    print([textLine({ words: [textWord({ characters: '#WA𝔾MI ⚜️' })] })]);
-    print([textLine({ words: [textWord({ characters: 'Transaction:' })] })]);
-    printLink(print, messages.viewTxn, explorerUrl + tx);
+    if (!token) {
+      throw new Error('Wrong symbol, available tokens: usdc');
+    }
+    const amount = toWei(Amount, token.decimals);
 
+    let userBalance;
+    let trx;
+    let amountBetweenSwap;
+
+    userBalance = await balance(userAddress, token.address);
+
+    if (amount.gt(userBalance)) throw Error('Insufficient amount');
+
+    const userAllowance = await allowance(token.address, oneInchRouterAddress);
+    if (amount.gt(userAllowance)) {
+      const firstTxn = await approve(userAddress, token.address, oneInchRouterAddress, amount);
+      print([textLine({ words: [textWord({ characters: messages.approve })] })]);
+      printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+    }
+
+    try {
+      amountBetweenSwap = await checkSwapAmount(amount);
+      print([
+        textLine({
+          words: [textWord({ characters: amountBetweenSwap })],
+        }),
+      ]);
+    } catch (e) {
+      throw Error(e);
+    }
+
+    try {
+      trx = await buy(amount, userAddress);
+      print([
+        textLine({
+          words: [textWord({ characters: 'You have successfully purchased $GTON!' })],
+        }),
+      ]);
+      print([textLine({ words: [textWord({ characters: '#WA𝔾MI ⚜️' })] })]);
+      printLink(print, messages.viewTxn, explorerUrl + trx);
+    } catch (e) {
+      throw Error(e);
+    }
     loading(false);
     lock(false);
   } catch (err) {

@@ -4,21 +4,6 @@ const isLive = 'true';
 const isTestnet = true;
 
 const claimNetwork = '250';
-// WFTMAddress -> wTokenAddress
-const wTokenAddress = '0xc778417e063141139fce010982780140aa0cd5ab';
-const GTONAddress = '0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6';
-
-// spiritswaprouteraddress -> routeraddress
-const routeraddress = '0x3c4925b50e337aecc2cf4b9e4767b43dcfbad286';
-
-// spiritswappooladdress -> poolAddress
-const poolAddress = '0x131ee332febf8d2aa5f18f0d2c444e99411462e5';
-
-// FTMGTONSwapPath -> swapPath
-const pairSwapPath = [
-  '0xD0011dE099E514c2094a510dd0109F91bf8791Fa',
-  '0xc4d0a76BA5909c8e764B67aCF7360f843FbACB2d',
-];
 
 const usdcAddress = '0x46aff14b22e4717934edc2cb99bcb5ea1185a5e8';
 const stakingAddress = '0x2061489A2AE30D0ced15F4721c0bb53f30DE175c';
@@ -80,11 +65,6 @@ export {
   fantomRpc,
   testnetFantomRpc,
   tokenAddresses,
-  wTokenAddress,
-  GTONAddress,
-  poolAddress,
-  routeraddress,
-  pairSwapPath,
   bondingETHAddress,
   faucetLink,
   bondingContracts,
