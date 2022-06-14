@@ -11,7 +11,7 @@ import { fromWei } from './WEB3/API/balance';
 import tokenMap, { tokens } from './WEB3/API/addToken';
 import notFoundStrings from '../Errors/notfound-strings';
 import { isCurrentChain } from '../Parser/WEB3/validate';
-import { mmChains } from './WEB3/chains';
+import { isMobile, isTablet } from 'react-device-detect';
 
 enum ErrorCodes {
   INVALID_ARGUMENT = 'INVALID_ARGUMENT',
@@ -81,9 +81,17 @@ export function createWorker(
 }
 
 export async function connect(state) {
-  const address = await connectMetamask();
-  state[1](address);
-  return address;
+  if (!isMobile && !isTablet) {
+    try {
+      const address = await connectMetamask();
+      state[1](address);
+      return address;
+    } catch (e) {
+      console.error(e);
+    }
+  } else {
+    return ' ';
+  }
 }
 
 const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
