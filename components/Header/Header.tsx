@@ -2,10 +2,12 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import classes from './header.module.scss';
 import { chain, claimNetwork, isTestnet } from '../../config/config';
+import { isMobile, isTablet } from 'react-device-detect';
 import Web3 from 'web3';
 declare const window: any;
 
 function Header() {
+  const show = !isMobile && !isTablet;
   let chainId;
 
   useEffect(() => {
@@ -72,15 +74,17 @@ function Header() {
       >
         FORUM
       </a>
-      <div className={classes.btn}>
-        {isCurrentChainId === chain.chainId && !isTestnet
-          ? 'ETH MAINNET'
-          : isCurrentChainId === chain.chainId && isTestnet
-          ? 'ROPSTEN'
-          : isCurrentChainId === claimNetwork
-          ? 'FANTOM'
-          : 'WRONG NETWORK'}
-      </div>
+      {show && (
+        <div className={classes.btn}>
+          {isCurrentChainId === chain.chainId && !isTestnet
+            ? 'ETH MAINNET'
+            : isCurrentChainId === chain.chainId && isTestnet
+            ? 'ROPSTEN'
+            : isCurrentChainId === claimNetwork
+            ? 'FANTOM'
+            : 'WRONG NETWORK'}
+        </div>
+      )}
     </div>
   );
 }
