@@ -37,6 +37,13 @@ const tokenMap: Record<string, Token> = {
     image: '',
     canBeUsedForPurchase: true,
   },
+  eth: {
+    address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+    symbol: 'ETH',
+    decimals: 18,
+    image: '',
+    canBeUsedForPurchase: true,
+  },
 };
 
 export const tokens: Record<string, string> = {
