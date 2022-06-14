@@ -21,8 +21,6 @@ import { toWei } from '../WEB3/API/balance';
 import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import { buy, checkSwapAmount } from '../WEB3/buyGTON';
-import { Token } from 'spiritswap-sdk';
-
 declare const window: any;
 
 enum ErrorCodes {
