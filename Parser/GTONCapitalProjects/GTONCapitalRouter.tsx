@@ -16,12 +16,11 @@ import commonOperators, { printLink } from '../common';
 import notFoundStrings from '../../Errors/notfound-strings';
 import { stake, unstake, claim, userDidClaim } from '../WEB3/Stake';
 import { harvest } from '../WEB3/harvest';
-import balance, { userShare } from '../WEB3/Balance';
+import balance, { userShare, getEthBalance } from '../WEB3/Balance';
 import { toWei } from '../WEB3/API/balance';
 import tokenMap from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import { buy, checkSwapAmount } from '../WEB3/buyGTON';
-
 declare const window: any;
 
 enum ErrorCodes {
@@ -251,7 +250,7 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
 
     if (!token || !token.canBeUsedForPurchase) {
-      throw new Error('Wrong symbol, available tokens: usdc');
+      throw new Error('Wrong symbol, available tokens: usdc, eth');
     }
     const amount = toWei(Amount, token.decimals);
 
@@ -259,19 +258,24 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     let trx;
     let amountBetweenSwap;
 
-    userBalance = await balance(userAddress, token.address);
+    userBalance =
+      TokenName === 'eth'
+        ? (userBalance = await getEthBalance(userAddress))
+        : (userBalance = await balance(userAddress, token.address));
 
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
-    const userAllowance = await allowance(token.address, oneInchRouterAddress);
-    if (amount.gt(userAllowance)) {
-      const firstTxn = await approve(userAddress, token.address, oneInchRouterAddress, amount);
-      print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-      printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+    if (TokenName !== 'eth') {
+      const userAllowance = await allowance(token.address, oneInchRouterAddress);
+      if (amount.gt(userAllowance)) {
+        const firstTxn = await approve(userAddress, token.address, oneInchRouterAddress, amount);
+        print([textLine({ words: [textWord({ characters: messages.approve })] })]);
+        printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+      }
     }
 
     try {
-      amountBetweenSwap = await checkSwapAmount(amount);
+      amountBetweenSwap = await checkSwapAmount(amount, token.address, token.decimals);
       print([
         textLine({
           words: [textWord({ characters: amountBetweenSwap })],
@@ -282,7 +286,7 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     }
 
     try {
-      trx = await buy(amount, userAddress);
+      trx = await buy(amount, userAddress, token.address);
       print([
         textLine({
           words: [textWord({ characters: 'You have successfully purchased $GTON!' })],
