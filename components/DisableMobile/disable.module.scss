@@ -1,0 +1,29 @@
+.containerWrap {
+  @media (max-width: 1000px) {
+    border-radius: 20px;
+    height: 100%;
+    width: 100%;
+    background-image: url('../../public/images/bg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+}
+.subtitle {
+  margin-top: 20px;
+  font-family: 'Courier New', courier, monospace;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 19px;
+  color: #e9e9ca;
+  margin-bottom: 45px;
+}
+
+.logo {
+  margin-top: 20px;
+  width: 90%;
+}
+
+.img {
+  margin-right: 40px;
+}

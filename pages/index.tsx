@@ -9,7 +9,6 @@ import BondingParser from '../Parser/Bonding/Parser';
 import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
 import { connect, printLink } from '../Parser/common';
-import { isCurrentChain } from '../Parser/WEB3/validate';
 import Header from '../components/Header/Header';
 
 declare const window: any;
