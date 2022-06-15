@@ -39,7 +39,7 @@ function Header() {
   }, []);
 
   return (
-    <div className={classes.headerWrap}>
+    <div className={classes.headerContainer}>
       <a
         href="https://gton.capital"
         target="_blank"
