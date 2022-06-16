@@ -9,7 +9,6 @@ import BondingParser from '../Parser/Bonding/Parser';
 import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
 import { connect, printLink } from '../Parser/common';
-import { isCurrentChain } from '../Parser/WEB3/validate';
 import Header from '../components/Header/Header';
 
 declare const window: any;
@@ -31,7 +30,9 @@ export default function Web() {
 
   // it's necessary update state if wallet is available
   useEffect(() => {
-    connect(state).then();
+    connect(state)
+      .then()
+      .catch((e) => console.error(e));
   }, []);
   return (
     <Layout

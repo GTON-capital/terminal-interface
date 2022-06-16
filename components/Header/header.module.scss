@@ -1,4 +1,4 @@
-.headerWrap {
+.headerContainer {
   z-index: 999999;
   position: absolute;
   margin-top: 15px;
@@ -14,9 +14,15 @@
   min-width: 600px;
   max-width: 1100px;
   margin: 0 auto;
-  @media (max-width: 900px) {
+  @media (max-width: 1000px) {
+    position: relative;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-left: 20px !important;
     min-width: 100%;
     padding: 0px;
+    height: 600px;
   }
 }
 
@@ -35,6 +41,12 @@
   display: inline-block;
   background-color: #0000;
   border: 1px solid #d0fc7e;
+  @media (max-width: 1000px) {
+    border: none;
+    display: flex;
+    position: absolute;
+    bottom: 30px;
+  }
 }
 
 .headerTextWrap {
@@ -45,5 +57,11 @@
   font-family: 'Courier New', courier, monospace;
   &:hover {
     color: #fff;
+  }
+  @media (max-width: 1000px) {
+    font-size: 17px !important;
+    color: #cfcf5f;
+    text-decoration: underline;
+    margin-bottom: 45px;
   }
 }

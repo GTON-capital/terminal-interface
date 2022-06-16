@@ -3,7 +3,7 @@ import { validate } from './validate';
 
 declare const window: any;
 
-async function addToken (token: Token): Promise<void> {
+async function addToken(token: Token): Promise<void> {
   await validate();
   await window.ethereum.request({
     method: 'wallet_watchAsset',
@@ -12,6 +12,6 @@ async function addToken (token: Token): Promise<void> {
       options: token,
     },
   });
-};
+}
 
 export default addToken;
