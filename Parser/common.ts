@@ -71,8 +71,6 @@ export function createWorker(
       } else {
         message = err.message || errMessage;
       }
-      console.log(err);
-
       print([textLine({ words: [textWord({ characters: message })] })]);
       loading(false);
       lock(false);
@@ -80,14 +78,14 @@ export function createWorker(
   };
 }
 
-export async function connect(state) {
+export async function connect(state): Promise<string> {
   if (!isMobile && !isTablet) {
     try {
       const address = await connectMetamask();
       state[1](address);
       return address;
     } catch (e) {
-      console.error(e);
+      throw new Error(e.message);
     }
   } else {
     return ' ';
@@ -95,8 +93,12 @@ export async function connect(state) {
 }
 
 const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
-  const address = await connect(state);
-  print([textLine({ words: [textWord({ characters: `Connected successfuly: ${address}` })] })]);
+  try {
+    const address = await connect(state);
+    print([textLine({ words: [textWord({ characters: `Connected successfuly: ${address}` })] })]);
+  } catch (e) {
+    throw new Error(e);
+  }
 }, 'Error while connecting metamask, please try again');
 
 const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {

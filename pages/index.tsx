@@ -30,7 +30,9 @@ export default function Web() {
 
   // it's necessary update state if wallet is available
   useEffect(() => {
-    connect(state).then();
+    connect(state)
+      .then()
+      .catch((e) => console.error(e));
   }, []);
   return (
     <Layout
