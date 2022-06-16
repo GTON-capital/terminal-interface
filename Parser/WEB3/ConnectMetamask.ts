@@ -6,11 +6,15 @@ declare const window: any;
 const { isAddress, getAddress } = utils;
 
 const connectMetamask = async () => {
+  let accounts;
   if (!window.ethereum || !window.ethereum!.isMetaMask) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
-
-  let accounts = await window.ethereum.request!({ method: 'eth_requestAccounts' });
+  try {
+    accounts = await window.ethereum.request!({ method: 'eth_requestAccounts' });
+  } catch (e) {
+    throw new Error(e.message);
+  }
   if (!accounts) {
     accounts = await window.ethereum.enable!();
   }
