@@ -1,12 +1,36 @@
 kind: pipeline
+type: docker
+name: gton-capital
 
-steps:
-  - name: build & check
-  - image: node
-  - commands:
-    - npm i
-    - npm run build
-    - npm run start
+pipeline:
+  run-test:
+    image: node:16.15.1-alpine3.16
+    commands:
+      - node --version
+      - npm --version
+      - npm ci
+      - npm run build
     when:
       event:
         - pull_request
+
+  testnet-deployment:
+    image: appleboy/drone-ssh
+    host: cli.gton.capital
+    settings:
+      username: root
+    key:
+      from_secret: ssh_key
+    script:
+      - cd /var/www/test-terminal/ && sh deploy.sh
+
+    when:
+      branch:
+        - develop
+      event:
+        - push
+
+trigger:
+  branch:
+    - drone-integrate
+    - develop
