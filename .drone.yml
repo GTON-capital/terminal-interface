@@ -35,3 +35,4 @@ trigger:
   branch:
     - drone-integrate
     - develop
+    - testing/current-CI
