@@ -8,7 +8,7 @@ pipeline:
     commands:
       - node --version
       - npm --version
-      - npm ci
+      - npm i
       - npm run build
     when:
       event:
