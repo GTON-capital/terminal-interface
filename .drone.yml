@@ -8,6 +8,7 @@ pipeline:
     commands:
       - node --version
       - npm --version
+      - npm cache clean --force
       - npm i
       - npm run build
     when:
