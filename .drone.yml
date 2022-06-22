@@ -4,7 +4,7 @@ name: gton-capital
 
 pipeline:
   run-test:
-    image: node:16.15.1-alpine3.16
+    image: node:16
     commands:
       - node --version
       - npm --version
@@ -30,6 +30,7 @@ pipeline:
         - develop
       event:
         - push
+
 
 trigger:
   branch:
