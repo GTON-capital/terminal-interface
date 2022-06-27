@@ -9,7 +9,7 @@ pipeline:
       - node --version
       - npm --version
       - npm cache clean --force
-      - npm i
+      - npm i -d
       - npm run build
     when:
       event:
