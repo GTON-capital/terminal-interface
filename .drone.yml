@@ -17,7 +17,7 @@ pipeline:
 
   testnet-deployment:
     image: appleboy/drone-ssh
-    host: cli.gton.capital
+    host: test.cli.gton.capital
     settings:
       username: root
     key:
@@ -31,9 +31,27 @@ pipeline:
       event:
         - push
 
+  mainnet-deployment:
+    image: appleboy/drone-ssh
+    host: cli.gton.capital
+    settings:
+      username: root
+    key:
+      from_secret: ssh_key
+    script:
+      - cd /var/www/terminal-interface/ && sh deploy.sh
+
+    when:
+      branch:
+        - master
+      event:
+        - push
+
+
 
 trigger:
   branch:
     - drone-integrate
+    - master
     - develop
     - testing/current-CI
