@@ -2,8 +2,9 @@ const network = '3'; // Ropsten
 const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = true;
-
 const claimNetwork = '250';
+
+const oneInchRouterAddress = '';
 
 const usdcAddress = '0x46aff14b22e4717934edc2cb99bcb5ea1185a5e8';
 const stakingAddress = '0x2061489A2AE30D0ced15F4721c0bb53f30DE175c';
@@ -13,7 +14,8 @@ const fantomStakingAddress = '0xb0daab4eb0c23affaa5c9943d6f361b51479ac48'; // Fa
 const faucetAddress = '0xBf5F86594cbDf911376c776A291b8Eb921D82CA1'; // Inactive contract, need on Ropsten
 const gtonAddress = '0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6';
 
-// fantomNet -> network
+// chain
+
 const chain = {
   chainId: '3',
   chainIdHex: '0x3',
@@ -84,4 +86,5 @@ export {
   isDev,
   isLive,
   gtonMainnetAddress,
+  oneInchRouterAddress,
 };
