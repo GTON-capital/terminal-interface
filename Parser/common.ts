@@ -158,14 +158,14 @@ const AddTokenWorker = createWorker(async ({ print }, TokenName) => {
   print([textLine({ words: [textWord({ characters: messages.addToken })] })]);
 }, 'Error adding token to Meramask');
 
-const FaucetWorker = createWorker(async ({ print }, token) => {
-  const tokenAddress = tokens[token];
+const FaucetWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {
+  const tokenAddress = tokens[TokenName];
 
   if (!tokenAddress) {
     print([textLine({ words: [textWord({ characters: 'Pass token name as second argument' })] })]);
     return;
   }
-  await faucet(tokenAddress);
+  await faucet(tokenAddress, userAddress);
   print([textLine({ words: [textWord({ characters: messages.faucetDeposit })] })]);
 });
 
