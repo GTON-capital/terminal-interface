@@ -6,15 +6,15 @@ const claimNetwork = '250';
 
 const oneInchRouterAddress = '0x1111111254fb6c44bac0bed2854e76f90643097d';
 
+const usdcAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 const stakingAddress = '0xeff66b4a84c8a6b69b99eb1c5e39af8fc35d13db';
 const claimAddress = '0xbceb65916a02804acfc32983a52b07f07e1c5477'; // Fantom
 const fantomStakingAddress = '0xb0daab4eb0c23affaa5c9943d6f361b51479ac48'; // Fantom
 
 const faucetAddress = '';
 const gtonAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
-const usdcAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 
-// fantomNet -> chain
+// chain
 
 const chain = {
   chainId: '1',
@@ -29,15 +29,55 @@ const explorerUrl = 'https://etherscan.io/tx/';
 const faucetLink = 'https://faucet.fantom.network/';
 const gcLink = 'https://gton.capital/';
 
+const storageAddress = '';
+const bondingETHAddress = '';
+
+enum BondTokens {
+  ftm = 'ftm',
+  usdc = 'usdc',
+}
+
+enum BondTypes {
+  week = 'week',
+  quarter = 'quarter',
+}
+
+const tokenAddresses = {
+  [BondTokens.usdc]: '',
+};
+
+const bondingContracts = {
+  [BondTokens.ftm]: {
+    [BondTypes.week]: '',
+    [BondTypes.quarter]: '',
+  },
+  [BondTokens.usdc]: {
+    [BondTypes.week]: '',
+    [BondTypes.quarter]: '',
+  },
+};
+
+const fantomRpc = 'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161/';
+const gtonMainnetAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
+const testnetFantomRpc = 'https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161/';
+
 export {
+  BondTokens,
+  BondTypes,
+  fantomRpc,
+  testnetFantomRpc,
+  tokenAddresses,
+  bondingETHAddress,
+  faucetLink,
+  bondingContracts,
+  gcLink,
   network,
   claimNetwork,
-  gcLink,
-  faucetLink,
   explorerUrl,
   isTestnet,
   chain,
   stakingAddress,
+  storageAddress,
   claimAddress,
   fantomStakingAddress,
   faucetAddress,
@@ -45,5 +85,6 @@ export {
   usdcAddress,
   isDev,
   isLive,
+  gtonMainnetAddress,
   oneInchRouterAddress,
 };

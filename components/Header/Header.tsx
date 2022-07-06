@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import { useEffect, useState } from 'react';
 import classes from './header.module.scss';
