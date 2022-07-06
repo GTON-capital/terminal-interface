@@ -3,4 +3,4 @@ services:
   main-cli:
     build: .
     ports:
-      - "6006:3000"
+      - "6001:3000"

@@ -3,4 +3,5 @@
 package-lock.json
 .vscode/settings.json
 .DS_Store
+docker-compose.yml
 yarn.lock
