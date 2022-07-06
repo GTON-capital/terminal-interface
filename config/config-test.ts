@@ -10,7 +10,7 @@ const stakingAddress = '0x2061489A2AE30D0ced15F4721c0bb53f30DE175c';
 const claimAddress = '0xB48327cC1804A0DCf2F85A09e0fBBB5e4d8f4830'; // Fantom network, not eth
 const fantomStakingAddress = '0xb0daab4eb0c23affaa5c9943d6f361b51479ac48'; // Fantom
 
-const faucetAddress = '0x013Da22e5aa1Aa49cae61A1b06B240164021CF22'; // Inactive contract, need on Ropsten
+const faucetAddress = '0xBf5F86594cbDf911376c776A291b8Eb921D82CA1'; // Inactive contract, need on Ropsten
 const gtonAddress = '0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6';
 
 // fantomNet -> network
