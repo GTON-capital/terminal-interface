@@ -23,7 +23,7 @@ pipeline:
     key:
       from_secret: ssh_key
     script:
-      - cd /var/www/test-terminal/ && sh deploy.sh
+      - cd /var/www/test-terminal/.drone/ && sh deploy.sh && docker-compose -f docker-compose-testnet.yml up -d --build --force-recreate
 
     when:
       branch:
@@ -39,7 +39,7 @@ pipeline:
     key:
       from_secret: ssh_key
     script:
-      - cd /var/www/terminal-interface/ && sh deploy.sh
+      - cd /var/www/terminal-interface/.drone/ && sh deploy.sh && docker-compose -f docker-compose-mainnet.yml up -d --build --force-recreate
 
     when:
       branch:
@@ -53,5 +53,4 @@ trigger:
   branch:
     - master
     - develop
-    - feature/TestnetCI
-    - feature/MainnetCI
+    - feature/CI
