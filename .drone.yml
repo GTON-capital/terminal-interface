@@ -18,9 +18,8 @@ pipeline:
   testnet-deployment:
     image: appleboy/drone-ssh
     host: test.cli.gton.capital
+    command_timeout: 30m 
     settings:
-      port: 22
-        command_timeout: 20m
       username: root
     key:
       from_secret: ssh_key
@@ -36,9 +35,8 @@ pipeline:
   mainnet-deployment:
     image: appleboy/drone-ssh
     host: cli.gton.capital
+    command_timeout: 30m
     settings:
-      port: 22
-        command_timeout: 20m
       username: root
     key:
       from_secret: ssh_key
