@@ -49,7 +49,6 @@ pipeline:
       event:
         - push
 
-
 trigger:
   branch:
     - master
