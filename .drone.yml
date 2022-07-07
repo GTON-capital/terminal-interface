@@ -24,7 +24,7 @@ pipeline:
     key:
       from_secret: ssh_key
     script:
-      - cd /var/www/test-terminal/.drone/ && sh deploy.sh && docker-compose -f docker-compose-testnet.yml up -d --build --force-recreate
+      - cd /var/www/test-terminal/.drone/ && sh deploy.sh && mv ../config/config-test.ts ../config/config.ts && docker-compose -f docker-compose-testnet.yml up -d --build --force-recreate
 
     when:
       branch:
