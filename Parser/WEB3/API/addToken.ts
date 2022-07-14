@@ -1,4 +1,10 @@
-import { stakingAddress, gtonAddress, usdcAddress } from '../../../config/config';
+import {
+  stakingAddress,
+  gtonAddress,
+  usdcAddress,
+  wEthAddress,
+  gcdAddress,
+} from '../../../config/config';
 
 export type Token = {
   address: string;
@@ -44,11 +50,26 @@ const tokenMap: Record<string, Token> = {
     image: '',
     canBeUsedForPurchase: true,
   },
+  weth: {
+    address: wEthAddress,
+    symbol: 'WETH',
+    decimals: 18,
+    image: '',
+    canBeUsedForPurchase: true,
+  },
+  gcd: {
+    address: gcdAddress,
+    symbol: 'GCD',
+    decimals: 18,
+    image: '',
+    canBeUsedForPurchase: true,
+  },
 };
 
 export const tokens: Record<string, string> = {
   gton: gtonAddress,
   usdc: usdcAddress,
+  gcd: gcdAddress,
 };
 
 export default tokenMap;

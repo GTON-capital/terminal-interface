@@ -10,9 +10,20 @@ const usdcAddress = '0x46aff14b22e4717934edc2cb99bcb5ea1185a5e8';
 const stakingAddress = '0x2061489A2AE30D0ced15F4721c0bb53f30DE175c';
 const claimAddress = '0xB48327cC1804A0DCf2F85A09e0fBBB5e4d8f4830'; // Fantom network, not eth
 const fantomStakingAddress = '0xb0daab4eb0c23affaa5c9943d6f361b51479ac48'; // Fantom
+const bridgeAddress = '0xd23CBBCDBB88302cD2f4dFe3fE62fE27Ec5762fF';
 
 const faucetAddress = '0xBf5F86594cbDf911376c776A291b8Eb921D82CA1'; // Inactive contract, need on Ropsten
+
 const gtonAddress = '0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6';
+const gcdAddress = '0xEfedaF36c785dcEd1CebEA0A1BdBb5ae08022dAF';
+const wEthAddress = '0xc778417e063141139fce010982780140aa0cd5ab';
+
+const gtonUniswapV3Oracle = '0xaa2Cc9ca2251D1FF1B130a5514357E290574169F';
+const wEthAndUsdcUniswapV3Oracle = '0x5B9082Ac5E0be515DDa3f699C895AC0CD2751A65';
+
+const cdpManager01 = '0x5BD328d4182f244d6CB405Ea2bb0455C1899c968';
+const vaultManagerParameters = '0x216f02d56C501E591D1A669E01A74F2A7aFE7Da8';
+const vault = '0x849F651dA55b4dE09C5e91C5d3c4AC890DAC8804';
 
 // chain
 
@@ -87,4 +98,12 @@ export {
   isLive,
   gtonMainnetAddress,
   oneInchRouterAddress,
+  gtonUniswapV3Oracle,
+  cdpManager01,
+  vaultManagerParameters,
+  vault,
+  gcdAddress,
+  bridgeAddress,
+  wEthAndUsdcUniswapV3Oracle,
+  wEthAddress,
 };

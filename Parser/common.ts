@@ -4,6 +4,7 @@ import Big from 'big.js';
 import { chain, network } from '../config/config';
 import connectMetamask from './WEB3/ConnectMetamask';
 import addToken from './WEB3/addTokenToMM';
+import switchChain from './WEB3/Switch';
 import faucet from './WEB3/Faucet';
 import messages from '../Messages/Messages';
 import balance, { userShare } from './WEB3/Balance';
@@ -114,6 +115,7 @@ const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) =
     const harvest = fromWei(balanceWei.minus(shareWei).toFixed(18));
     const share = fromWei(shareWei);
     const gton = fromWei(await balance(userAddress, tokenMap.gton.address));
+    const gcd = fromWei(await balance(userAddress, tokenMap.gcd.address));
 
     print([
       textLine({
@@ -128,6 +130,11 @@ const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) =
     print([
       textLine({
         words: [textWord({ characters: `GTON:    ${gton.toFixed(4).replace(/0*$/, '')}` })],
+      }),
+    ]);
+    print([
+      textLine({
+        words: [textWord({ characters: `GCD:     ${gcd.toFixed(4).replace(/0*$/, '')}` })],
       }),
     ]);
     return;
@@ -158,6 +165,11 @@ const AddTokenWorker = createWorker(async ({ print }, TokenName) => {
   print([textLine({ words: [textWord({ characters: messages.addToken })] })]);
 }, 'Error adding token to Meramask');
 
+const SwitchChainWorker = createWorker(async ({ print }) => {
+  await switchChain('gton');
+  print([textLine({ words: [textWord({ characters: messages.switchChain })] })]);
+}, 'Error adding token to Meramask');
+
 const FaucetWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {
   const tokenAddress = tokens[TokenName];
 
@@ -182,6 +194,7 @@ const PriceWorker = createWorker(async ({ print }) => {
 const commonOperators = {
   faucet: FaucetWorker,
   add: AddTokenWorker,
+  switch: SwitchChainWorker,
   balance: BalanceWorker,
   join: ConnectMetamaskWorker,
   price: PriceWorker,

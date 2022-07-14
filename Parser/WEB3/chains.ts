@@ -25,4 +25,12 @@ export const mmChains: MMChains = {
     nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH' },
     blockExplorerUrls: ['https://ropsten.etherscan.io/'],
   },
+  gton: {
+    chainId: '50021',
+    chainIdHex: '0xC365',
+    chainName: 'TestGTON',
+    rpcUrls: ['https://testnet.gton.network'],
+    nativeCurrency: { name: 'GCD', decimals: 18, symbol: 'GCD' },
+    blockExplorerUrls: ['https://explorer.testnet.gton.network/'],
+  },
 };
