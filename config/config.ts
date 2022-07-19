@@ -10,9 +10,20 @@ const usdcAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 const stakingAddress = '0xeff66b4a84c8a6b69b99eb1c5e39af8fc35d13db';
 const claimAddress = '0xbceb65916a02804acfc32983a52b07f07e1c5477'; // Fantom
 const fantomStakingAddress = '0xb0daab4eb0c23affaa5c9943d6f361b51479ac48'; // Fantom
+const bridgeAddress = '';
 
 const faucetAddress = '';
+
 const gtonAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
+const gcdAddress = '0x213ecAe6b3CbC0AD976f7d82626546d5b63A71cB';
+const wEthAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+
+const gtonUniswapV3Oracle = '0x67717ea6376F18F217b733eE18abaAD480dAC928';
+const wEthAndUsdcUniswapV3Oracle = '0xa424eB5D1098EA644591d49b96D39dbc69675F04';
+
+const cdpManager01 = '0x6aA3cDc7a0Ab05C58105AA4C85568583f2b7e02f';
+const vaultManagerParameters = '0x3888C25AcDaB370dc2B85550E0943B4253346174';
+const vault = '0xAAbBB7471bCA1C152C690f10A1A9e006FE17BD7e';
 
 // chain
 
@@ -87,4 +98,12 @@ export {
   isLive,
   gtonMainnetAddress,
   oneInchRouterAddress,
+  gtonUniswapV3Oracle,
+  cdpManager01,
+  vaultManagerParameters,
+  vault,
+  gcdAddress,
+  bridgeAddress,
+  wEthAndUsdcUniswapV3Oracle,
+  wEthAddress,
 };
