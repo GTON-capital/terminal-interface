@@ -110,7 +110,7 @@ const messages = {
   ${Prefix.PREFIX}${Commands.CLAIM} - claim gton and harvest reward from V1 staking contract (Fantom)
   ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
   ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
-  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest rewardv
+  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
   ${commonCommands}
   `,
   bondingHelpText: `
