@@ -1,0 +1,56 @@
+kind: pipeline
+type: docker
+name: gton-capital
+
+pipeline:
+  run-test:
+    image: node:16
+    commands:
+      - node --version
+      - npm --version
+      - npm cache clean --force
+      - npm i -d
+      - npm run build
+    when:
+      event:
+        - pull_request
+
+  testnet-deployment:
+    image: appleboy/drone-ssh
+    host: test.cli.gton.capital
+    command_timeout: 30m 
+    settings:
+      username: root
+    key:
+      from_secret: ssh_key
+    script:
+      - cd /var/www/test-terminal/.drone/ && sh deploy.sh && mv ../config/config-test.ts ../config/config.ts && docker-compose -f docker-compose-testnet.yml up -d --build --force-recreate
+
+    when:
+      branch:
+        - develop
+      event:
+        - push
+
+  mainnet-deployment:
+    image: appleboy/drone-ssh
+    host: cli.gton.capital
+    command_timeout: 30m
+    settings:
+      username: root
+    key:
+      from_secret: ssh_key
+    script:
+      - cd /var/www/terminal-interface/.drone/ && sh deploy.sh && docker-compose -f docker-compose-mainnet.yml up -d --build --force-recreate
+
+    when:
+      branch:
+        - master
+      event:
+        - push
+
+trigger:
+  branch:
+    - master
+    - develop
+    - feature/CI

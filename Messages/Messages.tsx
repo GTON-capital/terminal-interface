@@ -13,6 +13,7 @@ enum Commands {
   BUY = 'buy',
   CLAIM = 'claim',
   PRICE = 'price',
+  SWITCH = 'switch',
 }
 
 enum BondingCommands {
@@ -23,6 +24,12 @@ enum BondingCommands {
   Bonds = 'bonds',
   Preview = 'preview',
   Types = 'types',
+}
+
+enum UpdatingCommand {
+  BORROW = 'borrow',
+  REPAY = 'repay',
+  BRIDGE = 'bridge',
 }
 
 enum ChatCommands {
@@ -59,11 +66,14 @@ const cdHelp = `
 const commonCommands = `
   ${Prefix.PREFIX}${Commands.HELP} - this output
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
-  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | all - get actual erc20 token balance
-  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | usdc - add tokens to metamask
+  ${Prefix.PREFIX}${
+  Commands.BALANCE
+} gton | sgton | harvest | gcd | all - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | gcd | usdc  - add tokens to metamask,
   ${Prefix.PREFIX}${
   Commands.BUY
 } gton for <amount> <token>  - available tokens: eth, usdc (more coming soon) 
+  ${isTestnet ? `${Prefix.PREFIX}${Commands.SWITCH} - switch chain to GTON` : ''}
   ${isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`;
 
 const messages = {
@@ -128,6 +138,13 @@ const messages = {
   
   ${cdHelp}
   `,
+  updatingHelpText: `
+  Available commands:
+  ${commonCommands}
+  
+  ${Prefix.PREFIX}${UpdatingCommand.BORROW} gcd with <amount> <token> with <percent>% risk | [UNAUDITED]
+  ${Prefix.PREFIX}${UpdatingCommand.REPAY} <amount> gcd and withdraw <amount> <token> | [UNAUDITED],
+  ${Prefix.PREFIX}${UpdatingCommand.BRIDGE} <amount> gcd  | [UNAUDITED]`,
   links: `
   Empty command rn
   `,
@@ -179,6 +196,9 @@ const messages = {
   `,
   addToken: `
   Successfully added token to the MetaMask.
+  `,
+  switchChain: `
+  Successfully switched to GTON chain.
   `,
 };
 

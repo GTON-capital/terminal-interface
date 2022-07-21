@@ -6,6 +6,7 @@ import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet, chain } from '../config/config';
 import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
 import BondingParser from '../Parser/Bonding/Parser';
+import UpdatesParser from '../Parser/Updating/Parser';
 import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
 import { connect, printLink } from '../Parser/common';
@@ -19,6 +20,7 @@ const Projects = {
   Ogswap: 'ogswap',
   Bonding: 'bonding',
   Chat: 'chat',
+  Updates: 'updates',
 };
 
 let CurrentDirectory = Projects.Staking;
@@ -66,6 +68,16 @@ export default function Web() {
                       textLine({
                         words: [
                           textWord({ characters: 'Succefully switched to ' + Projects.Bonding }),
+                        ],
+                      }),
+                    ]);
+                    break;
+                  case 'updates':
+                    CurrentDirectory = Projects.Updates;
+                    print([
+                      textLine({
+                        words: [
+                          textWord({ characters: 'Succefully switched to ' + Projects.Updates }),
                         ],
                       }),
                     ]);
@@ -122,6 +134,9 @@ export default function Web() {
                   break;
                 case Projects.Bonding:
                   BondingParser(eventQueue, state, command);
+                  break;
+                case Projects.Updates:
+                  UpdatesParser(eventQueue, state, command);
                   break;
                 case Projects.Chat:
                   ChatParser(eventQueue, state, command);
