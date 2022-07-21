@@ -143,7 +143,8 @@ const messages = {
   ${commonCommands}
   
   ${Prefix.PREFIX}${UpdatingCommand.BORROW} gcd with <amount> <token> with <percent>% risk | [UNAUDITED]
-  ${Prefix.PREFIX}${UpdatingCommand.REPAY} <amount> gcd and withdraw <amount><token> | [UNAUDITED]`,
+  ${Prefix.PREFIX}${UpdatingCommand.REPAY} <amount> gcd and withdraw <amount> <token> | [UNAUDITED],
+  ${Prefix.PREFIX}${UpdatingCommand.BRIDGE} <amount> gcd  | [UNAUDITED]`,
   links: `
   Empty command rn
   `,
