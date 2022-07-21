@@ -1,6 +1,6 @@
 import { textLine, textWord } from 'crt-terminal';
 import messages from '../../Messages/Messages';
-import commonOperators, { printLink, createWorker, parser, timeConverter } from '../common';
+import commonOperators, { printLink, createWorker, parser } from '../common';
 import { toWei } from '../WEB3/API/balance';
 import tokenMap from '../WEB3/API/addToken';
 import { isCurrentChain } from '../WEB3/validate';
@@ -40,7 +40,7 @@ const ErrorHandler = (print, Code, Operation) => {
       textLine({
         words: [
           textWord({
-            characters: `It looks like you specified the quantity incorrectly, for example: ${Operation} 20, or ${Operation} all`,
+            characters: `It looks like you specified the quantity incorrectly, for example: ${Operation} 20`,
           }),
         ],
       }),

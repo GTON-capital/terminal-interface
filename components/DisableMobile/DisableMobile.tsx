@@ -1,5 +1,5 @@
+/* eslint-disable */
 import React, { PropsWithChildren } from 'react';
-import Image from 'next/image';
 import { isMobile, isTablet } from 'react-device-detect';
 import classes from './disable.module.scss';
 
@@ -11,7 +11,7 @@ function DisableMobile({ children }: PropsWithChildren<IDisableMobileProps>) {
     <div className={classes.containerWrap} style={{ position: 'relative', height: '100%' }}>
       {!show && (
         <div className="containerOverlay">
-          <Image className={classes.logo} src="./images/title.png" />
+          <img className={classes.logo} src="/images/title.png" />
           <span className={classes.subtitle}>
             Terminal is accessible <br /> from desktop only.
             <br />
@@ -51,13 +51,13 @@ function DisableMobile({ children }: PropsWithChildren<IDisableMobileProps>) {
           </a>
           <div>
             <a className={classes.link} href="https://twitter.com/GtonCapital">
-              <Image className={classes.img} src="./images/twitter.svg" />
+              <img className={classes.img} src="/images/twitter.svg" />
             </a>
             <a className={classes.link} href="https://t.me/GC_community">
-              <Image className={classes.img} src="./images/telegram.svg" />
+              <img className={classes.img} src="/images/telegram.svg" />
             </a>
             <a className={classes.link} href="https://discord.com/invite/Ce972zqGW6">
-              <Image className={classes.img} src="./images/discord.svg" />
+              <img className={classes.img} src="/images/discord.svg" />
             </a>
           </div>
         </div>

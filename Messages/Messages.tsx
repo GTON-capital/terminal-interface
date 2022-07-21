@@ -110,7 +110,7 @@ const messages = {
   ${Prefix.PREFIX}${Commands.CLAIM} - claim gton and harvest reward from V1 staking contract (Fantom)
   ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
   ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
-  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest rewardv
+  ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
   ${commonCommands}
   `,
   bondingHelpText: `
@@ -143,7 +143,8 @@ const messages = {
   ${commonCommands}
   
   ${Prefix.PREFIX}${UpdatingCommand.BORROW} gcd with <amount> <token> with <percent>% risk | [UNAUDITED]
-  ${Prefix.PREFIX}${UpdatingCommand.REPAY} <amount> gcd and withdraw <amount><token> | [UNAUDITED]`,
+  ${Prefix.PREFIX}${UpdatingCommand.REPAY} <amount> gcd and withdraw <amount> <token> | [UNAUDITED],
+  ${Prefix.PREFIX}${UpdatingCommand.BRIDGE} <amount> gcd  | [UNAUDITED]`,
   links: `
   Empty command rn
   `,
