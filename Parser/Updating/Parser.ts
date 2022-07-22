@@ -4,7 +4,11 @@ import commonOperators, { printLink, createWorker, parser } from '../common';
 import { toWei } from '../WEB3/API/balance';
 import tokenMap from '../WEB3/API/addToken';
 import { isCurrentChain } from '../WEB3/validate';
-import balance, { getUniswapBalanceGton, getUniswapBalanceWEthAndUsdc } from '../WEB3/Balance';
+import balance, {
+  getUniswapBalanceGton,
+  getUniswapBalanceWEthAndUsdc,
+  getEthBalance,
+} from '../WEB3/Balance';
 import {
   explorerUrl,
   network,
@@ -77,7 +81,7 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
     const Amount = tmpARGS[2];
     const TokenName = tmpARGS[3];
     const percentRisk = +parseInt(tmpARGS[5]) / 100;
-
+    let userAllowanceTokenDeposit;
     let userBalance;
     let amount;
     let debt;
@@ -97,22 +101,24 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
     if (!token) {
       throw new Error('Wrong symbol, available tokens: gton, eth');
     }
-
-    userBalance = await balance(userAddress, token.address);
+    userBalance =
+      TokenName === 'eth'
+        ? await getEthBalance(userAddress)
+        : await balance(userAddress, token.address);
 
     amount = toWei(Amount, token.decimals);
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
-    initialCollateralRatio = await getInitialCollateralRatio(token.address);
-    liquidationRatio = await getLiquidationRatio(token.address);
-    token;
-
     switch (TokenName) {
-      case 'weth':
-        uniSwapOracleBalance = await getUniswapBalanceWEthAndUsdc(token.address, amount);
+      case 'eth':
+        uniSwapOracleBalance = await getUniswapBalanceWEthAndUsdc(tokenMap.weth.address, amount);
+        initialCollateralRatio = await getInitialCollateralRatio(tokenMap.weth.address);
+        liquidationRatio = await getLiquidationRatio(tokenMap.weth.address);
         break;
       case 'gton':
         uniSwapOracleBalance = await getUniswapBalanceGton(token.address, amount);
+        initialCollateralRatio = await getInitialCollateralRatio(token.address);
+        liquidationRatio = await getLiquidationRatio(token.address);
         break;
     }
 
@@ -129,13 +135,24 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
       }),
     ]);
 
-    const userAllowanceTokenDeposit = await allowance(token.address, vault);
+    if (TokenName !== 'eth') {
+      userAllowanceTokenDeposit = await allowance(token.address, vault);
 
-    if (amount.gt(userAllowanceTokenDeposit)) {
-      const firstTxn = await approve(userAddress, token.address, vault, amount);
+      if (amount.gt(userAllowanceTokenDeposit)) {
+        const firstTxn = await approve(userAddress, token.address, vault, amount);
 
-      print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-      printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+        print([textLine({ words: [textWord({ characters: messages.approve })] })]);
+        printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+      }
+    } else {
+      userAllowanceTokenDeposit = await allowance(tokenMap.weth.address, vault);
+
+      if (amount.gt(userAllowanceTokenDeposit)) {
+        const firstTxn = await approve(userAddress, tokenMap.weth.address, vault, amount);
+
+        print([textLine({ words: [textWord({ characters: messages.approve })] })]);
+        printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+      }
     }
 
     const userAllowanceGcd = await allowance(tokenMap.gcd.address, vault);
@@ -147,7 +164,7 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
       printLink(print, messages.viewTxn, explorerUrl + secondTxn);
     }
 
-    if (TokenName !== 'weth') {
+    if (TokenName !== 'eth') {
       const thirdTrx = await join(userAddress, token.address, amount, debt);
       print([textLine({ words: [textWord({ characters: 'Succesfull borrowed $GCD.' })] })]);
       printLink(print, messages.viewTxn, explorerUrl + thirdTrx);
@@ -191,6 +208,7 @@ const ExitGcdWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     let amountBorrowedToken;
     let thirdTxn;
     let userCollateralAmount;
+    let userAllowanceToken;
 
     if (AmountGCD < 0 || AmountBorrowedToken < 0) throw new Error(`You can't withdraw 0 tokens`);
 
@@ -201,7 +219,10 @@ const ExitGcdWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
     }
 
     userGcdBalance = await balance(userAddress, tokenMap.gcd.address);
-    userCollateralAmount = await getCollateral(token.address, userAddress);
+    userCollateralAmount =
+      TokenName === 'eth'
+        ? await getCollateral(tokenMap.weth.address, userAddress)
+        : await getCollateral(token.address, userAddress);
 
     amountGcd = toWei(AmountGCD);
     if (amountGcd.gt(userGcdBalance)) throw Error('Insufficient amount');
@@ -219,22 +240,24 @@ const ExitGcdWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
       printLink(print, messages.viewTxn, explorerUrl + firstTxn);
     }
 
-    const userAllowanceToken = await allowance(token.address, cdpManager01);
+    if (TokenName === 'eth') {
+      userAllowanceToken = await allowance(tokenMap.weth.address, cdpManager01);
+    } else {
+      userAllowanceToken = await allowance(token.address, cdpManager01);
+    }
 
     if (amountBorrowedToken.gt(userAllowanceToken)) {
-      const secondTxn = await approve(
-        userAddress,
-        token.address,
-        cdpManager01,
-        amountBorrowedToken,
-      );
+      const secondTxn =
+        TokenName === 'eth'
+          ? await approve(userAddress, tokenMap.weth.address, cdpManager01, amountBorrowedToken)
+          : await approve(userAddress, token.address, cdpManager01, amountBorrowedToken);
 
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
       printLink(print, messages.viewTxn, explorerUrl + secondTxn);
     }
 
     thirdTxn =
-      TokenName === 'weth'
+      TokenName === 'eth'
         ? (thirdTxn = await exit_Eth(userAddress, amountBorrowedToken, amountGcd))
         : (thirdTxn = await exit(userAddress, token.address, amountBorrowedToken, amountGcd));
     print([
