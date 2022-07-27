@@ -73,7 +73,6 @@ const commonCommands = `
   ${Prefix.PREFIX}${
   Commands.BUY
 } gton for <amount> <token>  - available tokens: eth, usdc (more coming soon) 
-  ${isTestnet ? `${Prefix.PREFIX}${Commands.SWITCH} - switch chain to GTON` : ''}
   ${isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`;
 
 const messages = {
@@ -141,7 +140,8 @@ const messages = {
   updatingHelpText: `
   Available commands:
   ${commonCommands}
-  
+
+  ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to GTON
   ${Prefix.PREFIX}${UpdatingCommand.BORROW} gcd with <amount> <token> with <percent>% risk | [UNAUDITED]
   ${Prefix.PREFIX}${UpdatingCommand.REPAY} <amount> gcd and withdraw <amount> <token> | [UNAUDITED],
   ${Prefix.PREFIX}${UpdatingCommand.BRIDGE} <amount> gcd  | [UNAUDITED]`,

@@ -3,6 +3,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = true;
 const claimNetwork = '250';
+const gtonNetwork = '1000';
 
 const oneInchRouterAddress = '';
 
@@ -106,4 +107,5 @@ export {
   bridgeAddress,
   wEthAndUsdcUniswapV3Oracle,
   wEthAddress,
+  gtonNetwork,
 };
