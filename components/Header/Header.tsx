@@ -2,7 +2,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import classes from './header.module.scss';
-import { chain, claimNetwork, isTestnet } from '../../config/config';
+import { chain, claimNetwork, isTestnet, gtonNetwork } from '../../config/config';
 import Web3 from 'web3';
 declare const window: any;
 
@@ -80,6 +80,8 @@ function Header() {
           ? 'ROPSTEN'
           : isCurrentChainId === claimNetwork
           ? 'FANTOM'
+          : isCurrentChainId === gtonNetwork
+          ? 'GTON'
           : 'WRONG NETWORK'}
       </div>
     </div>

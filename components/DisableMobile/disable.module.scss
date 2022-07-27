@@ -1,5 +1,5 @@
 .containerWrap {
-  @media (max-width: 1000px) {
+  @media (max-width: 600px) {
     border-radius: 20px;
     height: 100%;
     width: 100%;
@@ -11,7 +11,7 @@
 }
 .subtitle {
   display: none;
-  @media (max-width: 1000px) {
+  @media (max-width: 600px) {
     display: block;
     margin-top: 20px;
     font-family: 'Courier New', courier, monospace;
@@ -26,7 +26,7 @@
 
 .logo {
   display: none;
-  @media (max-width: 1000px) {
+  @media (max-width: 600px) {
     display: block;
     margin-top: 20px;
     width: 90%;

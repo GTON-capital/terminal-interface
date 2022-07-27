@@ -14,7 +14,7 @@
   min-width: 600px;
   max-width: 1100px;
   margin: 0 auto;
-  @media (max-width: 1000px) {
+  @media (max-width: 600px) {
     position: relative;
     flex-direction: column;
     justify-content: flex-start;
@@ -41,7 +41,7 @@
   display: inline-block;
   background-color: #0000;
   border: 1px solid #d0fc7e;
-  @media (max-width: 1000px) {
+  @media (max-width: 600px) {
     border: none;
     display: flex;
     position: absolute;
@@ -58,7 +58,7 @@
   &:hover {
     color: #fff;
   }
-  @media (max-width: 1000px) {
+  @media (max-width: 600px) {
     font-size: 17px !important;
     color: #cfcf5f;
     text-decoration: underline;
