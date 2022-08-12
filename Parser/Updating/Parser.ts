@@ -27,7 +27,7 @@ import {
   exit_Eth,
   getCollateral,
 } from '../WEB3/cdpManager';
-import { bridgeGcdToL2 } from '../WEB3/Bridge';
+import { bridgeToL2 } from '../WEB3/Bridge';
 import { allowance, approve } from '../WEB3/approve';
 
 declare const window: any;
@@ -295,26 +295,35 @@ const BridgeToL2Worker = async ({ lock, loading, print }, Args, [userAddress]) =
     const Amount = tmpARGS[0];
     let userBalance;
     let amount;
+    let TokenName = tmpARGS[1];
+
+    const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
+
+    if (!token || token.symbol == 'GCD' || token.symbol !== 'GTON') {
+      throw new Error('Wrong symbol, available tokens: gton, gcd');
+    }
 
     if (Amount === '0') throw new Error(`You can't bridge less then 0`);
 
-    userBalance = await balance(userAddress, tokenMap.gcd.address);
+    userBalance = await balance(userAddress, token.address);
 
-    amount = toWei(Amount, tokenMap.gcd.decimals);
+    amount = toWei(Amount, token.decimals);
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
-    const userAllowance = await allowance(tokenMap.gcd.address, bridgeAddress);
+    const userAllowance = await allowance(token.address, bridgeAddress);
 
     if (amount.gt(userAllowance)) {
-      const firstTxn = await approve(userAddress, tokenMap.gcd.address, bridgeAddress, amount);
+      const firstTxn = await approve(userAddress, token.address, bridgeAddress, amount);
 
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
       printLink(print, messages.viewTxn, explorerUrl + firstTxn);
     }
 
-    const secondTxn = await bridgeGcdToL2(userAddress, amount);
+    const secondTxn = await bridgeToL2(userAddress, amount, token.address, token.l2address);
 
-    print([textLine({ words: [textWord({ characters: 'Succesfull bridged $GCD.' })] })]);
+    print([
+      textLine({ words: [textWord({ characters: `Succesfull bridged $${token.symbol}.` })] }),
+    ]);
     printLink(print, messages.viewTxn, explorerUrl + secondTxn);
 
     loading(false);

@@ -16,7 +16,9 @@ const bridgeAddress = '0x1351eA7CEF8178BefC61BD3DbE11A842297985d8';
 const faucetAddress = '';
 
 const gtonAddress = '0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d';
+const gtonL2Adress = '0x7c6b91D9Be155A6Db01f749217d76fF02A7227F2';
 const gcdAddress = '0x213ecAe6b3CbC0AD976f7d82626546d5b63A71cB';
+const gcdL2Address = '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000';
 const wEthAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 
 const gtonUniswapV3Oracle = '0x67717ea6376F18F217b733eE18abaAD480dAC928';
@@ -94,6 +96,7 @@ export {
   fantomStakingAddress,
   faucetAddress,
   gtonAddress,
+  gtonL2Adress,
   usdcAddress,
   isDev,
   isLive,
@@ -104,6 +107,7 @@ export {
   vaultManagerParameters,
   vault,
   gcdAddress,
+  gcdL2Address,
   bridgeAddress,
   wEthAndUsdcUniswapV3Oracle,
   wEthAddress,

@@ -1,6 +1,8 @@
 import {
   stakingAddress,
   gtonAddress,
+  gtonL2Adress,
+  gcdL2Address,
   usdcAddress,
   wEthAddress,
   gcdAddress,
@@ -8,6 +10,7 @@ import {
 
 export type Token = {
   address: string;
+  l2address: string;
   symbol: string;
   decimals: number;
   image: string;
@@ -17,6 +20,7 @@ export type Token = {
 const tokenMap: Record<string, Token> = {
   gton: {
     address: gtonAddress,
+    l2address: gtonL2Adress,
     symbol: 'GTON',
     decimals: 18,
     image: '',
@@ -24,6 +28,7 @@ const tokenMap: Record<string, Token> = {
   },
   sgton: {
     address: stakingAddress,
+    l2address: '',
     symbol: 'sGTON',
     decimals: 18,
     image: '',
@@ -31,6 +36,7 @@ const tokenMap: Record<string, Token> = {
   },
   harvest: {
     address: stakingAddress,
+    l2address: '',
     symbol: 'sGTON',
     decimals: 18,
     image: '',
@@ -38,6 +44,7 @@ const tokenMap: Record<string, Token> = {
   },
   usdc: {
     address: usdcAddress,
+    l2address: '',
     symbol: 'USDC',
     decimals: 6,
     image: '',
@@ -45,6 +52,7 @@ const tokenMap: Record<string, Token> = {
   },
   eth: {
     address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+    l2address: '',
     symbol: 'ETH',
     decimals: 18,
     image: '',
@@ -52,6 +60,7 @@ const tokenMap: Record<string, Token> = {
   },
   weth: {
     address: wEthAddress,
+    l2address: '',
     symbol: 'WETH',
     decimals: 18,
     image: '',
@@ -59,6 +68,7 @@ const tokenMap: Record<string, Token> = {
   },
   gcd: {
     address: gcdAddress,
+    l2address: gcdL2Address,
     symbol: 'GCD',
     decimals: 18,
     image: '',
