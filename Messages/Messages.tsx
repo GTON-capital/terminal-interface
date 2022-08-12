@@ -144,7 +144,7 @@ const messages = {
   ${Prefix.PREFIX}${Commands.SWITCH} - switch chain to GTON
   ${Prefix.PREFIX}${UpdatingCommand.BORROW} gcd with <amount> <token> with <percent>% risk | [UNAUDITED]
   ${Prefix.PREFIX}${UpdatingCommand.REPAY} <amount> gcd and withdraw <amount> <token> | [UNAUDITED],
-  ${Prefix.PREFIX}${UpdatingCommand.BRIDGE} <amount> gcd  | [UNAUDITED]`,
+  ${Prefix.PREFIX}${UpdatingCommand.BRIDGE} <amount> gton | gcd - [UNAUDITED]`,
   links: `
   Empty command rn
   `,

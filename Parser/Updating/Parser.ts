@@ -299,7 +299,7 @@ const BridgeToL2Worker = async ({ lock, loading, print }, Args, [userAddress]) =
 
     const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
 
-    if (!token || token.symbol == 'GCD' || token.symbol !== 'GTON') {
+    if (!token || !['GCD', 'GTON'].includes(token.symbol)) {
       throw new Error('Wrong symbol, available tokens: gton, gcd');
     }
 
