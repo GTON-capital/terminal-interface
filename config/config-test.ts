@@ -16,7 +16,9 @@ const bridgeAddress = '0xd23CBBCDBB88302cD2f4dFe3fE62fE27Ec5762fF';
 const faucetAddress = '0xBf5F86594cbDf911376c776A291b8Eb921D82CA1'; // Inactive contract, need on Ropsten
 
 const gtonAddress = '0xaab9f76100e3332dc559878b0ebbf31cc4ab72e6';
+const gtonL2Adress = '';
 const gcdAddress = '0xEfedaF36c785dcEd1CebEA0A1BdBb5ae08022dAF';
+const gcdL2Address = '';
 const wEthAddress = '0xc778417e063141139fce010982780140aa0cd5ab';
 
 const gtonUniswapV3Oracle = '0xaa2Cc9ca2251D1FF1B130a5514357E290574169F';
@@ -94,6 +96,7 @@ export {
   fantomStakingAddress,
   faucetAddress,
   gtonAddress,
+  gtonL2Adress,
   usdcAddress,
   isDev,
   isLive,
@@ -104,6 +107,7 @@ export {
   vaultManagerParameters,
   vault,
   gcdAddress,
+  gcdL2Address,
   bridgeAddress,
   wEthAndUsdcUniswapV3Oracle,
   wEthAddress,
