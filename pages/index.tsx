@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, useEventQueue, textLine, textWord, anchorWord } from 'crt-terminal';
+import {
+  Terminal,
+  useEventQueue,
+  textLine,
+  textWord,
+  anchorWord,
+} from '@gton-capital/crt-terminal';
 import Layout from '../components/Layout/Layout';
 import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';

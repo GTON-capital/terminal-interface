@@ -1,8 +1,10 @@
-[![NPM](https://img.shields.io/npm/v/react-select.svg)](https://www.npmjs.com/package/crt-terminal)
+[![NPM](https://img.shields.io/npm/v/react-select.svg)](https://www.npmjs.com/package/@gton-capital/crt-terminal)
 
 # CRT terminal
 
 Simple retro styled React-hooks-based terminal shell.
+
+<!-- integrate with vercel to preview forked version -->
 
 [Demo page](https://crt-terminal.vercel.app/).
 
@@ -21,9 +23,9 @@ Simple retro styled React-hooks-based terminal shell.
 The best way to use crt-terminal is to install it from npm and include it into your app.
 
 ```
-yarn add crt-terminal
+yarn add @gton-capital/crt-terminal
 
-npm install crt-terminal
+npm install @gton-capital/crt-terminal
 ```
 
 Then you need to import `Terminal`, `useEventQueue` (or implement your own EventQueue) and line/words helpers (or corresponding enum with IDs).
@@ -32,7 +34,7 @@ Then you need to import `Terminal`, `useEventQueue` (or implement your own Event
 
 ```js
 import React from 'react';
-import { Terminal, useEventQueue, textLine, textWord } from 'crt-terminal';
+import { Terminal, useEventQueue, textLine, textWord } from '@gton-capital/crt-terminal';
 
 const bannerText = `
 Hello world!
