@@ -17,6 +17,7 @@ import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
 import { connect, printLink } from '../Parser/common';
 import Header from '../components/Header/Header';
+import { useRouter } from 'next/router';
 
 declare const window: any;
 
@@ -32,8 +33,9 @@ const Projects = {
 let CurrentDirectory = Projects.Staking;
 
 export default function Web() {
+  const router = useRouter();
   const eventQueue = useEventQueue();
-  const { print } = eventQueue.handlers;
+  const { print, type } = eventQueue.handlers;
   const state = useState(null);
 
   // it's necessary update state if wallet is available
@@ -42,6 +44,15 @@ export default function Web() {
       .then()
       .catch((e) => console.error(e));
   }, []);
+
+  useEffect(() => {
+    if (router.isReady) {
+      if (typeof router.query.c === 'string') {
+        type(router.query.c);
+      }
+    }
+  }, [router.isReady]);
+
   return (
     <Layout
       layoutParams={{
