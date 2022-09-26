@@ -35,7 +35,7 @@ let CurrentDirectory = Projects.Staking;
 export default function Web() {
   const router = useRouter();
   const eventQueue = useEventQueue();
-  const { print, type } = eventQueue.handlers;
+  const { print, typeCommand } = eventQueue.handlers;
   const state = useState(null);
 
   // it's necessary update state if wallet is available
@@ -48,7 +48,7 @@ export default function Web() {
   useEffect(() => {
     if (router.isReady) {
       if (typeof router.query.c === 'string') {
-        type(router.query.c);
+        typeCommand(router.query.c);
       }
     }
   }, [router.isReady]);
