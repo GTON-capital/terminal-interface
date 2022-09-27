@@ -1,4 +1,4 @@
-import { textLine, textWord, anchorWord } from 'crt-terminal';
+import { textLine, textWord, anchorWord } from '@gton-capital/crt-terminal';
 import Big from 'big.js';
 import messages from '../../Messages/Messages';
 import {

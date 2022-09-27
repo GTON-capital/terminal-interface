@@ -1,4 +1,4 @@
-import { textLine, textWord } from 'crt-terminal';
+import { textLine, textWord } from '@gton-capital/crt-terminal';
 import messages from '../../Messages/Messages';
 import commonOperators, { printLink, createWorker, parser } from '../common';
 import { toWei } from '../WEB3/API/balance';

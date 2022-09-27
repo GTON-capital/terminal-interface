@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, useEventQueue, textLine, textWord, anchorWord } from 'crt-terminal';
+import {
+  Terminal,
+  useEventQueue,
+  textLine,
+  textWord,
+  anchorWord,
+} from '@gton-capital/crt-terminal';
 import Layout from '../components/Layout/Layout';
 import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';
@@ -11,6 +17,7 @@ import ChatParser from '../Parser/Chat/Parser';
 import messages from '../Messages/Messages';
 import { connect, printLink } from '../Parser/common';
 import Header from '../components/Header/Header';
+import { useRouter } from 'next/router';
 
 declare const window: any;
 
@@ -26,8 +33,9 @@ const Projects = {
 let CurrentDirectory = Projects.Staking;
 
 export default function Web() {
+  const router = useRouter();
   const eventQueue = useEventQueue();
-  const { print } = eventQueue.handlers;
+  const { print, typeCommand } = eventQueue.handlers;
   const state = useState(null);
 
   // it's necessary update state if wallet is available
@@ -36,6 +44,15 @@ export default function Web() {
       .then()
       .catch((e) => console.error(e));
   }, []);
+
+  useEffect(() => {
+    if (router.isReady) {
+      if (typeof router.query.c === 'string') {
+        typeCommand(router.query.c);
+      }
+    }
+  }, [router.isReady]);
+
   return (
     <Layout
       layoutParams={{

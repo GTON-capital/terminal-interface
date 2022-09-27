@@ -1,4 +1,4 @@
-import { textLine, textWord } from 'crt-terminal';
+import { textLine, textWord } from '@gton-capital/crt-terminal';
 import Big from 'big.js';
 import messages from '../../Messages/Messages';
 import commonOperators, { printLink, createWorker, parser, timeConverter } from '../common';

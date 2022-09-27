@@ -1,6 +1,7 @@
-import { textLine, textWord, anchorWord } from 'crt-terminal';
+import { textLine, textWord, anchorWord } from '@gton-capital/crt-terminal';
 import axios from 'axios';
 import Big from 'big.js';
+import { isMobile, isTablet } from 'react-device-detect';
 import { chain, network } from '../config/config';
 import connectMetamask from './WEB3/ConnectMetamask';
 import addToken from './WEB3/addTokenToMM';
@@ -11,8 +12,7 @@ import balance, { userShare } from './WEB3/Balance';
 import { fromWei } from './WEB3/API/balance';
 import tokenMap, { tokens } from './WEB3/API/addToken';
 import notFoundStrings from '../Errors/notfound-strings';
-import { isCurrentChain } from '../Parser/WEB3/validate';
-import { isMobile, isTablet } from 'react-device-detect';
+import { isCurrentChain } from './WEB3/validate';
 
 enum ErrorCodes {
   INVALID_ARGUMENT = 'INVALID_ARGUMENT',
