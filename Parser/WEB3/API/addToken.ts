@@ -3,7 +3,8 @@ import {
   gtonAddress,
   gtonL2Adress,
   gcdL2Address,
-  usdcAddress,
+  usdcAddressBsc,
+  busdAddressBsc,
   wEthAddress,
   gcdAddress,
 } from '../../../config/config';
@@ -15,6 +16,25 @@ export type Token = {
   decimals: number;
   image: string;
   canBeUsedForPurchase: boolean;
+};
+
+const collateralsTokenMap: Record<string, Token> = {
+  usdc: {
+    address: usdcAddressBsc,
+    l2address: '',
+    symbol: 'USDC',
+    decimals: 18,
+    image: '',
+    canBeUsedForPurchase: true,
+  },
+  busd: {
+    address: busdAddressBsc,
+    l2address: '',
+    symbol: 'BUSD',
+    decimals: 18,
+    image: '',
+    canBeUsedForPurchase: true,
+  },
 };
 
 const tokenMap: Record<string, Token> = {
@@ -43,10 +63,18 @@ const tokenMap: Record<string, Token> = {
     canBeUsedForPurchase: false,
   },
   usdc: {
-    address: usdcAddress,
+    address: usdcAddressBsc,
     l2address: '',
     symbol: 'USDC',
-    decimals: 6,
+    decimals: 18,
+    image: '',
+    canBeUsedForPurchase: true,
+  },
+  busd: {
+    address: busdAddressBsc,
+    l2address: '',
+    symbol: 'BUSD',
+    decimals: 18,
     image: '',
     canBeUsedForPurchase: true,
   },
@@ -78,8 +106,8 @@ const tokenMap: Record<string, Token> = {
 
 export const tokens: Record<string, string> = {
   gton: gtonAddress,
-  usdc: usdcAddress,
+  usdc: usdcAddressBsc,
   gcd: gcdAddress,
 };
 
-export default tokenMap;
+export { tokenMap, collateralsTokenMap };

@@ -5,20 +5,20 @@ import {
   gtonAddress,
   stakingAddress,
   explorerUrl,
-  network,
+  gtonTokenNetwork,
   claimNetwork,
   chain,
   fantomStakingAddress,
   oneInchRouterAddress,
 } from '../../config/config';
-import { isCurrentChain } from '../WEB3/validate';
+import { isCorrectChain } from '../WEB3/validate';
 import commonOperators, { printLink } from '../common';
 import notFoundStrings from '../../Errors/notfound-strings';
 import { stake, unstake, claim, userDidClaim } from '../WEB3/Stake';
 import { harvest } from '../WEB3/harvest';
 import balance, { userShare, getEthBalance } from '../WEB3/Balance';
 import { toWei } from '../WEB3/API/balance';
-import tokenMap from '../WEB3/API/addToken';
+import { tokenMap } from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import { buy, checkSwapAmount } from '../WEB3/buyGTON';
 
@@ -65,8 +65,8 @@ const StakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) => {
     lock(true);
     loading(true);
 
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    if (!(await isCorrectChain(gtonTokenNetwork))) {
+      throw new Error(`Wrong network, switch to ${chain.chainName}, please.`);
     }
     if (Amount === '0') throw new Error("You can't stake less than 0 $GTON");
 
@@ -114,8 +114,8 @@ const UnStakeWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
     lock(true);
     loading(true);
 
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    if (!(await isCorrectChain(gtonTokenNetwork))) {
+      throw new Error(`Wrong network, switch to ${chain.chainName}, please.`);
     }
     if (Amount === '0') throw new Error("You can't unstake less than 0 $GTON");
 
@@ -153,8 +153,8 @@ const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
   try {
     lock(true);
     loading(true);
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    if (!(await isCorrectChain(gtonTokenNetwork))) {
+      throw new Error(`Wrong network, switch to ${chain.chainName}, please.`);
     }
 
     if (Amount === '0') throw new Error("You can't harvest less than 0 $GTON");
@@ -196,8 +196,8 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
   try {
     lock(true);
     loading(true);
-    if (!(await isCurrentChain(claimNetwork))) {
-      throw new Error('Wrong network, switch on Fantom Opera, please.');
+    if (!(await isCorrectChain(claimNetwork))) {
+      throw new Error('Wrong network, switch to Fantom Opera, please.');
     }
 
     if (await userDidClaim()) throw Error('You already claimed your GTON from V1 staking');
@@ -238,8 +238,8 @@ const BuyWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
   try {
     loading(true);
     lock(true);
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    if (!(await isCorrectChain(gtonTokenNetwork))) {
+      throw new Error(`Wrong network, switch to ${chain.chainName}, please.`);
     }
     const tmpARGS = Args.split(' ');
 

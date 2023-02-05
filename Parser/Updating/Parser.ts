@@ -2,16 +2,16 @@ import { textLine, textWord } from '@gton-capital/crt-terminal';
 import messages from '../../Messages/Messages';
 import commonOperators, { printLink, createWorker, parser } from '../common';
 import { toWei } from '../WEB3/API/balance';
-import tokenMap from '../WEB3/API/addToken';
-import { isCurrentChain } from '../WEB3/validate';
+import { tokenMap, collateralsTokenMap } from '../WEB3/API/addToken';
+import { isCorrectChain } from '../WEB3/validate';
 import balance, {
-  getUniswapBalanceGton,
-  getUniswapBalanceWEthAndUsdc,
+  getUniswapAssetUsdValue,
+  getChainlinkedAssetUsdValue,
   getEthBalance,
 } from '../WEB3/Balance';
 import {
   explorerUrl,
-  network,
+  rollupL1NetworkId,
   chain,
   vault,
   bridgeAddress,
@@ -70,8 +70,8 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
   try {
     lock(true);
     loading(true);
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    if (!(await isCorrectChain(rollupL1NetworkId))) {
+      throw new Error(`Wrong network, switch to BNB Chain, please.`);
     }
     const tmpARGS = Args.split(' ');
     if (tmpARGS.length < 7) {
@@ -88,18 +88,18 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
     let liquidationPrice;
     let initialCollateralRatio;
     let liquidationRatio;
-    let uniSwapOracleBalance;
+    let assetUsdValue;
 
-    if (Amount === '0') throw new Error(`You can't borrow $GCD with 0 ${TokenName}$`);
+    if (Amount === '0') throw new Error(`You can't borrow $GCD with 0 ${TokenName}`);
 
     if (percentRisk > 1 || percentRisk < 0.01)
       // Converted persent
       throw new Error(`You can't borrow $GCD with less than 0% risk and more than 100%`);
 
-    const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
+    const token = TokenName in collateralsTokenMap ? collateralsTokenMap[TokenName] : null;
 
     if (!token) {
-      throw new Error('Wrong symbol, available tokens: gton, eth');
+      throw new Error('Wrong symbol, available tokens: busd, usdc');
     }
     userBalance =
       TokenName === 'eth'
@@ -110,19 +110,19 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
     switch (TokenName) {
-      case 'eth':
-        uniSwapOracleBalance = await getUniswapBalanceWEthAndUsdc(tokenMap.weth.address, amount);
-        initialCollateralRatio = await getInitialCollateralRatio(tokenMap.weth.address);
-        liquidationRatio = await getLiquidationRatio(tokenMap.weth.address);
+      case 'busd':
+        assetUsdValue = await getChainlinkedAssetUsdValue(token.address, amount);
+        initialCollateralRatio = await getInitialCollateralRatio(token.address);
+        liquidationRatio = await getLiquidationRatio(token.address);
         break;
-      case 'gton':
-        uniSwapOracleBalance = await getUniswapBalanceGton(token.address, amount);
+      case 'usdc':
+        assetUsdValue = await getChainlinkedAssetUsdValue(token.address, amount);
         initialCollateralRatio = await getInitialCollateralRatio(token.address);
         liquidationRatio = await getLiquidationRatio(token.address);
         break;
     }
 
-    debt = await calculateBorowedGCD(uniSwapOracleBalance, percentRisk, initialCollateralRatio);
+    debt = await calculateBorowedGCD(assetUsdValue, percentRisk, initialCollateralRatio);
     liquidationPrice = await getLiquidationPrice(debt, amount, liquidationRatio);
 
     print([
@@ -191,8 +191,8 @@ const ExitGcdWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
   try {
     lock(true);
     loading(true);
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    if (!(await isCorrectChain(rollupL1NetworkId))) {
+      throw new Error(`Wrong network, switch to BNB Chain, please.`);
     }
     const tmpARGS = Args.split(' ');
 
@@ -284,8 +284,8 @@ const BridgeToL2Worker = async ({ lock, loading, print }, Args, [userAddress]) =
   try {
     lock(true);
     loading(true);
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    if (!(await isCorrectChain(rollupL1NetworkId))) {
+      throw new Error(`Wrong network, switch to BNB Chain, please.`);
     }
     const tmpARGS = Args.split(' ');
 

@@ -1,5 +1,5 @@
 import { TerminalError } from '../../Errors/ErrorCodes';
-import { network, claimNetwork, chain } from '../../config/config';
+import { gtonTokenNetwork, claimNetwork, chain } from '../../config/config';
 import Web3 from 'web3';
 
 declare const window: any;
@@ -16,13 +16,16 @@ export async function validate() {
   if (accounts.length === 0) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
-  const chainId: string = await window.ethereum.request({ method: 'net_version' });
-  if (chainId !== network && chainId !== claimNetwork) {
-    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  }
+  // This check shouldn't be here, the caller needs to know the correct
+  // network that it needs and validate with 'isCorrectChain'
+
+  // const chainId: string = await window.ethereum.request({ method: 'net_version' });
+  // if (chainId !== gtonTokenNetwork && chainId !== claimNetwork) {
+  //   throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
+  // }
 }
 
-export async function isCurrentChain(chainId: string): Promise<Boolean> {
+export async function isCorrectChain(chainId: string): Promise<Boolean> {
   const web3 = new Web3(window.ethereum);
   let currentChainId;
   try {

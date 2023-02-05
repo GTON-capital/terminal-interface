@@ -69,10 +69,10 @@ const commonCommands = `
   ${Prefix.PREFIX}${
   Commands.BALANCE
 } gton | sgton | harvest | gcd | all - get actual erc20 token balance
-  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | gcd | usdc  - add tokens to metamask,
+  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | gcd | usdc - add tokens to metamask,
   ${Prefix.PREFIX}${
   Commands.BUY
-} gton for <amount> <token>  - available tokens: eth, usdc (more coming soon) 
+} gton for <amount> <token>  - available tokens: busd, usdc (more coming soon) 
   ${isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`;
 
 const messages = {

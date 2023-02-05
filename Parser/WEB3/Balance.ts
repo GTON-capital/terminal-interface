@@ -9,7 +9,7 @@ import UNISWAPV3ORACLE_WETH from './ABI/wEthUniswapV3Oracle.json';
 import {
   stakingAddress,
   gtonUniswapV3Oracle,
-  wEthAndUsdcUniswapV3Oracle,
+  chainlinkedOracleAddress,
 } from '../../config/config';
 
 declare const window: any;
@@ -40,11 +40,14 @@ export const getEthBalance = async (userAddress: string): Promise<Big> => {
   return Big(ethBalance);
 };
 
-export const getUniswapBalanceGton = async (tokenAddress: string, amount: Big): Promise<Big> => {
+export const getUniswapAssetUsdValue = async (tokenAddress: string, amount: Big): Promise<Big> => {
   const Q112 = '5192296858534827628530496329220096';
   try {
     const web3 = new Web3(window.ethereum);
-    const contract = new web3.eth.Contract(UNISWAPV3ORACLE_GTON as AbiItem[], gtonUniswapV3Oracle);
+    const contract = new web3.eth.Contract(
+      UNISWAPV3ORACLE_GTON as AbiItem[], 
+      gtonUniswapV3Oracle
+    );
     const collateralBalance = await contract.methods
       .assetToUsd(tokenAddress, amount.toFixed())
       .call();
@@ -54,18 +57,19 @@ export const getUniswapBalanceGton = async (tokenAddress: string, amount: Big): 
   }
 };
 
-export const getUniswapBalanceWEthAndUsdc = async (
+export const getChainlinkedAssetUsdValue = async (
   tokenAddress: string,
   amount: Big,
 ): Promise<Big> => {
   const Q112 = '5192296858534827628530496329220096';
-  console.log(Q112);
 
   try {
     const web3 = new Web3(window.ethereum);
     const contract = new web3.eth.Contract(
+      // Actually it doesn't matter if it's Uni oracle ABI 
+      // or not - we just use the basic oracle method
       UNISWAPV3ORACLE_WETH as AbiItem[],
-      wEthAndUsdcUniswapV3Oracle,
+      chainlinkedOracleAddress,
     );
     const collateralBalance = await contract.methods
       .assetToUsd(tokenAddress, amount.toFixed())

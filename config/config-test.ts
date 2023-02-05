@@ -7,7 +7,7 @@ const gtonNetwork = '1000';
 
 const oneInchRouterAddress = '';
 
-const usdcAddress = '0x46aff14b22e4717934edc2cb99bcb5ea1185a5e8';
+const usdcAddressEth = '0x46aff14b22e4717934edc2cb99bcb5ea1185a5e8';
 const stakingAddress = '0x2061489A2AE30D0ced15F4721c0bb53f30DE175c';
 const claimAddress = '0xB48327cC1804A0DCf2F85A09e0fBBB5e4d8f4830'; // Fantom network, not eth
 const fantomStakingAddress = '0xb0daab4eb0c23affaa5c9943d6f361b51479ac48'; // Fantom
@@ -22,11 +22,11 @@ const gcdL2Address = '';
 const wEthAddress = '0xc778417e063141139fce010982780140aa0cd5ab';
 
 const gtonUniswapV3Oracle = '0xaa2Cc9ca2251D1FF1B130a5514357E290574169F';
-const wEthAndUsdcUniswapV3Oracle = '0x5B9082Ac5E0be515DDa3f699C895AC0CD2751A65';
+const chainlinkedOracleAddress = '0x5B9082Ac5E0be515DDa3f699C895AC0CD2751A65';
 
-const cdpManager01 = '0x5BD328d4182f244d6CB405Ea2bb0455C1899c968';
-const vaultManagerParameters = '0x216f02d56C501E591D1A669E01A74F2A7aFE7Da8';
-const vault = '0x849F651dA55b4dE09C5e91C5d3c4AC890DAC8804';
+const cdpManager01 = '0x6aA3cDc7a0Ab05C58105AA4C85568583f2b7e02f';
+const vaultManagerParameters = '0x3888C25AcDaB370dc2B85550E0943B4253346174';
+const vault = '0xAAbBB7471bCA1C152C690f10A1A9e006FE17BD7e';
 
 // chain
 
@@ -97,7 +97,7 @@ export {
   faucetAddress,
   gtonAddress,
   gtonL2Adress,
-  usdcAddress,
+  usdcAddressEth,
   isDev,
   isLive,
   gtonMainnetAddress,
@@ -109,7 +109,7 @@ export {
   gcdAddress,
   gcdL2Address,
   bridgeAddress,
-  wEthAndUsdcUniswapV3Oracle,
+  chainlinkedOracleAddress,
   wEthAddress,
   gtonNetwork,
 };
