@@ -3,13 +3,14 @@ import Web3 from 'web3';
 import Big from 'big.js';
 import STAKING_ABI from './ABI/staking.json';
 import ERC20_ABI from './ABI/erc20.json';
-import { validate } from './validate';
+import { validate, isCorrectChain } from './validate';
 import UNISWAPV3ORACLE_GTON from './ABI/gtonUniswapV3Oracle.json';
 import UNISWAPV3ORACLE_WETH from './ABI/wEthUniswapV3Oracle.json';
 import {
   stakingAddress,
   gtonUniswapV3Oracle,
   chainlinkedOracleAddress,
+  gtonTokenNetwork,
 } from '../../config/config';
 
 declare const window: any;
@@ -20,6 +21,7 @@ const balance = async (
   rpc: any = window.ethereum,
 ): Promise<Big> => {
   await validate();
+  await isCorrectChain(gtonTokenNetwork);
   const web3 = new Web3(rpc);
   const contract = new web3.eth.Contract(ERC20_ABI as AbiItem[], gtonAddress);
   const userBalance: string = await contract.methods.balanceOf(userAddress).call();
@@ -28,6 +30,7 @@ const balance = async (
 
 export const userShare = async (userAddress: string): Promise<Big> => {
   await validate();
+  await isCorrectChain(gtonTokenNetwork);
   const web3 = new Web3(window.ethereum);
   const contract = new web3.eth.Contract(STAKING_ABI as AbiItem[], stakingAddress);
   const userBalance = await contract.methods.userInfo(userAddress).call();

@@ -16,13 +16,6 @@ export async function validate() {
   if (accounts.length === 0) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
-  // This check shouldn't be here, the caller needs to know the correct
-  // network that it needs and validate with 'isCorrectChain'
-
-  // const chainId: string = await window.ethereum.request({ method: 'net_version' });
-  // if (chainId !== gtonTokenNetwork && chainId !== claimNetwork) {
-  //   throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  // }
 }
 
 export async function isCorrectChain(chainId: string): Promise<Boolean> {

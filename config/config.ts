@@ -1,5 +1,5 @@
 const gtonTokenNetwork = '1'; // Ethereum
-const rollupL1NetworkId = '56'; // Ethereum
+const rollupL1NetworkId = '56'; // BSC
 const isDev = process.env.NODE_ENV === 'development';
 const isLive = 'true';
 const isTestnet = false;
