@@ -162,7 +162,7 @@ const AddTokenWorker = createWorker(async ({ print }, TokenName) => {
   let tokenChain: string;
   const token = tokenMap[TokenName];
   if (!token) throw Error('Available tokens are: gton, sgton, busd, usdc');
-  if (TokenName === 'busd' || TokenName === 'busd') {
+  if (TokenName === 'busd' || TokenName === 'usdc' || TokenName === 'gcd') {
     tokenChain = rollupL1NetworkId;
   } else if (TokenName === 'gton' || TokenName === 'sgton') {
     tokenChain = gtonTokenNetwork;

@@ -21,6 +21,7 @@ import { toWei } from '../WEB3/API/balance';
 import { tokenMap } from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import { buy, checkSwapAmount } from '../WEB3/buyGTON';
+import { borrowGCD, bridgeTokenToL2 } from '../Updating/Parser';
 
 declare const window: any;
 
@@ -192,6 +193,23 @@ const HarvestWorker = async ({ lock, loading, print }, Amount, [userAddress]) =>
   }
 };
 
+const BuyAndBridgeGCDWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
+  const tmpARGS = Args.split(' ');
+  if (tmpARGS.length < 2) {
+    throw new Error('Invalid input');
+  }
+
+  const Amount = tmpARGS[0];
+  const TokenName = tmpARGS[1];
+  const percentRisk = 95 / 100;
+
+  const gcdAmount = await borrowGCD(Amount, TokenName, percentRisk, userAddress, lock, loading, print);
+
+  print([textLine({ words: [textWord({ characters: `Borrowed ${gcdAmount.toFixed()} GCD`, })] })]);
+
+  // await bridgeTokenToL2(gcdAmount.toFixed(), 'gcd', userAddress, lock, loading, print);
+};
+
 const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
   try {
     lock(true);
@@ -322,6 +340,7 @@ const Commands = [
   'harvest',
   'buy',
   'claim',
+  'brige'
 ];
 
 const GTONRouterMap = {
@@ -331,6 +350,7 @@ const GTONRouterMap = {
   harvest: HarvestWorker,
   buy: BuyWorker,
   claim: ClaimPostAuditWorker,
+  bridge: BuyAndBridgeGCDWorker,
   ...commonOperators,
 };
 

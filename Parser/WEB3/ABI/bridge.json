@@ -1,22 +1,48 @@
 [
-  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
   {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": false, "internalType": "uint256", "name": "_chainid", "type": "uint256" }
-    ],
-    "name": "ERC20ChainID",
-    "type": "event"
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": true, "internalType": "address", "name": "_l1Token", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "_l2Token", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "_from", "type": "address" },
-      { "indexed": false, "internalType": "address", "name": "_to", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "indexed": false, "internalType": "bytes", "name": "_data", "type": "bytes" }
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_l1Token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_l2Token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
     "name": "ERC20DepositInitiated",
     "type": "event"
@@ -24,12 +50,42 @@
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": true, "internalType": "address", "name": "_l1Token", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "_l2Token", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "_from", "type": "address" },
-      { "indexed": false, "internalType": "address", "name": "_to", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "indexed": false, "internalType": "bytes", "name": "_data", "type": "bytes" }
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_l1Token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_l2Token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
     "name": "ERC20WithdrawalFinalized",
     "type": "event"
@@ -37,48 +93,92 @@
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": true, "internalType": "address", "name": "_from", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "_to", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "indexed": false, "internalType": "bytes", "name": "_data", "type": "bytes" },
-      { "indexed": false, "internalType": "uint256", "name": "chainId", "type": "uint256" }
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
-    "name": "ETHDepositInitiated",
+    "name": "GCDDepositInitiated",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": true, "internalType": "address", "name": "_from", "type": "address" },
-      { "indexed": true, "internalType": "address", "name": "_to", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "indexed": false, "internalType": "bytes", "name": "_data", "type": "bytes" },
-      { "indexed": false, "internalType": "uint256", "name": "chainId", "type": "uint256" }
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
-    "name": "ETHWithdrawalFinalized",
+    "name": "GCDWithdrawalFinalized",
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "DEFAULT_CHAINID",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "addressmgr",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
-      { "internalType": "address", "name": "_l1Token", "type": "address" },
-      { "internalType": "address", "name": "_l2Token", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "uint32", "name": "_l2Gas", "type": "uint32" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
+      {
+        "internalType": "address",
+        "name": "_l1Token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_l2Token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_l2Gas",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
     "name": "depositERC20",
     "outputs": [],
@@ -87,26 +187,36 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_chainid", "type": "uint256" },
-      { "internalType": "address", "name": "_l1Token", "type": "address" },
-      { "internalType": "address", "name": "_l2Token", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "uint32", "name": "_l2Gas", "type": "uint32" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
-    ],
-    "name": "depositERC20ByChainId",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_l1Token", "type": "address" },
-      { "internalType": "address", "name": "_l2Token", "type": "address" },
-      { "internalType": "address", "name": "_to", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "uint32", "name": "_l2Gas", "type": "uint32" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
+      {
+        "internalType": "address",
+        "name": "_l1Token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_l2Token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_l2Gas",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
     "name": "depositERC20To",
     "outputs": [],
@@ -115,89 +225,118 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_chainid", "type": "uint256" },
-      { "internalType": "address", "name": "_l1Token", "type": "address" },
-      { "internalType": "address", "name": "_l2Token", "type": "address" },
-      { "internalType": "address", "name": "_to", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "uint32", "name": "_l2Gas", "type": "uint32" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_l2Gas",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
-    "name": "depositERC20ToByChainId",
+    "name": "depositGCD",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint32", "name": "_l2Gas", "type": "uint32" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint32",
+        "name": "_l2Gas",
+        "type": "uint32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
-    "name": "depositETH",
+    "name": "depositGCDTo",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_chainId", "type": "uint256" },
-      { "internalType": "uint32", "name": "_l2Gas", "type": "uint32" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
-    ],
-    "name": "depositETHByChainId",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_to", "type": "address" },
-      { "internalType": "uint32", "name": "_l2Gas", "type": "uint32" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
-    ],
-    "name": "depositETHTo",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "_chainId", "type": "uint256" },
-      { "internalType": "address", "name": "_to", "type": "address" },
-      { "internalType": "uint32", "name": "_l2Gas", "type": "uint32" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
-    ],
-    "name": "depositETHToByChainId",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "address", "name": "", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
     ],
     "name": "deposits",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "donateETH",
+    "name": "donateNative",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_l1Token", "type": "address" },
-      { "internalType": "address", "name": "_l2Token", "type": "address" },
-      { "internalType": "address", "name": "_from", "type": "address" },
-      { "internalType": "address", "name": "_to", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
+      {
+        "internalType": "address",
+        "name": "_l1Token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_l2Token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
     "name": "finalizeERC20Withdrawal",
     "outputs": [],
@@ -206,53 +345,28 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_chainid", "type": "uint256" },
-      { "internalType": "address", "name": "_l1Token", "type": "address" },
-      { "internalType": "address", "name": "_l2Token", "type": "address" },
-      { "internalType": "address", "name": "_from", "type": "address" },
-      { "internalType": "address", "name": "_to", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
+      {
+        "internalType": "address",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
     ],
-    "name": "finalizeERC20WithdrawalByChainId",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_from", "type": "address" },
-      { "internalType": "address", "name": "_to", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
-    ],
-    "name": "finalizeETHWithdrawal",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "_chainid", "type": "uint256" },
-      { "internalType": "address", "name": "_from", "type": "address" },
-      { "internalType": "address", "name": "_to", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
-    ],
-    "name": "finalizeETHWithdrawalByChainId",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "_chainid", "type": "uint256" },
-      { "internalType": "address", "name": "_from", "type": "address" },
-      { "internalType": "address", "name": "_to", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "bytes", "name": "_data", "type": "bytes" }
-    ],
-    "name": "finalizeGCDWithdrawalByChainId",
+    "name": "finalizeGCDWithdrawal",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -260,16 +374,33 @@
   {
     "inputs": [],
     "name": "gcd",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_l1messenger", "type": "address" },
-      { "internalType": "address", "name": "_l2TokenBridge", "type": "address" },
-      { "internalType": "address", "name": "_gcd", "type": "address" },
-      { "internalType": "address", "name": "_addressmgr", "type": "address" }
+      {
+        "internalType": "address",
+        "name": "_l1messenger",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_l2TokenBridge",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_gcd",
+        "type": "address"
+      }
     ],
     "name": "initialize",
     "outputs": [],
@@ -279,15 +410,31 @@
   {
     "inputs": [],
     "name": "l2TokenBridge",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "messenger",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

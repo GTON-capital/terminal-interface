@@ -14,6 +14,7 @@ enum Commands {
   CLAIM = 'claim',
   PRICE = 'price',
   SWITCH = 'switch',
+  BUYANDBRIDGEGCD = 'bridge',
 }
 
 enum BondingCommands {
@@ -66,13 +67,10 @@ const cdHelp = `
 const commonCommands = `
   ${Prefix.PREFIX}${Commands.HELP} - this output
   ${Prefix.PREFIX}${Commands.JOIN} - connect wallet to the terminal
-  ${Prefix.PREFIX}${
-  Commands.BALANCE
-} gton | sgton | harvest | gcd | all - get actual erc20 token balance
-  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | gcd | usdc - add tokens to metamask,
-  ${Prefix.PREFIX}${
-  Commands.BUY
-} gton for <amount> <token>  - available tokens: busd, usdc (more coming soon) 
+  ${Prefix.PREFIX}${Commands.BALANCE} gton | sgton | harvest | gcd | all - get actual erc20 token balance
+  ${Prefix.PREFIX}${Commands.BUYANDBRIDGEGCD} <amount> <token> - buy GCD with stable at ~0.92 liquidation price and bridge it to rollup
+  ${Prefix.PREFIX}${Commands.ADD_TOKEN} gton | sgton | gcd | usdc - add tokens to metamask
+  ${Prefix.PREFIX}${Commands.BUY} gton for <amount> <token>  - available tokens: busd, usdc (more coming soon) 
   ${isTestnet ? `${Prefix.PREFIX}${Commands.FAUCET} usdc | gton - receive gton airdrop` : ''}`;
 
 const messages = {

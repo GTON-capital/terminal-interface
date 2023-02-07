@@ -15,7 +15,7 @@ const busdAddressBsc = '0xe9e7cea3dedca5984780bafc599bd69add087d56';
 const stakingAddress = '0xeff66b4a84c8a6b69b99eb1c5e39af8fc35d13db';
 const claimAddress = '0xbceb65916a02804acfc32983a52b07f07e1c5477'; // Fantom
 const fantomStakingAddress = '0xb0daab4eb0c23affaa5c9943d6f361b51479ac48'; // Fantom
-const bridgeAddress = '0x1351eA7CEF8178BefC61BD3DbE11A842297985d8';
+const bridgeAddress = '0x6d0E7094a385396F78399b5c679be09d8702555B';
 
 const faucetAddress = '';
 
@@ -44,6 +44,7 @@ const chain = {
 };
 
 const explorerUrl = 'https://etherscan.io/tx/';
+const bscScanUrl = 'https://bscscan.com/tx/';
 const faucetLink = 'https://faucet.fantom.network/';
 const gcLink = 'https://gton.capital/';
 
@@ -95,6 +96,7 @@ export {
   rollupL1NetworkId,
   claimNetwork,
   explorerUrl,
+  bscScanUrl,
   isTestnet,
   chain,
   stakingAddress,
