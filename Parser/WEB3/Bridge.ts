@@ -12,23 +12,43 @@ export const bridgeToL2 = async (
   tokenAddressL1: string,
   tokenAddressL2: string,
 ): Promise<string> => {
-  const depositErc20 = '2000000000000000';
-  const gcNetId = isTestnet ? '50021' : '1000';
-  const gas = 0;
+  const gas = 200000;
   const data = '0x00';
   try {
     const web3 = new Web3(window.ethereum);
     const contract = new web3.eth.Contract(bridgeAbi as AbiItem[], bridgeAddress);
     let txn = await contract.methods
-      .depositERC20ByChainId(
-        gcNetId,
+      .depositERC20(
         tokenAddressL1,
         tokenAddressL2,
         tokenAmount.toFixed(),
         gas,
         data,
       )
-      .send({ from: userAddress, value: depositErc20 });
+      .send({ from: userAddress });
+    return txn.transactionHash;
+  } catch (e) {
+    console.log(e);
+    throw new Error(e);
+  }
+};
+
+export const bridgeGCDToL2 = async (
+  userAddress: string,
+  tokenAmount: Big,
+): Promise<string> => {
+  const gas = 200000;
+  const data = '0x00';
+  try {
+    const web3 = new Web3(window.ethereum);
+    const contract = new web3.eth.Contract(bridgeAbi as AbiItem[], bridgeAddress);
+    let txn = await contract.methods
+      .depositGCD(
+        tokenAmount.toFixed(),
+        gas,
+        data,
+      )
+      .send({ from: userAddress });
     return txn.transactionHash;
   } catch (e) {
     console.log(e);

@@ -2,7 +2,7 @@ import { textLine, textWord, anchorWord } from '@gton-capital/crt-terminal';
 import axios from 'axios';
 import Big from 'big.js';
 import { isMobile, isTablet } from 'react-device-detect';
-import { chain, network } from '../config/config';
+import { chain, gtonTokenNetwork, rollupL1NetworkId } from '../config/config';
 import connectMetamask from './WEB3/ConnectMetamask';
 import addToken from './WEB3/addTokenToMM';
 import switchChain from './WEB3/Switch';
@@ -10,9 +10,9 @@ import faucet from './WEB3/Faucet';
 import messages from '../Messages/Messages';
 import balance, { userShare } from './WEB3/Balance';
 import { fromWei } from './WEB3/API/balance';
-import tokenMap, { tokens } from './WEB3/API/addToken';
+import { tokens, tokenMap } from './WEB3/API/addToken';
 import notFoundStrings from '../Errors/notfound-strings';
-import { isCurrentChain } from './WEB3/validate';
+import { isCorrectChain } from './WEB3/validate';
 
 enum ErrorCodes {
   INVALID_ARGUMENT = 'INVALID_ARGUMENT',
@@ -103,8 +103,8 @@ const ConnectMetamaskWorker = createWorker(async ({ print }, _, state) => {
 }, 'Error while connecting metamask, please try again');
 
 const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) => {
-  if (!(await isCurrentChain(network))) {
-    throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+  if (!(await isCorrectChain(gtonTokenNetwork))) {
+    throw new Error(`Wrong network, switch to ${chain.chainName}, please.`);
   }
 
   if (TokenName === 'all') {
@@ -159,8 +159,19 @@ const BalanceWorker = createWorker(async ({ print }, TokenName, [userAddress]) =
 }, 'Something went wrong, please try again');
 
 const AddTokenWorker = createWorker(async ({ print }, TokenName) => {
+  let tokenChain: string;
   const token = tokenMap[TokenName];
-  if (!token) throw Error('Available tokens are: gton, sgton, usdc');
+  if (!token) throw Error('Available tokens are: gton, sgton, busd, usdc');
+  if (TokenName === 'busd' || TokenName === 'usdc' || TokenName === 'gcd') {
+    tokenChain = rollupL1NetworkId;
+  } else if (TokenName === 'gton' || TokenName === 'sgton') {
+    tokenChain = gtonTokenNetwork;
+  } else {
+    throw new Error(`Unknown chain for token ${TokenName}`);
+  }
+  if (!(await isCorrectChain(tokenChain))) {
+    throw new Error(`Wrong network, switch to ${chain.chainName}, please.`);
+  }
   await addToken(token);
   print([textLine({ words: [textWord({ characters: messages.addToken })] })]);
 }, 'Error adding token to Meramask');

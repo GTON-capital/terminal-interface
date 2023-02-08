@@ -1,18 +1,17 @@
 import { textLine, textWord } from '@gton-capital/crt-terminal';
+import Big from 'big.js';
 import messages from '../../Messages/Messages';
 import commonOperators, { printLink, createWorker, parser } from '../common';
-import { toWei } from '../WEB3/API/balance';
-import tokenMap from '../WEB3/API/addToken';
-import { isCurrentChain } from '../WEB3/validate';
+import { toWei, fromWei } from '../WEB3/API/balance';
+import { tokenMap, collateralsTokenMap } from '../WEB3/API/addToken';
+import { isCorrectChain } from '../WEB3/validate';
 import balance, {
-  getUniswapBalanceGton,
-  getUniswapBalanceWEthAndUsdc,
+  getChainlinkedAssetUsdValue,
   getEthBalance,
 } from '../WEB3/Balance';
 import {
-  explorerUrl,
-  network,
-  chain,
+  bscScanUrl,
+  rollupL1NetworkId,
   vault,
   bridgeAddress,
   cdpManager01,
@@ -27,7 +26,7 @@ import {
   exit_Eth,
   getCollateral,
 } from '../WEB3/cdpManager';
-import { bridgeToL2 } from '../WEB3/Bridge';
+import { bridgeToL2, bridgeGCDToL2 } from '../WEB3/Bridge';
 import { allowance, approve } from '../WEB3/approve';
 
 declare const window: any;
@@ -67,82 +66,91 @@ const HelpWorker = ({ print }) => {
 };
 
 const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [userAddress]) => {
-  try {
-    lock(true);
-    loading(true);
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
-    }
-    const tmpARGS = Args.split(' ');
+  const tmpARGS = Args.split(' ');
     if (tmpARGS.length < 7) {
       throw new Error('Invalid input');
     }
 
-    const Amount = tmpARGS[2];
-    const TokenName = tmpARGS[3];
-    const percentRisk = +parseInt(tmpARGS[5]) / 100;
+  const Amount = tmpARGS[2];
+  const TokenName = tmpARGS[3];
+  const percentRisk = parseInt(tmpARGS[5]) / 100;
+
+  await borrowGCDWithRisk(Amount, TokenName, percentRisk, userAddress, lock, loading, print);
+});
+
+export async function borrowGCDWithRisk(tokenAmount, tokenName, percentRisk, userAddress, lock, loading, print): Promise<Big> {
+  const token = tokenName in collateralsTokenMap ? collateralsTokenMap[tokenName] : null;
+  if (!token) {
+    throw new Error('Wrong symbol, available tokens: busd, usdc');
+  }
+
+  if (percentRisk > 1 || percentRisk < 0.01)
+      // Converted percent
+      throw new Error(`You can't borrow $GCD with less than 0% risk and more than 100%`);
+
+  // For ERC-20 tokens with chainlink oracles, might need a switch in case it changes
+  const tokenInWei = toWei(tokenAmount, token.decimals);
+  const assetUsdValue = await getChainlinkedAssetUsdValue(token.address, tokenInWei);
+  const initialCollateralRatio = await getInitialCollateralRatio(token.address);
+  const amountGCDWei = await calculateBorowedGCD(assetUsdValue, percentRisk, initialCollateralRatio);
+  const amountGCD = fromWei(amountGCDWei)
+
+  const borrowedAmount = await borrowExactGCDForToken(tokenAmount, tokenName, amountGCD, userAddress, lock, loading, print);
+  return borrowedAmount
+}
+
+export async function borrowExactGCDForToken(tokenAmount, tokenName, gcdAmount, userAddress, lock, loading, print): Promise<Big> {
+  try {
+    lock(true);
+    loading(true);
+    if (!(await isCorrectChain(rollupL1NetworkId))) {
+      throw new Error(`Wrong network, switch to BNB Chain, please.`);
+    }
+    
     let userAllowanceTokenDeposit;
     let userBalance;
     let amount;
-    let debt;
     let liquidationPrice;
-    let initialCollateralRatio;
     let liquidationRatio;
-    let uniSwapOracleBalance;
 
-    if (Amount === '0') throw new Error(`You can't borrow $GCD with 0 ${TokenName}$`);
+    if (tokenAmount === '0') throw new Error(`You can't borrow $GCD with 0 ${tokenName}`);
 
-    if (percentRisk > 1 || percentRisk < 0.01)
-      // Converted persent
-      throw new Error(`You can't borrow $GCD with less than 0% risk and more than 100%`);
-
-    const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
+    const token = tokenName in collateralsTokenMap ? collateralsTokenMap[tokenName] : null;
 
     if (!token) {
-      throw new Error('Wrong symbol, available tokens: gton, eth');
+      throw new Error('Wrong symbol, available tokens: busd, usdc');
     }
     userBalance =
-      TokenName === 'eth'
+      tokenName === 'eth'
         ? await getEthBalance(userAddress)
         : await balance(userAddress, token.address);
 
-    amount = toWei(Amount, token.decimals);
+    amount = toWei(tokenAmount, token.decimals);
+    const amountGCDWei = toWei(gcdAmount, 18);
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
-    switch (TokenName) {
-      case 'eth':
-        uniSwapOracleBalance = await getUniswapBalanceWEthAndUsdc(tokenMap.weth.address, amount);
-        initialCollateralRatio = await getInitialCollateralRatio(tokenMap.weth.address);
-        liquidationRatio = await getLiquidationRatio(tokenMap.weth.address);
-        break;
-      case 'gton':
-        uniSwapOracleBalance = await getUniswapBalanceGton(token.address, amount);
-        initialCollateralRatio = await getInitialCollateralRatio(token.address);
-        liquidationRatio = await getLiquidationRatio(token.address);
-        break;
-    }
+    liquidationRatio = await getLiquidationRatio(token.address);
+    liquidationPrice = await getLiquidationPrice(amountGCDWei, amount, liquidationRatio);
 
-    debt = await calculateBorowedGCD(uniSwapOracleBalance, percentRisk, initialCollateralRatio);
-    liquidationPrice = await getLiquidationPrice(debt, amount, liquidationRatio);
-
+    // print([textLine({ words: [textWord({ characters: `Price of ${tokenName} is $${liquidationPrice}`, })] })]);
     print([
       textLine({
         words: [
           textWord({
-            characters: `Liquidation price for ${TokenName} is $${liquidationPrice}`,
+            characters: `Liquidation price for ${tokenName} is $${liquidationPrice}`,
           }),
         ],
       }),
     ]);
 
-    if (TokenName !== 'eth') {
+    if (tokenName !== 'eth') {
       userAllowanceTokenDeposit = await allowance(token.address, vault);
 
       if (amount.gt(userAllowanceTokenDeposit)) {
         const firstTxn = await approve(userAddress, token.address, vault, amount);
 
         print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-        printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+        printLink(print, messages.viewTxn, bscScanUrl + firstTxn);
       }
     } else {
       userAllowanceTokenDeposit = await allowance(tokenMap.weth.address, vault);
@@ -151,48 +159,49 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
         const firstTxn = await approve(userAddress, tokenMap.weth.address, vault, amount);
 
         print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-        printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+        printLink(print, messages.viewTxn, bscScanUrl + firstTxn);
       }
     }
 
     const userAllowanceGcd = await allowance(tokenMap.gcd.address, vault);
 
-    if (debt.gt(userAllowanceGcd)) {
-      const secondTxn = await approve(userAddress, tokenMap.gcd.address, vault, debt);
+    if (amountGCDWei.gt(userAllowanceGcd)) {
+      const secondTxn = await approve(userAddress, tokenMap.gcd.address, vault, amountGCDWei);
 
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-      printLink(print, messages.viewTxn, explorerUrl + secondTxn);
+      printLink(print, messages.viewTxn, bscScanUrl + secondTxn);
     }
 
-    if (TokenName !== 'eth') {
-      const thirdTrx = await join(userAddress, token.address, amount, debt);
-      print([textLine({ words: [textWord({ characters: 'Succesfull borrowed $GCD.' })] })]);
-      printLink(print, messages.viewTxn, explorerUrl + thirdTrx);
+    if (tokenName !== 'eth') {
+      const thirdTrx = await join(userAddress, token.address, amount, amountGCDWei);
+      print([textLine({ words: [textWord({ characters: 'Succesfully borrowed $GCD.' })] })]);
+      printLink(print, messages.viewTxn, bscScanUrl + thirdTrx);
     } else {
-      const fourthTrx = await join_Eth(userAddress, amount, debt);
-      print([textLine({ words: [textWord({ characters: 'Succesfull borrowed $GCD.' })] })]);
-      printLink(print, messages.viewTxn, explorerUrl + fourthTrx);
+      const fourthTrx = await join_Eth(userAddress, amount, amountGCDWei);
+      print([textLine({ words: [textWord({ characters: 'Succesfully borrowed $GCD.' })] })]);
+      printLink(print, messages.viewTxn, bscScanUrl + fourthTrx);
     }
 
     loading(false);
     lock(false);
+    return fromWei(amountGCDWei)
   } catch (err) {
     if (err.code in ErrorCodes) {
-      ErrorHandler(print, err.code, 'stake'); // rename errors
+      ErrorHandler(print, err.code, 'borrowGCD'); // rename errors
     } else {
       print([textLine({ words: [textWord({ characters: err.message })] })]);
     }
     loading(false);
     lock(false);
   }
-});
+}
 
 const ExitGcdWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
   try {
     lock(true);
     loading(true);
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
+    if (!(await isCorrectChain(rollupL1NetworkId))) {
+      throw new Error(`Wrong network, switch to BNB Chain, please.`);
     }
     const tmpARGS = Args.split(' ');
 
@@ -237,7 +246,7 @@ const ExitGcdWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
       const firstTxn = await approve(userAddress, tokenMap.gcd.address, vault, amountGcd);
 
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-      printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+      printLink(print, messages.viewTxn, bscScanUrl + firstTxn);
     }
 
     if (TokenName === 'eth') {
@@ -253,7 +262,7 @@ const ExitGcdWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
           : await approve(userAddress, token.address, cdpManager01, amountBorrowedToken);
 
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-      printLink(print, messages.viewTxn, explorerUrl + secondTxn);
+      printLink(print, messages.viewTxn, bscScanUrl + secondTxn);
     }
 
     thirdTxn =
@@ -265,7 +274,7 @@ const ExitGcdWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
         words: [textWord({ characters: `Succesfull repay $GCD and withdraw $${TokenName}.` })],
       }),
     ]);
-    printLink(print, messages.viewTxn, explorerUrl + thirdTxn);
+    printLink(print, messages.viewTxn, bscScanUrl + thirdTxn);
 
     loading(false);
     lock(false);
@@ -281,33 +290,40 @@ const ExitGcdWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
 };
 
 const BridgeToL2Worker = async ({ lock, loading, print }, Args, [userAddress]) => {
-  try {
-    lock(true);
-    loading(true);
-    if (!(await isCurrentChain(network))) {
-      throw new Error(`Wrong network, switch on ${chain.chainName}, please.`);
-    }
-    const tmpARGS = Args.split(' ');
+  const tmpARGS = Args.split(' ');
 
     if (tmpARGS.length < 2) {
       throw new Error('Invalid input');
     }
     const Amount = tmpARGS[0];
+    const TokenName = tmpARGS[1];
+
+    await bridgeTokenToL2(Amount, TokenName, userAddress, lock, loading, print);
+};
+
+export async function bridgeTokenToL2(tokenAmount, tokenName, userAddress, lock, loading, print) {
+  try {
+    lock(true);
+    loading(true);
+
+    if (!(await isCorrectChain(rollupL1NetworkId))) {
+      throw new Error(`Wrong network, switch to BNB Chain, please.`);
+    }
+
     let userBalance;
     let amount;
-    let TokenName = tmpARGS[1];
 
-    const token = TokenName in tokenMap ? tokenMap[TokenName] : null;
+    const token = tokenName in tokenMap ? tokenMap[tokenName] : null;
 
     if (!token || !['GCD', 'GTON'].includes(token.symbol)) {
       throw new Error('Wrong symbol, available tokens: gton, gcd');
     }
 
-    if (Amount === '0') throw new Error(`You can't bridge less then 0`);
+    if (tokenAmount === '0') throw new Error(`You can't bridge less then 0`);
 
     userBalance = await balance(userAddress, token.address);
 
-    amount = toWei(Amount, token.decimals);
+    amount = toWei(tokenAmount, token.decimals);
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
     const userAllowance = await allowance(token.address, bridgeAddress);
@@ -316,15 +332,20 @@ const BridgeToL2Worker = async ({ lock, loading, print }, Args, [userAddress]) =
       const firstTxn = await approve(userAddress, token.address, bridgeAddress, amount);
 
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-      printLink(print, messages.viewTxn, explorerUrl + firstTxn);
+      printLink(print, messages.viewTxn, bscScanUrl + firstTxn);
     }
 
-    const secondTxn = await bridgeToL2(userAddress, amount, token.address, token.l2address);
+    let secondTxn;
+    if (token.symbol === 'GCD') {
+      secondTxn = await bridgeGCDToL2(userAddress, amount);
+    } else {
+      secondTxn = await bridgeToL2(userAddress, amount, token.address, token.l2address);
+    }
 
     print([
-      textLine({ words: [textWord({ characters: `Succesfull bridged $${token.symbol}.` })] }),
+      textLine({ words: [textWord({ characters: `Succesfully bridged $${token.symbol}.` })] }),
     ]);
-    printLink(print, messages.viewTxn, explorerUrl + secondTxn);
+    printLink(print, messages.viewTxn, bscScanUrl + secondTxn);
 
     loading(false);
     lock(false);
@@ -337,7 +358,7 @@ const BridgeToL2Worker = async ({ lock, loading, print }, Args, [userAddress]) =
     loading(false);
     lock(false);
   }
-};
+}
 
 const UpdatingMap = {
   help: HelpWorker,

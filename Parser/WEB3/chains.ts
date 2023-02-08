@@ -29,8 +29,8 @@ export const mmChains: MMChains = {
     chainId: '1000',
     chainIdHex: '0x3E8',
     chainName: 'GTON',
-    rpcUrls: ['https://gton.network'],
+    rpcUrls: ['https://rpc.gton.network'],
     nativeCurrency: { name: 'GCD', decimals: 18, symbol: 'GCD' },
-    blockExplorerUrls: ['https://testnet.gton.network/'],
+    blockExplorerUrls: ['https://explorer.gton.network/'],
   },
 };
