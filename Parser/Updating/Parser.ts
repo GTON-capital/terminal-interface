@@ -75,10 +75,31 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
   const TokenName = tmpARGS[3];
   const percentRisk = +parseInt(tmpARGS[5]) / 100;
 
-  await borrowGCD(Amount, TokenName, percentRisk, userAddress, lock, loading, print);
+  await borrowGCDWithRisk(Amount, TokenName, percentRisk, userAddress, lock, loading, print);
 });
 
-export async function borrowGCD(tokenAmount, tokenName, percentRisk, userAddress, lock, loading, print): Promise<Big> {
+export async function borrowGCDWithRisk(tokenAmount, tokenName, percentRisk, userAddress, lock, loading, print): Promise<Big> {
+  const token = tokenName in collateralsTokenMap ? collateralsTokenMap[tokenName] : null;
+  if (!token) {
+    throw new Error('Wrong symbol, available tokens: busd, usdc');
+  }
+
+  if (percentRisk > 1 || percentRisk < 0.01)
+      // Converted persent
+      throw new Error(`You can't borrow $GCD with less than 0% risk and more than 100%`);
+
+  // For ERC-20 tokens with chainlink oracles, might need a switch in case it changes
+  const tokenInWei = toWei(tokenAmount, token.decimals);
+  const assetUsdValue = await getChainlinkedAssetUsdValue(token.address, tokenInWei);
+  const initialCollateralRatio = await getInitialCollateralRatio(token.address);
+  const amountGCDWei = await calculateBorowedGCD(assetUsdValue, percentRisk, initialCollateralRatio);
+  const amountGCD = fromWei(amountGCDWei)
+
+  const borrowedAmount = await borrowExactGCDForToken(tokenAmount, tokenName, amountGCD, userAddress, lock, loading, print);
+  return borrowedAmount
+}
+
+export async function borrowExactGCDForToken(tokenAmount, tokenName, gcdAmount, userAddress, lock, loading, print): Promise<Big> {
   try {
     lock(true);
     loading(true);
@@ -89,17 +110,10 @@ export async function borrowGCD(tokenAmount, tokenName, percentRisk, userAddress
     let userAllowanceTokenDeposit;
     let userBalance;
     let amount;
-    let debt;
     let liquidationPrice;
-    let initialCollateralRatio;
     let liquidationRatio;
-    let assetUsdValue;
 
     if (tokenAmount === '0') throw new Error(`You can't borrow $GCD with 0 ${tokenName}`);
-
-    if (percentRisk > 1 || percentRisk < 0.01)
-      // Converted persent
-      throw new Error(`You can't borrow $GCD with less than 0% risk and more than 100%`);
 
     const token = tokenName in collateralsTokenMap ? collateralsTokenMap[tokenName] : null;
 
@@ -112,15 +126,11 @@ export async function borrowGCD(tokenAmount, tokenName, percentRisk, userAddress
         : await balance(userAddress, token.address);
 
     amount = toWei(tokenAmount, token.decimals);
+    const amountGCDWei = toWei(gcdAmount, 18);
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
-    // For ERC-20 tokens with chainlink oracles, might need a switch in case it changes
-    assetUsdValue = await getChainlinkedAssetUsdValue(token.address, amount);
-    initialCollateralRatio = await getInitialCollateralRatio(token.address);
     liquidationRatio = await getLiquidationRatio(token.address);
-
-    debt = await calculateBorowedGCD(assetUsdValue, percentRisk, initialCollateralRatio);
-    liquidationPrice = await getLiquidationPrice(debt, amount, liquidationRatio);
+    liquidationPrice = await getLiquidationPrice(amountGCDWei, amount, liquidationRatio);
 
     // print([textLine({ words: [textWord({ characters: `Price of ${tokenName} is $${liquidationPrice}`, })] })]);
     print([
@@ -155,26 +165,26 @@ export async function borrowGCD(tokenAmount, tokenName, percentRisk, userAddress
 
     const userAllowanceGcd = await allowance(tokenMap.gcd.address, vault);
 
-    if (debt.gt(userAllowanceGcd)) {
-      const secondTxn = await approve(userAddress, tokenMap.gcd.address, vault, debt);
+    if (amountGCDWei.gt(userAllowanceGcd)) {
+      const secondTxn = await approve(userAddress, tokenMap.gcd.address, vault, amountGCDWei);
 
       print([textLine({ words: [textWord({ characters: messages.approve })] })]);
       printLink(print, messages.viewTxn, bscScanUrl + secondTxn);
     }
 
     if (tokenName !== 'eth') {
-      const thirdTrx = await join(userAddress, token.address, amount, debt);
+      const thirdTrx = await join(userAddress, token.address, amount, amountGCDWei);
       print([textLine({ words: [textWord({ characters: 'Succesfully borrowed $GCD.' })] })]);
       printLink(print, messages.viewTxn, bscScanUrl + thirdTrx);
     } else {
-      const fourthTrx = await join_Eth(userAddress, amount, debt);
+      const fourthTrx = await join_Eth(userAddress, amount, amountGCDWei);
       print([textLine({ words: [textWord({ characters: 'Succesfully borrowed $GCD.' })] })]);
       printLink(print, messages.viewTxn, bscScanUrl + fourthTrx);
     }
 
     loading(false);
     lock(false);
-    return fromWei(debt)
+    return fromWei(amountGCDWei)
   } catch (err) {
     if (err.code in ErrorCodes) {
       ErrorHandler(print, err.code, 'borrowGCD'); // rename errors

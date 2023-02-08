@@ -21,7 +21,7 @@ import { toWei } from '../WEB3/API/balance';
 import { tokenMap } from '../WEB3/API/addToken';
 import { allowance, approve } from '../WEB3/approve';
 import { buy, checkSwapAmount } from '../WEB3/buyGTON';
-import { borrowGCD, bridgeTokenToL2 } from '../Updating/Parser';
+import { borrowExactGCDForToken, borrowGCDWithRisk, bridgeTokenToL2 } from '../Updating/Parser';
 
 declare const window: any;
 
@@ -201,9 +201,9 @@ const BuyAndBridgeGCDWorker = async ({ lock, loading, print }, Args, [userAddres
 
   const Amount = tmpARGS[0];
   const TokenName = tmpARGS[1];
-  const percentRisk = 95 / 100;
+  const GCDAmount = Amount * 9 / 10;
 
-  const gcdAmount = await borrowGCD(Amount, TokenName, percentRisk, userAddress, lock, loading, print);
+  const gcdAmount = await borrowExactGCDForToken(Amount, TokenName, GCDAmount, userAddress, lock, loading, print);
 
   print([textLine({ words: [textWord({ characters: `Borrowed ${gcdAmount.toFixed()} GCD`, })] })]);
 
