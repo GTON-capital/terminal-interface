@@ -73,7 +73,7 @@ const BorrowGcdWorker = createWorker(async ({ lock, loading, print }, Args, [use
 
   const Amount = tmpARGS[2];
   const TokenName = tmpARGS[3];
-  const percentRisk = +parseInt(tmpARGS[5]) / 100;
+  const percentRisk = parseInt(tmpARGS[5]) / 100;
 
   await borrowGCDWithRisk(Amount, TokenName, percentRisk, userAddress, lock, loading, print);
 });
@@ -85,7 +85,7 @@ export async function borrowGCDWithRisk(tokenAmount, tokenName, percentRisk, use
   }
 
   if (percentRisk > 1 || percentRisk < 0.01)
-      // Converted persent
+      // Converted percent
       throw new Error(`You can't borrow $GCD with less than 0% risk and more than 100%`);
 
   // For ERC-20 tokens with chainlink oracles, might need a switch in case it changes
