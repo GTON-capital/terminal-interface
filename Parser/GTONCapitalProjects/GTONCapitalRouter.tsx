@@ -207,7 +207,7 @@ const BuyAndBridgeGCDWorker = async ({ lock, loading, print }, Args, [userAddres
 
   print([textLine({ words: [textWord({ characters: `Borrowed ${gcdAmount.toFixed()} GCD`, })] })]);
 
-  // await bridgeTokenToL2(gcdAmount.toFixed(), 'gcd', userAddress, lock, loading, print);
+  await bridgeTokenToL2(gcdAmount.toFixed(), 'gcd', userAddress, lock, loading, print);
 };
 
 const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress]) => {

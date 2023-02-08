@@ -2,7 +2,7 @@ import { textLine, textWord } from '@gton-capital/crt-terminal';
 import Big from 'big.js';
 import messages from '../../Messages/Messages';
 import commonOperators, { printLink, createWorker, parser } from '../common';
-import { toWei } from '../WEB3/API/balance';
+import { toWei, fromWei } from '../WEB3/API/balance';
 import { tokenMap, collateralsTokenMap } from '../WEB3/API/addToken';
 import { isCorrectChain } from '../WEB3/validate';
 import balance, {
@@ -114,18 +114,10 @@ export async function borrowGCD(tokenAmount, tokenName, percentRisk, userAddress
     amount = toWei(tokenAmount, token.decimals);
     if (amount.gt(userBalance)) throw Error('Insufficient amount');
 
-    switch (tokenName) {
-      case 'busd':
-        assetUsdValue = await getChainlinkedAssetUsdValue(token.address, amount);
-        initialCollateralRatio = await getInitialCollateralRatio(token.address);
-        liquidationRatio = await getLiquidationRatio(token.address);
-        break;
-      case 'usdc':
-        assetUsdValue = await getChainlinkedAssetUsdValue(token.address, amount);
-        initialCollateralRatio = await getInitialCollateralRatio(token.address);
-        liquidationRatio = await getLiquidationRatio(token.address);
-        break;
-    }
+    // For ERC-20 tokens with chainlink oracles, might need a switch in case it changes
+    assetUsdValue = await getChainlinkedAssetUsdValue(token.address, amount);
+    initialCollateralRatio = await getInitialCollateralRatio(token.address);
+    liquidationRatio = await getLiquidationRatio(token.address);
 
     debt = await calculateBorowedGCD(assetUsdValue, percentRisk, initialCollateralRatio);
     liquidationPrice = await getLiquidationPrice(debt, amount, liquidationRatio);
@@ -182,7 +174,7 @@ export async function borrowGCD(tokenAmount, tokenName, percentRisk, userAddress
 
     loading(false);
     lock(false);
-    return debt
+    return fromWei(debt)
   } catch (err) {
     if (err.code in ErrorCodes) {
       ErrorHandler(print, err.code, 'borrowGCD'); // rename errors
