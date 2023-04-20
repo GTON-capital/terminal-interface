@@ -10,11 +10,19 @@ import {
   chain,
   fantomStakingAddress,
   oneInchRouterAddress,
+  gtonNetwork,
 } from '../../config/config';
 import { isCorrectChain } from '../WEB3/validate';
 import commonOperators, { printLink } from '../common';
 import notFoundStrings from '../../Errors/notfound-strings';
-import { stake, unstake, claim, userDidClaim } from '../WEB3/Stake';
+import { 
+  stake, 
+  unstake, 
+  claimGTON,
+  claimOGXT,
+  userDidClaimGTONOnFantom,
+  userDidClaimOGXT,
+} from '../WEB3/Stake';
 import { harvest } from '../WEB3/harvest';
 import balance, { userShare, getEthBalance } from '../WEB3/Balance';
 import { toWei } from '../WEB3/API/balance';
@@ -218,12 +226,51 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
       throw new Error('Wrong network, switch to Fantom Opera, please.');
     }
 
-    if (await userDidClaim()) throw Error('You already claimed your GTON from V1 staking');
+    if (await userDidClaimGTONOnFantom()) throw Error('You already claimed your GTON from V1 staking');
 
     const stakingBalance = await balance(userAddress, fantomStakingAddress);
     if (stakingBalance.eq(0)) throw Error("You don't have any GTON in V1 staking");
 
-    const secondTxn = await claim();
+    const secondTxn = await claimGTON();
+
+    print([textLine({ words: [textWord({ characters: messages.claim })] })]);
+    print([
+      textLine({
+        words: [
+          anchorWord({
+            className: 'link-padding',
+            characters: messages.viewTxn,
+            href: explorerUrl + secondTxn,
+          }),
+        ],
+      }),
+    ]);
+
+    loading(false);
+    lock(false);
+  } catch (err) {
+    if (err.code in ErrorCodes) {
+      ErrorHandler(print, err.code, 'stake');
+    } else {
+      print([textLine({ words: [textWord({ characters: err.message })] })]);
+    }
+
+    loading(false);
+    lock(false);
+  }
+};
+
+const ClaimOGXTWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
+  try {
+    lock(true);
+    loading(true);
+    if (!(await isCorrectChain(gtonNetwork))) {
+      throw new Error('Wrong network, switch to GTON Chain, please.');
+    }
+
+    if (await userDidClaimOGXT()) throw Error('You don\'t have any OGXT to claim');
+
+    const secondTxn = await claimOGXT();
 
     print([textLine({ words: [textWord({ characters: messages.claim })] })]);
     print([
@@ -349,7 +396,8 @@ const GTONRouterMap = {
   unstake: UnStakeWorker,
   harvest: HarvestWorker,
   buy: BuyWorker,
-  claim: ClaimPostAuditWorker,
+  claimGTONFantom: ClaimPostAuditWorker,
+  claim: ClaimOGXTWorker,
   bridge: BuyAndBridgeGCDWorker,
   ...commonOperators,
 };

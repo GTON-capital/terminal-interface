@@ -10,6 +10,7 @@ const oneInchRouterAddress = '';
 const usdcAddressEth = '0x46aff14b22e4717934edc2cb99bcb5ea1185a5e8';
 const stakingAddress = '0x2061489A2AE30D0ced15F4721c0bb53f30DE175c';
 const claimAddress = '0xB48327cC1804A0DCf2F85A09e0fBBB5e4d8f4830'; // Fantom network, not eth
+const claimOGXTAddress = '0xdC1b3cDa1Bc3d1EE3f1d769d531d4a99e392A4D3'; // GTON
 const fantomStakingAddress = '0xb0daab4eb0c23affaa5c9943d6f361b51479ac48'; // Fantom
 const bridgeAddress = '0xd23CBBCDBB88302cD2f4dFe3fE62fE27Ec5762fF';
 
@@ -93,6 +94,7 @@ export {
   stakingAddress,
   storageAddress,
   claimAddress,
+  claimOGXTAddress,
   fantomStakingAddress,
   faucetAddress,
   gtonAddress,
