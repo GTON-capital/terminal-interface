@@ -48,6 +48,7 @@ const explorerUrl = 'https://etherscan.io/tx/';
 const bscScanUrl = 'https://bscscan.com/tx/';
 const faucetLink = 'https://faucet.fantom.network/';
 const gcLink = 'https://gton.capital/';
+const gtonScanUrl = 'https://explorer.gton.network/tx/';
 
 const storageAddress = '';
 const bondingETHAddress = '';
@@ -98,6 +99,7 @@ export {
   claimNetwork,
   explorerUrl,
   bscScanUrl,
+  gtonScanUrl,
   isTestnet,
   chain,
   stakingAddress,

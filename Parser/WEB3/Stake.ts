@@ -4,11 +4,11 @@ import Big from 'big.js';
 import STAKING_ABI from './ABI/staking.json';
 import CLAIM_ABI from './ABI/claimGtonPostAudit.json';
 import CLAIM_OGXT_ABI from './ABI/claimOGXT.json';
-import { 
-  stakingAddress, 
-  claimAddress, 
-  gtonTokenNetwork, 
-  claimNetwork, 
+import {
+  stakingAddress,
+  claimAddress,
+  gtonTokenNetwork,
+  claimNetwork,
   gtonNetwork,
   claimOGXTAddress,
 } from '../../config/config';
@@ -49,7 +49,6 @@ export const claimGTON = async (): Promise<void> => {
 };
 
 export const userDidClaimGTONOnFantom = async (): Promise<boolean> => {
-  console.log("222")
   await validate();
   await isCorrectChain(claimNetwork);
   const web3 = new Web3(window.ethereum);
@@ -59,13 +58,12 @@ export const userDidClaimGTONOnFantom = async (): Promise<boolean> => {
   return txn;
 };
 
-export const userDidClaimOGXT = async (): Promise<boolean> => {
+export const canUserClaimOGXT = async (): Promise<boolean> => {
   await validate();
   await isCorrectChain(gtonNetwork);
   const web3 = new Web3(window.ethereum);
   const signer = (await web3.eth.getAccounts())[0];
   const contract = new web3.eth.Contract(CLAIM_OGXT_ABI as AbiItem[], claimOGXTAddress);
-  console.log(CLAIM_OGXT_ABI)
   const txn = await contract.methods.canUserClaim(signer).call();
   return txn;
 };
