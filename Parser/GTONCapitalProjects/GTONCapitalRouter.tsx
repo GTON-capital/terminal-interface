@@ -5,16 +5,25 @@ import {
   gtonAddress,
   stakingAddress,
   explorerUrl,
+  gtonScanUrl,
   gtonTokenNetwork,
   claimNetwork,
   chain,
   fantomStakingAddress,
   oneInchRouterAddress,
+  gtonNetwork,
 } from '../../config/config';
 import { isCorrectChain } from '../WEB3/validate';
 import commonOperators, { printLink } from '../common';
 import notFoundStrings from '../../Errors/notfound-strings';
-import { stake, unstake, claim, userDidClaim } from '../WEB3/Stake';
+import {
+  stake,
+  unstake,
+  claimGTON,
+  claimOGXT,
+  userDidClaimGTONOnFantom,
+  canUserClaimOGXT,
+} from '../WEB3/Stake';
 import { harvest } from '../WEB3/harvest';
 import balance, { userShare, getEthBalance } from '../WEB3/Balance';
 import { toWei } from '../WEB3/API/balance';
@@ -201,11 +210,19 @@ const BuyAndBridgeGCDWorker = async ({ lock, loading, print }, Args, [userAddres
 
   const Amount = tmpARGS[0];
   const TokenName = tmpARGS[1];
-  const GCDAmount = Amount * 9 / 10;
+  const GCDAmount = (Amount * 9) / 10;
 
-  const gcdAmount = await borrowExactGCDForToken(Amount, TokenName, GCDAmount, userAddress, lock, loading, print);
+  const gcdAmount = await borrowExactGCDForToken(
+    Amount,
+    TokenName,
+    GCDAmount,
+    userAddress,
+    lock,
+    loading,
+    print,
+  );
 
-  print([textLine({ words: [textWord({ characters: `Borrowed ${gcdAmount.toFixed()} GCD`, })] })]);
+  print([textLine({ words: [textWord({ characters: `Borrowed ${gcdAmount.toFixed()} GCD` })] })]);
 
   await bridgeTokenToL2(gcdAmount.toFixed(), 'gcd', userAddress, lock, loading, print);
 };
@@ -218,12 +235,13 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
       throw new Error('Wrong network, switch to Fantom Opera, please.');
     }
 
-    if (await userDidClaim()) throw Error('You already claimed your GTON from V1 staking');
+    if (await userDidClaimGTONOnFantom())
+      throw Error('You already claimed your GTON from V1 staking');
 
     const stakingBalance = await balance(userAddress, fantomStakingAddress);
     if (stakingBalance.eq(0)) throw Error("You don't have any GTON in V1 staking");
 
-    const secondTxn = await claim();
+    const secondTxn = await claimGTON();
 
     print([textLine({ words: [textWord({ characters: messages.claim })] })]);
     print([
@@ -233,6 +251,55 @@ const ClaimPostAuditWorker = async ({ lock, loading, print }, Args, [userAddress
             className: 'link-padding',
             characters: messages.viewTxn,
             href: explorerUrl + secondTxn,
+          }),
+        ],
+      }),
+    ]);
+
+    loading(false);
+    lock(false);
+  } catch (err) {
+    if (err.code in ErrorCodes) {
+      ErrorHandler(print, err.code, 'stake');
+    } else {
+      print([textLine({ words: [textWord({ characters: err.message })] })]);
+    }
+
+    loading(false);
+    lock(false);
+  }
+};
+
+const ClaimOGXTWorker = async ({ lock, loading, print }, Args, [userAddress]) => {
+  try {
+    lock(true);
+    loading(true);
+    if (!(await isCorrectChain(gtonNetwork))) {
+      throw new Error('Wrong network, switch to GTON Chain, please.');
+    }
+    const canUserClaim = await canUserClaimOGXT();
+    if (!canUserClaim) throw Error("You don't have any OGXT to claim");
+
+    const agreement = window.confirm(
+      'By using this contract you certify that you are not a US citizen, resident or tax resident. By interacting with any smart contract on the GTON Capital protocol (including purchases via bonding, staking, withdrawals, approvals, interactions with any assets on chain), you expressly and unconditionally affirm that you are not a resident of the US and do not violate any local regulations if based in any other jurisdiction. \n\n Do you agree with the terms?.',
+    );
+
+    if (!agreement) {
+      throw Error(
+        "Please note that OGXT claim is only possible if you don't violate any local laws and are not a US resident",
+      );
+    }
+
+    const secondTxn = await claimOGXT();
+
+    print([textLine({ words: [textWord({ characters: messages.claim })] })]);
+    print([
+      textLine({
+        words: [
+          anchorWord({
+            className: 'link-padding',
+            characters: messages.viewTxn,
+            href: gtonScanUrl + secondTxn,
           }),
         ],
       }),
@@ -340,7 +407,7 @@ const Commands = [
   'harvest',
   'buy',
   'claim',
-  'brige'
+  'brige',
 ];
 
 const GTONRouterMap = {
@@ -349,7 +416,8 @@ const GTONRouterMap = {
   unstake: UnStakeWorker,
   harvest: HarvestWorker,
   buy: BuyWorker,
-  claim: ClaimPostAuditWorker,
+  claimGTONFantom: ClaimPostAuditWorker,
+  claim: ClaimOGXTWorker,
   bridge: BuyAndBridgeGCDWorker,
   ...commonOperators,
 };

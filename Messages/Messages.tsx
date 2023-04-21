@@ -104,7 +104,7 @@ const messages = {
 
   stakingHelpText: `
   Available commands:
-  ${Prefix.PREFIX}${Commands.CLAIM} - claim gton and harvest reward from V1 staking contract (Fantom)
+  ${Prefix.PREFIX}${Commands.CLAIM} - claim OGXT on GTON Chain (only non-US residents)
   ${Prefix.PREFIX}${Commands.STAKE} <amount> | all - stake funds
   ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
   ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
