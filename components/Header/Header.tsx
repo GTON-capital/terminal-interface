@@ -2,42 +2,29 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import classes from './header.module.scss';
-import { chain, claimNetwork, isTestnet } from '../../config/config';
 import Web3 from 'web3';
+import { ApplicationConfig } from '../../config/types';
+import { TerminalState } from '../../State/types';
 declare const window: any;
 
-function Header() {
-  let chainId;
+interface IHeaderProps {
+  config: ApplicationConfig;
+  state: TerminalState;
+}
 
-  useEffect(() => {
-    chainId = async () => {
-      const web3 = new Web3(window.ethereum);
-      return await web3.eth.net.getId();
-    };
-  });
+function Header({ config, state }: IHeaderProps) {
+  let explorerUrl: string;
+  let networkName: string;
 
-  let [isCurrentChainId, setChain] = useState(chainId);
-
-  useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.on('chainChanged', function (networkId) {
-        const id = parseInt(networkId.toString(16)).toString();
-        setChain(id);
-        console.log(id);
-      });
-    }
-  });
-
-  useEffect(() => {
-    // Set initial chain
-    const getChain = async () => {
-      const web3 = new Web3(window.ethereum);
-      const currentChainId = await (await web3.eth.net.getId()).toString();
-      setChain(currentChainId);
-    };
-
-    getChain().catch(console.error);
-  }, []);
+  if (state) {
+    explorerUrl = state.chain.isL2Network
+      ? state.chain.explorerUrl
+      : config.chains[state.chain.oppositeChainId].explorerUrl; // Only GTON explorers
+    networkName = state.chain.name.replace('-', ' ').toUpperCase();
+  } else {
+    explorerUrl = 'https://explorer.gton.network';
+    networkName = 'NOT CONNECTED';
+  }
 
   return (
     <div className={classes.headerContainer}>
@@ -58,7 +45,7 @@ function Header() {
         DOCS
       </a>
       <a
-        href="https://explorer.testnet.gton.network"
+        href={explorerUrl}
         target="_blank"
         rel="noopener noreferrer"
         className={classes.headerTextWrap}
@@ -73,15 +60,7 @@ function Header() {
       >
         FORUM
       </a>
-      <div className={classes.btn}>
-        {isCurrentChainId === chain.chainId && !isTestnet
-          ? 'ETH MAINNET'
-          : isCurrentChainId === chain.chainId && isTestnet
-          ? 'ROPSTEN'
-          : isCurrentChainId === claimNetwork
-          ? 'FANTOM'
-          : 'WRONG NETWORK'}
-      </div>
+      <div className={classes.btn}>{networkName}</div>
     </div>
   );
 }

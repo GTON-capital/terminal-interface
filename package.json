@@ -33,6 +33,7 @@
     "axios": "^0.26.0",
     "big.js": "^6.1.1",
     "bignumber.js": "^9.0.2",
+    "env-var": "^7.4.1",
     "eth-sig-util": "^3.0.1",
     "ethers": "^5.5.3",
     "help": "^3.0.2",

@@ -1,18 +1,12 @@
-import { TerminalError } from '../../Errors/ErrorCodes';
-import { mmChains } from '../WEB3/chains';
+import { BigNumber } from 'ethers';
+import { ApplicationConfig, NativeCurrency } from '../../config/types';
+
 declare const window: any;
 
-const switchChain = async (network: string): Promise<void> => {
-  if (!window.ethereum || !window.ethereum!.isMetaMask) {
-    throw new TerminalError({ code: 'NO_METAMASK' });
-  }
-  if (!window.ethereum.request) {
-    throw new TerminalError({ code: 'METAMASK_WRONG_NETWORK' });
-  }
+const switchChain = async (config: ApplicationConfig, network: string): Promise<void> => {
+  const { id, name, rpcUrl, explorerUrl, nativeCurrency } = config.chainsByName[network];
+  const chainIdHex = `0x${id.toString(16)}`;
 
-  network = network.toLowerCase();
-
-  const { chainIdHex, chainName, rpcUrls, nativeCurrency, blockExplorerUrls } = mmChains[network];
   try {
     await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
@@ -31,10 +25,10 @@ const switchChain = async (network: string): Promise<void> => {
           params: [
             {
               chainId: chainIdHex,
-              chainName,
-              rpcUrls,
+              chainName: name,
+              rpcUrls: [rpcUrl],
               nativeCurrency,
-              blockExplorerUrls,
+              blockExplorerUrls: [explorerUrl],
             },
           ],
         });

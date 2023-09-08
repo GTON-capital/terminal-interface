@@ -1,49 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Terminal,
   useEventQueue,
   textLine,
   textWord,
   anchorWord,
+  TextLine,
 } from '@gton-capital/crt-terminal';
 import Layout from '../components/Layout/Layout';
 import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet, chain } from '../config/config';
-import GTONParser from '../Parser/GTONCapitalProjects/GTONCapitalRouter';
-import BondingParser from '../Parser/Bonding/Parser';
-import UpdatesParser from '../Parser/Updating/Parser';
-import ChatParser from '../Parser/Chat/Parser';
+import UpdatesParser from '../Parser/Updating/factory';
 import messages from '../Messages/Messages';
-import { connect, printLink } from '../Parser/common';
 import Header from '../components/Header/Header';
 import { useRouter } from 'next/router';
+import { Projects, cd } from '../Parser/cd';
+import { useTerminalState } from '../State/hook';
+import updateParserFactory from '../Parser/Updating/factory';
+import { GetStaticProps, InferGetStaticPropsType } from 'next';
+import { ApplicationConfig } from '../config/types';
+import { config } from '../config';
 
 declare const window: any;
 
-const Projects = {
-  Staking: 'staking',
-  Candyshop: 'candyshop',
-  Ogswap: 'ogswap',
-  Bonding: 'bonding',
-  Chat: 'chat',
-  Updates: 'updates',
+let CurrentDirectory = Projects.Updates;
+
+export const getStaticProps: GetStaticProps<{
+  config: ApplicationConfig;
+}> = async () => {
+  return { props: { config: config() } };
 };
 
-let CurrentDirectory = Projects.Staking;
-
-export default function Web() {
+export default function Web({ config }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter();
   const eventQueue = useEventQueue();
   const { print, typeCommand } = eventQueue.handlers;
-  const state = useState(null);
 
-  // it's necessary update state if wallet is available
-  useEffect(() => {
-    connect(state)
-      .then()
-      .catch((e) => console.error(e));
-  }, []);
+  const state = useTerminalState(config);
 
   useEffect(() => {
     if (router.isReady) {
@@ -68,98 +62,22 @@ export default function Web() {
             queue={eventQueue}
             onCommand={(command) => {
               if (command.split(' ')[0] == 'cd') {
-                switch (command.split(' ')[1]) {
-                  case 'staking':
-                    CurrentDirectory = Projects.Staking;
-                    print([
-                      textLine({
-                        words: [
-                          textWord({ characters: 'Succefully switched to ' + Projects.Staking }),
-                        ],
-                      }),
-                    ]);
-                    break;
-                  case 'bonding':
-                    CurrentDirectory = Projects.Bonding;
-                    print([
-                      textLine({
-                        words: [
-                          textWord({ characters: 'Succefully switched to ' + Projects.Bonding }),
-                        ],
-                      }),
-                    ]);
-                    break;
-                  case 'updates':
-                    CurrentDirectory = Projects.Updates;
-                    print([
-                      textLine({
-                        words: [
-                          textWord({ characters: 'Succefully switched to ' + Projects.Updates }),
-                        ],
-                      }),
-                    ]);
-                    break;
-                  case 'chat':
-                    CurrentDirectory = Projects.Chat;
-                    print([
-                      textLine({
-                        words: [
-                          textWord({ characters: 'Succefully switched to ' + Projects.Chat }),
-                        ],
-                      }),
-                    ]);
-                    print([
-                      textLine({
-                        words: [
-                          textWord({
-                            characters:
-                              'Keep in mind that chat backend checks only mainnet balances!',
-                          }),
-                        ],
-                      }),
-                    ]);
-                    break;
-                  case 'candyshop':
-                    // CurrentDirectory = Projects.candyshop;
-                    // print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.candyshop })]})]);
-                    print([
-                      textLine({ words: [textWord({ characters: 'Project is coming soon ' })] }),
-                    ]);
-
-                    break;
-                  case 'ogswap':
-                    // CurrentDirectory = Projects.ogswap;
-                    // print([textLine({words:[textWord({ characters: "Succefully switched to " + Projects.ogswap })]})]);
-                    print([
-                      textLine({ words: [textWord({ characters: 'Project is coming soon ' })] }),
-                    ]);
-                    break;
-                  default:
-                    print([
-                      textLine({
-                        words: [textWord({ characters: 'There is no project with this name ' })],
-                      }),
-                    ]);
-                    break;
+                const result = cd(command.split(' ')[1]);
+                if (result.newDirectory) {
+                  CurrentDirectory = result.newDirectory;
                 }
-                return;
+
+                print([
+                  textLine({
+                    words: [textWord({ characters: result.message })],
+                  }),
+                ]);
               }
 
               switch (CurrentDirectory) {
-                case Projects.Staking:
-                  GTONParser(eventQueue, state, command);
-                  break;
-                case Projects.Bonding:
-                  BondingParser(eventQueue, state, command);
-                  break;
                 case Projects.Updates:
-                  UpdatesParser(eventQueue, state, command);
-                  break;
-                case Projects.Chat:
-                  ChatParser(eventQueue, state, command);
-                  break;
-                case Projects.Candyshop:
-                  // import CandyParser from './Parser/CandyShop/CandyShopParser'
+                  const parser = updateParserFactory(config, state[0]);
+                  parser(eventQueue, state, command);
                   break;
                 case Projects.Ogswap:
                   // import OGSwapParser from './Parser/OGSwap/OGSwapParser'
@@ -172,35 +90,37 @@ export default function Web() {
               }
             }}
             prompt={'/' + CurrentDirectory + ' $ '}
-            banner={[
-              textLine({ words: [textWord({ characters: messages.banner })] }),
-              textLine({
-                words: [
-                  anchorWord({
-                    className: 'link-padding',
-                    characters: messages.gc,
-                    onClick: () => {
-                      window.open(gcLink, '_blank');
-                    },
-                  }),
-                ],
-              }),
-              isTestnet
-                ? textLine({
-                    words: [
-                      anchorWord({
-                        className: 'link-padding',
-                        characters: messages.faucet,
-                        onClick: () => {
-                          window.open(faucetLink, '_blank');
-                        },
-                      }),
-                    ],
-                  })
-                : null,
-            ]}
+            banner={
+              [
+                textLine({ words: [textWord({ characters: messages.banner })] }),
+                textLine({
+                  words: [
+                    anchorWord({
+                      className: 'link-padding',
+                      characters: messages.gc,
+                      onClick: () => {
+                        window.open(gcLink, '_blank');
+                      },
+                    }),
+                  ],
+                }),
+                isTestnet
+                  ? textLine({
+                      words: [
+                        anchorWord({
+                          className: 'link-padding',
+                          characters: messages.faucet,
+                          onClick: () => {
+                            window.open(faucetLink, '_blank');
+                          },
+                        }),
+                      ],
+                    })
+                  : null,
+              ].filter(Boolean) as Array<TextLine>
+            }
           ></Terminal>
-          <Header />
+          <Header config={config} state={state[0]} />
         </DisableMobile>
       </main>
     </Layout>

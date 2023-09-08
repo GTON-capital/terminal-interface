@@ -16,28 +16,10 @@ enum Commands {
   SWITCH = 'switch',
 }
 
-enum BondingCommands {
-  Tokens = 'tokens',
-  Mint = 'mint',
-  Claim = 'claimBond',
-  Info = 'info',
-  Bonds = 'bonds',
-  Preview = 'preview',
-  Types = 'types',
-}
-
-enum UpdatingCommand {
+export enum UpdatingCommand {
   BORROW = 'borrow',
   REPAY = 'repay',
   BRIDGE = 'bridge',
-}
-
-enum ChatCommands {
-  Send = 'send',
-  Load = 'load',
-  Login = 'login',
-  Members = 'members',
-  Angels = 'angels',
 }
 
 enum OptionalActions {
@@ -59,9 +41,7 @@ enum Links {
   CLAIM = 'https://medium.com/gearbox-protocol/credit-account-mining-guide-fueling-up-for-the-launch-abc17fbddbad',
 }
 
-const cdHelp = `
-  ${Prefix.PREFIX}${Commands.CD} bonding | staking - change project
-`;
+export const cdHelp = `${Prefix.PREFIX}${Commands.CD} bonding | staking - change project`;
 
 const commonCommands = `
   ${Prefix.PREFIX}${Commands.HELP} - this output
@@ -88,11 +68,9 @@ const messages = {
                                                        
                           ⚜️ Welcome to GTON CAPITAL CLI UI 📺!
 
-      This dApp allows to interact with GTON Capital staking core smart contracts on Ethereum${
-        isTestnet ? ' Testnet' : ''
-      }
+      This dApp allows to interact with GTON Capital staking core smart contracts on L1
       and later on GTON Network.
-      ${isTestnet ? 'Mainnet coming soon!' : ''}
+
       GTON Cli is an old-school console-based user interface.
                           
       Kudos for the inspiration to the intricate brain of ivangbi and the Gearbox team
@@ -112,31 +90,6 @@ const messages = {
   ${Prefix.PREFIX}${Commands.UNSTAKE} <amount> | all - unstake funds
   ${Prefix.PREFIX}${Commands.HARVEST} <amount> | all - harvest reward
   ${commonCommands}
-  `,
-  bondingHelpText: `
-  Available commands:
-  ${commonCommands}
-  ${Prefix.PREFIX}${BondingCommands.Tokens} - prints list of tokens, that are available to spend on bond
-  ${Prefix.PREFIX}${BondingCommands.Types} - prints list of available bond types
-  ${Prefix.PREFIX}${BondingCommands.Bonds} - prints bonds ids of connected wallet
-  ${Prefix.PREFIX}${BondingCommands.Mint} <token> <type> <amount> - buy <type> of bond, spending <amount> of <token> via CLI
-  ${Prefix.PREFIX}${BondingCommands.Claim} <bondId> - claim bond with given id
-  ${Prefix.PREFIX}${BondingCommands.Info} <bondId> - prints info about given bond id
-  ${Prefix.PREFIX}${BondingCommands.Preview} <token> <type> <amount> - shows amount gton out after claim
-  ${cdHelp}
-  `,
-  chatHelpText: `
-  Available commands:
-  ${commonCommands}
-  ${Prefix.PREFIX}${ChatCommands.Login} <name> - logs in connected account, provide your <name>
-  ${Prefix.PREFIX}${ChatCommands.Load} all <amount> - load and print last <amount> messages in angels' chat
-  ${Prefix.PREFIX}${ChatCommands.Load} dm <amount> <username or address> - load and print last received <amount> messages from <user>
-  ${Prefix.PREFIX}${ChatCommands.Send} all <message> - sends message to all in the chat
-  ${Prefix.PREFIX}${ChatCommands.Send} dm <username or address> <message> - sends message to the user with specified name
-  ${Prefix.PREFIX}${ChatCommands.Members} - prints addresses that are registered in the chat
-  ${Prefix.PREFIX}${ChatCommands.Angels} - prints info about angels program
-  
-  ${cdHelp}
   `,
   updatingHelpText: `
   Available commands:
@@ -197,8 +150,8 @@ const messages = {
   addToken: `
   Successfully added token to the MetaMask.
   `,
-  switchChain: `
-  Successfully switched to GTON chain.
+  switchChain: (name: string) => `
+  Successfully switched to ${name} chain.
   `,
 };
 
