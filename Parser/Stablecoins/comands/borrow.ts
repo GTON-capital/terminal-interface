@@ -83,17 +83,27 @@ export const BorrowStablecoinWorker = (coinName: string) =>
           amount,
         );
         initialCollateralRatio = await getInitialCollateralRatio(
+          stablecoinContracts.vaultManagerParametersAddress,
           state.chain.nativeCurrency.wethAddress,
         );
-        liquidationRatio = await getLiquidationRatio(state.chain.nativeCurrency.wethAddress);
+        liquidationRatio = await getLiquidationRatio(
+          stablecoinContracts.vaultManagerParametersAddress,
+          state.chain.nativeCurrency.wethAddress,
+        );
       } else {
         uniSwapOracleBalance = await collateralToStablecoinEquivalent(
           stablecoinContracts.oracleRegistryAddress,
           collateralToken.address,
           amount,
         );
-        initialCollateralRatio = await getInitialCollateralRatio(collateralToken.address);
-        liquidationRatio = await getLiquidationRatio(collateralToken.address);
+        initialCollateralRatio = await getInitialCollateralRatio(
+          stablecoinContracts.vaultManagerParametersAddress,
+          collateralToken.address,
+        );
+        liquidationRatio = await getLiquidationRatio(
+          stablecoinContracts.vaultManagerParametersAddress,
+          collateralToken.address,
+        );
       }
 
       debt = await calculateBorowedStablecoin(
@@ -107,7 +117,7 @@ export const BorrowStablecoinWorker = (coinName: string) =>
         textLine({
           words: [
             textWord({
-              characters: `Liquidation price for ${collateralName} is $${liquidationPrice}`,
+              characters: `Liquidation price for ${collateralName} is ${liquidationPrice} ${stablecoinToken.symbol}`,
             }),
           ],
         }),
@@ -167,13 +177,24 @@ export const BorrowStablecoinWorker = (coinName: string) =>
       }
 
       if (!collateralToken.isNative) {
-        const thirdTrx = await join(state.address, collateralToken.address, amount, debt);
+        const thirdTrx = await join(
+          stablecoinContracts.cdpManagerAddress,
+          state.address,
+          collateralToken.address,
+          amount,
+          debt,
+        );
         print([
           textLine({ words: [textWord({ characters: `Succesfull borrowed ${coinName}.` })] }),
         ]);
         printLink(print, messages.viewTxn, state.chain.explorerUrl + thirdTrx);
       } else {
-        const fourthTrx = await join_Eth(state.address, amount, debt);
+        const fourthTrx = await join_Eth(
+          stablecoinContracts.cdpManagerAddress,
+          state.address,
+          amount,
+          debt,
+        );
         print([
           textLine({ words: [textWord({ characters: `Succesfull borrowed ${coinName}.` })] }),
         ]);

@@ -1,11 +1,13 @@
 import vaultManagerParametersAbi from './ABI/vaultManagerParametersAbi.json';
-import { vaultManagerParameters } from '../../config/config';
 import { AbiItem } from 'web3-utils';
 import Web3 from 'web3';
 
 declare const window: any;
 
-export const getInitialCollateralRatio = async (tokenAddress: string): Promise<number> => {
+export const getInitialCollateralRatio = async (
+  vaultManagerParameters: string,
+  tokenAddress: string,
+): Promise<number> => {
   const web3 = new Web3(window.ethereum);
   const contract = new web3.eth.Contract(
     vaultManagerParametersAbi as AbiItem[],
@@ -17,7 +19,10 @@ export const getInitialCollateralRatio = async (tokenAddress: string): Promise<n
   return initialCollateralRation / 100;
 };
 
-export const getLiquidationRatio = async (tokenAddress: string): Promise<number> => {
+export const getLiquidationRatio = async (
+  vaultManagerParameters: string,
+  tokenAddress: string,
+): Promise<number> => {
   const web3 = new Web3(window.ethereum);
   const contract = new web3.eth.Contract(
     vaultManagerParametersAbi as AbiItem[],

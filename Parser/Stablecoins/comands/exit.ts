@@ -58,8 +58,16 @@ export const ExitStablecoinWorker = (coinName: string) =>
 
       userStablecoinBalance = await balance(state.address, stablecoinToken.address);
       userCollateralAmount = collateralToken.isNative
-        ? await getCollateral(state.chain.nativeCurrency.wethAddress, state.address)
-        : await getCollateral(collateralToken.address, state.address);
+        ? await getCollateral(
+            stablecoinContracts.vaultAddress,
+            state.chain.nativeCurrency.wethAddress,
+            state.address,
+          )
+        : await getCollateral(
+            stablecoinContracts.vaultAddress,
+            collateralToken.address,
+            state.address,
+          );
 
       stablecoinAmountInWei = toWei(stablecoinAmount);
       if (stablecoinAmountInWei.gt(userStablecoinBalance)) throw Error('Insufficient amount');
@@ -118,8 +126,14 @@ export const ExitStablecoinWorker = (coinName: string) =>
       }
 
       thirdTxn = collateralToken.isNative
-        ? (thirdTxn = await exit_Eth(state.address, collateralAmountInWei, stablecoinAmountInWei))
+        ? (thirdTxn = await exit_Eth(
+            stablecoinContracts.cdpManagerAddress,
+            state.address,
+            collateralAmountInWei,
+            stablecoinAmountInWei,
+          ))
         : (thirdTxn = await exit(
+            stablecoinContracts.cdpManagerAddress,
             state.address,
             collateralToken.address,
             collateralAmountInWei,

@@ -42,6 +42,8 @@ export type SimulatedToken = {
   cdpManagerAddress: string;
   cdpManagerFallback: string | null;
   vaultAddress: string;
+  vaultManagerParametersAddress: string;
+
   oracleRegistryAddress: string;
 
   collaterals: Array<TokenName>;

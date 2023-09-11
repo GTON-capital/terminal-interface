@@ -44,6 +44,10 @@ function parseSimulatedToken(networkName: string, tokenName: string): SimulatedT
     name: tokenName,
 
     vaultAddress: env.get(`${ENV_PREFIX}_VAULT_ADDRESS`).required().asString(),
+    vaultManagerParametersAddress: env
+      .get(`${ENV_PREFIX}_VAULT_MANAGER_PARAMETERS_ADDRESS`)
+      .required()
+      .asString(),
     oracleRegistryAddress: env.get(`${ENV_PREFIX}_ORACLE_REGISTRY_ADDRESS`).required().asString(),
     cdpManagerAddress: env.get(`${ENV_PREFIX}_CDP_MANAGER_ADDRESS`).required().asString(),
     cdpManagerFallback: env.get(`${ENV_PREFIX}_CDP_MANAGER_FALLBACK_ADDRESS`).asString() || null,
