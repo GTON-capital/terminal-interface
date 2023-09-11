@@ -2,7 +2,7 @@ import { Operands, Parser, parser } from '../Common/parser';
 import { TerminalState } from '../../State/types';
 import { commonOperationsFactory } from '../Common/factory';
 import { ApplicationConfig } from '../../config/types';
-import { HelpWorker } from './comands/help';
+import { HelpWorker } from '../Common/commands/help';
 import { BorrowStablecoinWorker } from './comands/borrow';
 import { ExitStablecoinWorker } from './comands/exit';
 import { BridgeToL2Worker } from './comands/bridge';

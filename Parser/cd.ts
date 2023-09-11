@@ -1,6 +1,10 @@
+import { TerminalState } from '../State/types';
+import { getStablecoinNameFromPath } from './path';
+
 export const Projects = {
+  Root: 'home',
   Ogswap: 'ogswap',
-  Updates: 'updates',
+  Stablecoins: 'stablecoins/',
 };
 
 type ChangeDirectoryResult = {
@@ -8,12 +12,12 @@ type ChangeDirectoryResult = {
   message: string;
 };
 
-export function cd(project): ChangeDirectoryResult {
+export function cd(project: string, state: TerminalState): ChangeDirectoryResult {
   switch (project) {
-    case Projects.Updates:
+    case Projects.Root:
       return {
-        newDirectory: Projects.Updates,
-        message: 'Succefully switched to ' + Projects.Updates,
+        newDirectory: Projects.Root,
+        message: 'Succefully switched to ' + Projects.Root,
       };
     case Projects.Ogswap:
       // CurrentDirectory = Projects.ogswap;
@@ -23,6 +27,13 @@ export function cd(project): ChangeDirectoryResult {
         message: 'Project is coming soon ',
       };
     default:
+      const stablecoin = getStablecoinNameFromPath(project);
+      if (stablecoin && state && state.chain.simulatedTokens[stablecoin]) {
+        return {
+          newDirectory: project,
+          message: `Succesfully switched to stablecoin ${stablecoin} project`,
+        };
+      }
       return {
         newDirectory: null,
         message: 'There is no project with this name ',

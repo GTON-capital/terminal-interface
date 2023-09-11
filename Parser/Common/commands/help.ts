@@ -1,7 +1,7 @@
 import { textLine, textWord } from '@gton-capital/crt-terminal';
 import { Commands, Prefix, cdHelp } from '../../../Messages/Messages';
-import { Operands } from '../../Common/parser';
-import { IWorker } from '../../Common/worker';
+import { Operands } from '../parser';
+import { IWorker } from '../worker';
 
 export const HelpWorker = (operands: Operands): IWorker => ({
   execute: ({ print }, _, [nonValidatedState], config) => {

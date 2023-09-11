@@ -11,7 +11,6 @@ import Layout from '../components/Layout/Layout';
 import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet, chain } from '../config/config';
-import UpdatesParser from '../Parser/Stablecoins/factory';
 import messages from '../Messages/Messages';
 import Header from '../components/Header/Header';
 import { useRouter } from 'next/router';
@@ -21,10 +20,14 @@ import stablecoinsParserFactory from '../Parser/Stablecoins/factory';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { ApplicationConfig } from '../config/types';
 import { config } from '../config';
+import { commonOperationsFactory } from '../Parser/Common/factory';
+import rootParserFectory from '../Parser/Root/factory';
+import { Parser } from '../Parser/Common/parser';
+import { getStablecoinNameFromPath } from '../Parser/path';
 
 declare const window: any;
 
-let CurrentDirectory = Projects.Updates;
+let CurrentDirectory = Projects.Root;
 
 export const getStaticProps: GetStaticProps<{
   config: ApplicationConfig;
@@ -62,7 +65,7 @@ export default function Web({ config }: InferGetStaticPropsType<typeof getStatic
             queue={eventQueue}
             onCommand={(command) => {
               if (command.split(' ')[0] == 'cd') {
-                const result = cd(command.split(' ')[1]);
+                const result = cd(command.split(' ')[1], state[0]);
                 if (result.newDirectory) {
                   CurrentDirectory = result.newDirectory;
                 }
@@ -74,18 +77,26 @@ export default function Web({ config }: InferGetStaticPropsType<typeof getStatic
                 ]);
               }
 
+              let parser: Parser;
+
               switch (CurrentDirectory) {
-                case Projects.Updates:
-                  const parser = stablecoinsParserFactory('gcd', config, state[0]);
+                case Projects.Root:
+                  parser = rootParserFectory(config, state[0]);
                   parser(eventQueue, state, command);
                   break;
                 case Projects.Ogswap:
                   // import OGSwapParser from './Parser/OGSwap/OGSwapParser'
                   break;
                 default:
-                  print([
-                    textLine({ words: [textWord({ characters: 'Error: please refresh page' })] }),
-                  ]);
+                  const stablecoinName = getStablecoinNameFromPath(CurrentDirectory);
+                  if (stablecoinName) {
+                    parser = stablecoinsParserFactory(stablecoinName, config, state[0]);
+                    parser(eventQueue, state, command);
+                  } else {
+                    print([
+                      textLine({ words: [textWord({ characters: 'Error: please refresh page' })] }),
+                    ]);
+                  }
                   break;
               }
             }}
