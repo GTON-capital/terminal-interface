@@ -11,13 +11,13 @@ import Layout from '../components/Layout/Layout';
 import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';
 import { faucetLink, gcLink, isTestnet, chain } from '../config/config';
-import UpdatesParser from '../Parser/Updating/factory';
+import UpdatesParser from '../Parser/Stablecoins/factory';
 import messages from '../Messages/Messages';
 import Header from '../components/Header/Header';
 import { useRouter } from 'next/router';
 import { Projects, cd } from '../Parser/cd';
 import { useTerminalState } from '../State/hook';
-import updateParserFactory from '../Parser/Updating/factory';
+import stablecoinsParserFactory from '../Parser/Stablecoins/factory';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { ApplicationConfig } from '../config/types';
 import { config } from '../config';
@@ -76,7 +76,7 @@ export default function Web({ config }: InferGetStaticPropsType<typeof getStatic
 
               switch (CurrentDirectory) {
                 case Projects.Updates:
-                  const parser = updateParserFactory(config, state[0]);
+                  const parser = stablecoinsParserFactory('gcd', config, state[0]);
                   parser(eventQueue, state, command);
                   break;
                 case Projects.Ogswap:

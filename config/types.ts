@@ -4,14 +4,12 @@ export type ChainName = string;
 
 export interface NativeToken {
   isNative: true;
-  wethAddress: string;
   address: null;
 }
 
 export interface ERC20Token {
   isNative?: false;
   address: string;
-  wethAddress: null;
 }
 
 export type BaseToken = {
@@ -19,11 +17,14 @@ export type BaseToken = {
   decimals: number;
   symbol: string;
   image: string;
+  isBridgeable: boolean;
 };
 
 export type Token = BaseToken & (NativeToken | ERC20Token);
 
-export type NativeCurrency = Omit<BaseToken, 'image'>;
+export type NativeCurrency = Omit<BaseToken, 'image' | 'isBridgeable'> & {
+  wethAddress: string;
+};
 
 export interface L2Network {
   isL2Network: true;
@@ -40,6 +41,8 @@ export type SimulatedToken = {
 
   cdpManagerAddress: string;
   cdpManagerFallback: string | null;
+  vaultAddress: string;
+  oracleRegistryAddress: string;
 
   collaterals: Array<TokenName>;
   fallbackCollaterals: Array<TokenName>;
@@ -58,6 +61,8 @@ export type ChainConfig = {
   tokens: Record<TokenName, Token>;
 
   simulatedTokens: Record<TokenName, SimulatedToken>;
+
+  bridgeAddress: string | null;
 } & (L2Network | L1Network);
 
 export interface ApplicationConfig {

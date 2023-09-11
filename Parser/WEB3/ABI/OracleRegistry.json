@@ -1,0 +1,167 @@
+[
+  {
+    "type": "constructor",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      { "type": "address", "name": "vaultParameters", "internalType": "address" },
+      { "type": "address", "name": "_weth", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "AssetOracle",
+    "inputs": [
+      { "type": "address", "name": "asset", "internalType": "address", "indexed": true },
+      { "type": "uint256", "name": "oracleType", "internalType": "uint256", "indexed": true }
+    ],
+    "anonymous": false
+  },
+  { "type": "event", "name": "KeydonixOracleTypes", "inputs": [], "anonymous": false },
+  {
+    "type": "event",
+    "name": "OracleType",
+    "inputs": [
+      { "type": "uint256", "name": "oracleType", "internalType": "uint256", "indexed": true },
+      { "type": "address", "name": "oracle", "internalType": "address", "indexed": true }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "", "internalType": "address" }],
+    "name": "WETH",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256[]", "name": "", "internalType": "uint256[]" }],
+    "name": "getKeydonixOracleTypes",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      {
+        "type": "tuple[]",
+        "name": "foundOracles",
+        "internalType": "struct OracleRegistry.Oracle[]",
+        "components": [
+          { "type": "uint256", "name": "oracleType", "internalType": "uint256" },
+          { "type": "address", "name": "oracleAddress", "internalType": "address" }
+        ]
+      }
+    ],
+    "name": "getOracles",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "keydonixOracleTypes",
+    "inputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "maxOracleType",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "", "internalType": "address" }],
+    "name": "oracleByAsset",
+    "inputs": [{ "type": "address", "name": "asset", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "", "internalType": "address" }],
+    "name": "oracleByType",
+    "inputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "oracleTypeByAsset",
+    "inputs": [{ "type": "address", "name": "", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "oracleTypeByOracle",
+    "inputs": [{ "type": "address", "name": "", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "setKeydonixOracleTypes",
+    "inputs": [{ "type": "uint256[]", "name": "_keydonixOracleTypes", "internalType": "uint256[]" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "setOracle",
+    "inputs": [
+      { "type": "uint256", "name": "oracleType", "internalType": "uint256" },
+      { "type": "address", "name": "oracle", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "setOracleTypeForAsset",
+    "inputs": [
+      { "type": "address", "name": "asset", "internalType": "address" },
+      { "type": "uint256", "name": "oracleType", "internalType": "uint256" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "setOracleTypeForAssets",
+    "inputs": [
+      { "type": "address[]", "name": "assets", "internalType": "address[]" },
+      { "type": "uint256", "name": "oracleType", "internalType": "uint256" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "unsetOracle",
+    "inputs": [{ "type": "uint256", "name": "oracleType", "internalType": "uint256" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "unsetOracleForAsset",
+    "inputs": [{ "type": "address", "name": "asset", "internalType": "address" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "unsetOracleForAssets",
+    "inputs": [{ "type": "address[]", "name": "assets", "internalType": "address[]" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "", "internalType": "contract VaultParameters" }],
+    "name": "vaultParameters",
+    "inputs": []
+  }
+]

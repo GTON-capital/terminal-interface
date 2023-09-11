@@ -28,7 +28,9 @@ export const ErrorHandler = (
   if (Code === ErrorCodes.NOT_ENOUGHT_FUNDS) {
     print([
       textLine({
-        words: [textWord({ characters: "You don't have enough funds to buy that many GTON" })],
+        words: [
+          textWord({ characters: "You don't have enough funds to buy that many Stablecoins" }),
+        ],
       }),
     ]);
   }

@@ -12,104 +12,53 @@ const CONFIG_PREFIX = 'GTON_CLI';
 const NATIVE_CURRENCY_INFIX = 'NATIVE';
 
 function parseNativeCurrency(networkName: string): NativeCurrency {
+  const ENV_PREFIX = `${CONFIG_PREFIX}_${networkName.toUpperCase()}_${NATIVE_CURRENCY_INFIX}`;
+
   return {
-    name: env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_${NATIVE_CURRENCY_INFIX}_NAME`)
-      .required()
-      .asString(),
-    decimals: env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_${NATIVE_CURRENCY_INFIX}_DECIMALS`)
-      .required()
-      .asIntPositive(),
-    symbol: env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_${NATIVE_CURRENCY_INFIX}_SYMBOL`)
-      .required()
-      .asString(),
+    name: env.get(`${ENV_PREFIX}_NAME`).required().asString(),
+    decimals: env.get(`${ENV_PREFIX}_DECIMALS`).required().asIntPositive(),
+    symbol: env.get(`${ENV_PREFIX}_SYMBOL`).required().asString(),
+    wethAddress: env.get(`${ENV_PREFIX}_WETH_ADDRESS`).required().asString(),
   };
 }
 
 function parseToken(networkName: string, tokenName: string): Token {
-  const isNative =
-    env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_${tokenName.toUpperCase()}_IS_NATIVE`)
-      .asBool() || false;
+  const ENV_PREFIX = `${CONFIG_PREFIX}_${networkName.toUpperCase()}_${tokenName.toUpperCase()}`;
+
+  const isNative = env.get(`${ENV_PREFIX}_IS_NATIVE`).asBool() || false;
   return {
     name: tokenName,
-    decimals: env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_${tokenName.toUpperCase()}_DECIMALS`)
-      .required()
-      .asIntPositive(),
-    symbol: env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_${tokenName.toUpperCase()}_SYMBOL`)
-      .required()
-      .asString(),
-    image:
-      env
-        .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_${tokenName.toUpperCase()}_IMAGE`)
-        .asUrlString() || null,
+    decimals: env.get(`${ENV_PREFIX}_DECIMALS`).required().asIntPositive(),
+    symbol: env.get(`${ENV_PREFIX}_SYMBOL`).required().asString(),
+    image: env.get(`${ENV_PREFIX}_IMAGE`).asUrlString() || null,
     isNative: isNative,
-    wethAddress: isNative
-      ? env
-          .get(
-            `${CONFIG_PREFIX}_${networkName.toUpperCase()}_${tokenName.toUpperCase()}_WETH_ADDRESS`,
-          )
-          .required()
-          .asString()
-      : null,
-    address: !isNative
-      ? env
-          .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_${tokenName.toUpperCase()}_ADDRESS`)
-          .required()
-          .asString()
-      : null,
+    address: !isNative ? env.get(`${ENV_PREFIX}_ADDRESS`).required().asString() : null,
+    isBridgeable: env.get(`${ENV_PREFIX}_IS_BRIDGEABLE`).default('false').asBool(),
   } as Token;
 }
 
 function parseSimulatedToken(networkName: string, tokenName: string): SimulatedToken {
+  const ENV_PREFIX = `${CONFIG_PREFIX}_${networkName.toUpperCase()}_SIMULATED_${tokenName.toUpperCase()}`;
+
   return {
     name: tokenName,
 
-    cdpManagerAddress: env
-      .get(
-        `${CONFIG_PREFIX}_${networkName.toUpperCase()}_SIMULATED_${tokenName.toUpperCase()}_CDP_MANAGER_ADDRESS`,
-      )
-      .required()
-      .asString(),
-    cdpManagerFallback:
-      env
-        .get(
-          `${CONFIG_PREFIX}_${networkName.toUpperCase()}_SIMULATED_${tokenName.toUpperCase()}_CDP_MANAGER_FALLBACK_ADDRESS`,
-        )
-        .asString() || null,
-    collaterals: env
-      .get(
-        `${CONFIG_PREFIX}_${networkName.toUpperCase()}_SIMULATED_${tokenName.toUpperCase()}_COLLATERALS`,
-      )
-      .required()
-      .asArray(','),
-    fallbackCollaterals:
-      env
-        .get(
-          `${CONFIG_PREFIX}_${networkName.toUpperCase()}_SIMULATED_${tokenName.toUpperCase()}_FALLBACK_COLLATERALS`,
-        )
-        .asArray(',') || [],
+    vaultAddress: env.get(`${ENV_PREFIX}_VAULT_ADDRESS`).required().asString(),
+    oracleRegistryAddress: env.get(`${ENV_PREFIX}_ORACLE_REGISTRY_ADDRESS`).required().asString(),
+    cdpManagerAddress: env.get(`${ENV_PREFIX}_CDP_MANAGER_ADDRESS`).required().asString(),
+    cdpManagerFallback: env.get(`${ENV_PREFIX}_CDP_MANAGER_FALLBACK_ADDRESS`).asString() || null,
+    collaterals: env.get(`${ENV_PREFIX}_COLLATERALS`).required().asArray(','),
+    fallbackCollaterals: env.get(`${ENV_PREFIX}_FALLBACK_COLLATERALS`).asArray(',') || [],
   };
 }
 
 function parseNetwork(networkName: string): ChainConfig {
-  const tokens = env
-    .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_TOKENS`)
-    .required()
-    .asArray(',');
-  const simulatedTokens = env
-    .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_SIMULATED_TOKENS`)
-    .required()
-    .asArray(',');
+  const ENV_PREFIX = `${CONFIG_PREFIX}_${networkName.toUpperCase()}`;
 
-  const isL2Network = env
-    .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_IS_L2`)
-    .default('false')
-    .asBool();
+  const tokens = env.get(`${ENV_PREFIX}_TOKENS`).required().asArray(',');
+  const simulatedTokens = env.get(`${ENV_PREFIX}_SIMULATED_TOKENS`).required().asArray(',');
+
+  const isL2Network = env.get(`${ENV_PREFIX}_IS_L2`).default('false').asBool();
 
   const parsedTokens = Object.fromEntries(
     tokens.map((name) => [name, parseToken(networkName, name)]),
@@ -117,37 +66,20 @@ function parseNetwork(networkName: string): ChainConfig {
 
   return {
     name: networkName,
-    id: env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_CHAIN_ID`)
-      .required()
-      .asIntPositive(),
-    rpcUrl: env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_RPC_URL`)
-      .required()
-      .asUrlString(),
-    explorerUrl: env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_EXPLORER_URL`)
-      .required()
-      .asUrlString(),
-    isTestnet: env
-      .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_IS_TESTNET`)
-      .default('false')
-      .asBool(),
+    id: env.get(`${ENV_PREFIX}_CHAIN_ID`).required().asIntPositive(),
+    rpcUrl: env.get(`${ENV_PREFIX}_RPC_URL`).required().asUrlString(),
+    explorerUrl: env.get(`${ENV_PREFIX}_EXPLORER_URL`).required().asUrlString(),
+    isTestnet: env.get(`${ENV_PREFIX}_IS_TESTNET`).default('false').asBool(),
     tokens: parsedTokens,
     nativeCurrency: parseNativeCurrency(networkName),
     simulatedTokens: Object.fromEntries(
       simulatedTokens.map((tokenName) => [tokenName, parseSimulatedToken(networkName, tokenName)]),
     ),
     isL2Network: isL2Network,
+    bridgeAddress: env.get(`${ENV_PREFIX}_BRIDGE_ADDRESS`).asString() || null,
     oppositeChainId: isL2Network
-      ? env
-          .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_L1_CHAIN_ID`)
-          .required()
-          .asIntPositive()
-      : env
-          .get(`${CONFIG_PREFIX}_${networkName.toUpperCase()}_GTON_CHAIN_ID`)
-          .required()
-          .asIntPositive(),
+      ? env.get(`${ENV_PREFIX}_L1_CHAIN_ID`).required().asIntPositive()
+      : env.get(`${ENV_PREFIX}_GTON_CHAIN_ID`).required().asIntPositive(),
   };
 }
 

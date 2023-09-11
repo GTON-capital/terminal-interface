@@ -7,7 +7,7 @@ import Big from 'big.js';
 
 declare const window: any;
 
-export const calculateBorowedGCD = async (
+export const calculateBorowedStablecoin = async (
   userBalance: Big,
   percentRisk: number,
   icr: number,
