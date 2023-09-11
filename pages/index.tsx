@@ -10,7 +10,7 @@ import {
 import Layout from '../components/Layout/Layout';
 import DisableMobile from '../components/DisableMobile/DisableMobile';
 import classes from './index.module.scss';
-import { faucetLink, gcLink, isTestnet, chain } from '../config/config';
+import { gcLink } from '../config/config';
 import messages from '../Messages/Messages';
 import Header from '../components/Header/Header';
 import { useRouter } from 'next/router';
@@ -20,14 +20,14 @@ import stablecoinsParserFactory from '../Parser/Stablecoins/factory';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { ApplicationConfig } from '../config/types';
 import { config } from '../config';
-import { commonOperationsFactory } from '../Parser/Common/factory';
 import rootParserFectory from '../Parser/Root/factory';
 import { Parser } from '../Parser/Common/parser';
 import { getStablecoinNameFromPath } from '../Parser/path';
+import { ls } from '../Parser/ls';
 
 declare const window: any;
 
-let CurrentDirectory = Projects.Root;
+let CurrentDirectory = Projects.Home;
 
 export const getStaticProps: GetStaticProps<{
   config: ApplicationConfig;
@@ -56,7 +56,7 @@ export default function Web({ config }: InferGetStaticPropsType<typeof getStatic
         title: 'CLI UI | GTON Capital',
         description: 'An inovative way of USER <-> SC interaction for GTON ecosystem products.',
         keyWords: 'GTON, GC, bonding, crypto, staking, DeFi, DAO',
-        url: isTestnet ? 'https://test.cli.gton.capital/' : 'https://cli.gton.capital/',
+        url: 'https://cli.gton.capital/',
       }}
     >
       <main className={classes.mainContainer}>
@@ -64,7 +64,8 @@ export default function Web({ config }: InferGetStaticPropsType<typeof getStatic
           <Terminal
             queue={eventQueue}
             onCommand={(command) => {
-              if (command.split(' ')[0] == 'cd') {
+              const commandName = command.split(' ')[0];
+              if (commandName == 'cd') {
                 const result = cd(command.split(' ')[1], state[0]);
                 if (result.newDirectory) {
                   CurrentDirectory = result.newDirectory;
@@ -77,10 +78,20 @@ export default function Web({ config }: InferGetStaticPropsType<typeof getStatic
                 ]);
               }
 
+              if (commandName === 'ls') {
+                const result = ls(state[0]);
+
+                print([
+                  textLine({
+                    words: [textWord({ characters: result })],
+                  }),
+                ]);
+              }
+
               let parser: Parser;
 
               switch (CurrentDirectory) {
-                case Projects.Root:
+                case Projects.Home:
                   parser = rootParserFectory(config, state[0]);
                   parser(eventQueue, state, command);
                   break;
@@ -115,19 +126,6 @@ export default function Web({ config }: InferGetStaticPropsType<typeof getStatic
                     }),
                   ],
                 }),
-                isTestnet
-                  ? textLine({
-                      words: [
-                        anchorWord({
-                          className: 'link-padding',
-                          characters: messages.faucet,
-                          onClick: () => {
-                            window.open(faucetLink, '_blank');
-                          },
-                        }),
-                      ],
-                    })
-                  : null,
               ].filter(Boolean) as Array<TextLine>
             }
           ></Terminal>
