@@ -34,8 +34,6 @@ export const ExitStablecoinWorker = (coinName: string) =>
       const stablecoinAmount = Number.parseFloat(tmpARGS[0]);
       const collateralAmount = Number.parseFloat(tmpARGS[4]);
       const collateralName = tmpARGS[5];
-      let thirdTxn;
-      let userAllowanceToken;
 
       if (!stablecoinContracts.collaterals.includes(collateralName)) {
         throw new Error(
@@ -87,7 +85,7 @@ export const ExitStablecoinWorker = (coinName: string) =>
         stablecoinAmountInWei,
       );
 
-      thirdTxn = isFallabckCompatible
+      const txn = isFallabckCompatible
         ? await exitFallbackPosition(
             stablecoinContracts,
             state.chain.nativeCurrency.wethAddress,
@@ -113,7 +111,7 @@ export const ExitStablecoinWorker = (coinName: string) =>
           ],
         }),
       ]);
-      printLink(print, messages.viewTxn, state.chain.explorerUrl + thirdTxn);
+      printLink(print, messages.viewTxn, state.chain.explorerUrl + txn);
 
       loading(false);
       lock(false);

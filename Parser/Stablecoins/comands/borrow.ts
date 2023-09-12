@@ -148,7 +148,7 @@ export const BorrowStablecoinWorker = (coinName: string) =>
         await checkAllownace(print, state, stablecoinToken.address, managerAddress, borrowFee);
       }
 
-      const thirdTrx = isFallabckCompatible
+      const txn = isFallabckCompatible
         ? await joinFallbackPosition(
             stablecoinContracts,
             state.chain.nativeCurrency.wethAddress,
@@ -165,7 +165,7 @@ export const BorrowStablecoinWorker = (coinName: string) =>
             calculatedStablecoinAmountInWei,
           );
       print([textLine({ words: [textWord({ characters: `Succesfull borrowed ${coinName}.` })] })]);
-      printLink(print, messages.viewTxn, state.chain.explorerUrl + thirdTrx);
+      printLink(print, messages.viewTxn, state.chain.explorerUrl + txn);
 
       loading(false);
       lock(false);
