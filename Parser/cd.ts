@@ -1,6 +1,6 @@
+import { Prefix } from '../Messages/Messages';
 import { TerminalState } from '../State/types';
 import { getDirs } from './dirs';
-import { getStablecoinNameFromPath } from './path';
 
 export const Projects = {
   Home: 'home',
@@ -21,7 +21,7 @@ export function cd(project: string, state: TerminalState): ChangeDirectoryResult
   if (!dir) {
     return {
       newDirectory: null,
-      message: 'There is no project with this name ',
+      message: `There is no project with this name. Try ${Prefix.PREFIX}ls command to list projects`,
     };
   }
 

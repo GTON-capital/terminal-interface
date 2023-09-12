@@ -7,13 +7,19 @@ import {
   calculateBorowedStablecoin,
   getLiquidationPrice,
   join,
-  join_Eth,
+  joinEth,
+  joinFallback,
 } from '../../WEB3/cdpManager';
-import { getInitialCollateralRatio, getLiquidationRatio } from '../../WEB3/vaultManager';
-import { allowance, approve } from '../../WEB3/approve';
+import {
+  getBorrowFee,
+  getInitialCollateralRatio,
+  getLiquidationRatio,
+} from '../../WEB3/vaultManager';
 import { printLink } from '../../common';
 import messages, { Prefix, UpdatingCommand } from '../../../Messages/Messages';
 import { ErrorCodes, ErrorHandler } from '../errors';
+import { SimulatedToken, Token } from '../../../config/types';
+import { checkAllownace } from '../../Common/utils/checkAllowance';
 
 export const BorrowStablecoinWorker = (coinName: string) =>
   new Worker(async ({ lock, loading, print }, Args, [nonValidatedState], config) => {
@@ -46,14 +52,16 @@ export const BorrowStablecoinWorker = (coinName: string) =>
         );
       }
 
-      let userAllowanceTokenDeposit;
-      let userBalance;
-      let amount;
-      let debt;
-      let liquidationPrice;
-      let initialCollateralRatio;
-      let liquidationRatio;
-      let uniSwapOracleBalance;
+      const isFallabckCompatible = stablecoinContracts.fallbackCollaterals.includes(
+        collateralToken.name,
+      );
+      const managerAddress = isFallabckCompatible
+        ? stablecoinContracts.cdpManagerFallback!!
+        : stablecoinContracts.cdpManagerAddress;
+
+      const collateralTokenAddress = collateralToken.isNative
+        ? state.chain.nativeCurrency.wethAddress
+        : collateralToken.address;
 
       if (collateralAmount === '0')
         throw new Error(`You can't borrow ${coinName} with 0 ${collateralName}$`);
@@ -69,137 +77,95 @@ export const BorrowStablecoinWorker = (coinName: string) =>
           )}'`,
         );
       }
-      userBalance = collateralToken.isNative
+      const userBalance = collateralToken.isNative
         ? await getEthBalance(state.address)
         : await balance(state.address, collateralToken.address);
 
-      amount = toWei(collateralAmount, collateralToken.decimals);
-      if (amount.gt(userBalance)) throw Error('Insufficient amount');
+      const collateralAmountInWei = toWei(collateralAmount, collateralToken.decimals);
+      if (collateralAmountInWei.gt(userBalance)) throw Error('Insufficient amount');
 
-      if (collateralToken.isNative) {
-        uniSwapOracleBalance = await collateralToStablecoinEquivalent(
-          stablecoinContracts.oracleRegistryAddress,
-          state.chain.nativeCurrency.wethAddress,
-          amount,
-        );
-        initialCollateralRatio = await getInitialCollateralRatio(
-          stablecoinContracts.vaultManagerParametersAddress,
-          state.chain.nativeCurrency.wethAddress,
-        );
-        liquidationRatio = await getLiquidationRatio(
-          stablecoinContracts.vaultManagerParametersAddress,
-          state.chain.nativeCurrency.wethAddress,
-        );
-      } else {
-        uniSwapOracleBalance = await collateralToStablecoinEquivalent(
-          stablecoinContracts.oracleRegistryAddress,
-          collateralToken.address,
-          amount,
-        );
-        initialCollateralRatio = await getInitialCollateralRatio(
-          stablecoinContracts.vaultManagerParametersAddress,
-          collateralToken.address,
-        );
-        liquidationRatio = await getLiquidationRatio(
-          stablecoinContracts.vaultManagerParametersAddress,
-          collateralToken.address,
-        );
-      }
+      const collateralEquivalentInStablecoin = await collateralToStablecoinEquivalent(
+        stablecoinContracts,
+        collateralToken,
+        state.chain.nativeCurrency.wethAddress,
+        collateralAmountInWei,
+      );
+      const initialCollateralRatio = await getInitialCollateralRatio(
+        stablecoinContracts.vaultManagerParametersAddress,
+        collateralTokenAddress,
+      );
+      const liquidationRatio = await getLiquidationRatio(
+        stablecoinContracts.vaultManagerParametersAddress,
+        collateralTokenAddress,
+      );
 
-      debt = await calculateBorowedStablecoin(
-        uniSwapOracleBalance,
+      const calculatedStablecoinAmountInWei = await calculateBorowedStablecoin(
+        collateralEquivalentInStablecoin,
         percentRisk,
         initialCollateralRatio,
       );
-      liquidationPrice = await getLiquidationPrice(debt, amount, liquidationRatio);
+      const liquidationPrice = await getLiquidationPrice(
+        calculatedStablecoinAmountInWei,
+        collateralAmountInWei,
+        liquidationRatio,
+      );
+
+      const borrowFee = await getBorrowFee(
+        stablecoinContracts.cdpManagerAddress,
+        collateralTokenAddress,
+        calculatedStablecoinAmountInWei,
+      );
 
       print([
         textLine({
           words: [
             textWord({
-              characters: `Liquidation price for ${collateralName} is ${liquidationPrice} ${stablecoinToken.symbol}`,
+              characters: `Liquidation price for ${collateralName} is ${liquidationPrice.toFixed()} ${
+                stablecoinToken.symbol
+              }`,
             }),
           ],
         }),
       ]);
 
-      if (!collateralToken.isNative) {
-        userAllowanceTokenDeposit = await allowance(
-          collateralToken.address,
-          stablecoinContracts.vaultAddress,
-        );
-
-        if (amount.gt(userAllowanceTokenDeposit)) {
-          const firstTxn = await approve(
-            state.address,
-            collateralToken.address,
-            stablecoinContracts.vaultAddress,
-            amount,
-          );
-
-          print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-          printLink(print, messages.viewTxn, state.chain.explorerUrl + firstTxn);
-        }
-      } else {
-        userAllowanceTokenDeposit = await allowance(
-          state.chain.nativeCurrency.wethAddress,
-          stablecoinContracts.vaultAddress,
-        );
-
-        if (amount.gt(userAllowanceTokenDeposit)) {
-          const firstTxn = await approve(
-            state.address,
-            state.chain.nativeCurrency.wethAddress,
-            stablecoinContracts.vaultAddress,
-            amount,
-          );
-
-          print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-          printLink(print, messages.viewTxn, state.chain.explorerUrl + firstTxn);
-        }
-      }
-
-      const userAllowanceStablecoins = await allowance(
-        stablecoinToken.address,
+      await checkAllownace(
+        print,
+        state,
+        collateralTokenAddress,
         stablecoinContracts.vaultAddress,
+        collateralAmountInWei,
       );
 
-      if (debt.gt(userAllowanceStablecoins)) {
-        const secondTxn = await approve(
-          state.address,
-          stablecoinToken.address,
-          stablecoinContracts.vaultAddress,
-          debt,
-        );
+      await checkAllownace(
+        print,
+        state,
+        stablecoinToken.address,
+        stablecoinContracts.vaultAddress,
+        calculatedStablecoinAmountInWei,
+      );
 
-        print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-        printLink(print, messages.viewTxn, state.chain.explorerUrl + secondTxn);
+      if (borrowFee.gt(0)) {
+        await checkAllownace(print, state, stablecoinToken.address, managerAddress, borrowFee);
       }
 
-      if (!collateralToken.isNative) {
-        const thirdTrx = await join(
-          stablecoinContracts.cdpManagerAddress,
-          state.address,
-          collateralToken.address,
-          amount,
-          debt,
-        );
-        print([
-          textLine({ words: [textWord({ characters: `Succesfull borrowed ${coinName}.` })] }),
-        ]);
-        printLink(print, messages.viewTxn, state.chain.explorerUrl + thirdTrx);
-      } else {
-        const fourthTrx = await join_Eth(
-          stablecoinContracts.cdpManagerAddress,
-          state.address,
-          amount,
-          debt,
-        );
-        print([
-          textLine({ words: [textWord({ characters: `Succesfull borrowed ${coinName}.` })] }),
-        ]);
-        printLink(print, messages.viewTxn, state.chain.explorerUrl + fourthTrx);
-      }
+      const thirdTrx = isFallabckCompatible
+        ? await joinFallbackPosition(
+            stablecoinContracts,
+            state.chain.nativeCurrency.wethAddress,
+            state.address,
+            collateralToken,
+            collateralAmountInWei,
+            calculatedStablecoinAmountInWei,
+          )
+        : await joinPosition(
+            stablecoinContracts,
+            state.address,
+            collateralToken,
+            collateralAmountInWei,
+            calculatedStablecoinAmountInWei,
+          );
+      print([textLine({ words: [textWord({ characters: `Succesfull borrowed ${coinName}.` })] })]);
+      printLink(print, messages.viewTxn, state.chain.explorerUrl + thirdTrx);
 
       loading(false);
       lock(false);
@@ -214,9 +180,69 @@ export const BorrowStablecoinWorker = (coinName: string) =>
     }
   }).setDescription({
     description: `${Prefix.PREFIX}${UpdatingCommand.BORROW} ${coinName} with <amount> <token> with <percent>% risk | [UNAUDITED]`,
-    getOptions(config, chain) {
+    getOptions(_, chain) {
       return {
         token: chain?.simulatedTokens[coinName].collaterals || [],
       };
     },
   });
+
+async function joinFallbackPosition(
+  contracts: SimulatedToken,
+  wethAddress: string,
+  senderAddress: string,
+  collateral: Token,
+  collateralAmountInWei: Big,
+  stablecoinAmountInWei: Big,
+): Promise<string> {
+  if (collateral.isNative) {
+    throw new Error(
+      `Native collateral ${collateral.name} marked as fallback compatible. Misconfiguration issue`,
+    );
+  }
+
+  if (!contracts.cdpManagerFallback) {
+    throw new Error(
+      `Fallback manager not configured for token ${collateral.name}. Misconfiguration issue`,
+    );
+  }
+
+  if (!contracts.fallbackWethPairs[collateral.name]) {
+    throw new Error(
+      `Fallback weth pair for collateral ${collateral.name} not found. Misconfiguration issue`,
+    );
+  }
+
+  return joinFallback(
+    contracts.cdpManagerFallback,
+    contracts.fallbackWethPairs[collateral.name],
+    wethAddress,
+    senderAddress,
+    collateral.address,
+    collateralAmountInWei,
+    stablecoinAmountInWei,
+  );
+}
+
+async function joinPosition(
+  contracts: SimulatedToken,
+  senderAddress: string,
+  collateral: Token,
+  collateralAmountInWei: Big,
+  stablecoinAmountInWei: Big,
+): Promise<string> {
+  return collateral.isNative
+    ? joinEth(
+        contracts.cdpManagerAddress,
+        senderAddress,
+        collateralAmountInWei,
+        stablecoinAmountInWei,
+      )
+    : join(
+        contracts.cdpManagerAddress,
+        senderAddress,
+        collateral.address,
+        collateralAmountInWei,
+        stablecoinAmountInWei,
+      );
+}

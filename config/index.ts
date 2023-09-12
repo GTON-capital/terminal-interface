@@ -40,6 +40,8 @@ function parseToken(networkName: string, tokenName: string): Token {
 function parseSimulatedToken(networkName: string, tokenName: string): SimulatedToken {
   const ENV_PREFIX = `${CONFIG_PREFIX}_${networkName.toUpperCase()}_SIMULATED_${tokenName.toUpperCase()}`;
 
+  const fallbackCollaterals = env.get(`${ENV_PREFIX}_FALLBACK_COLLATERALS`).asArray(',') || [];
+
   return {
     name: tokenName,
 
@@ -52,7 +54,16 @@ function parseSimulatedToken(networkName: string, tokenName: string): SimulatedT
     cdpManagerAddress: env.get(`${ENV_PREFIX}_CDP_MANAGER_ADDRESS`).required().asString(),
     cdpManagerFallback: env.get(`${ENV_PREFIX}_CDP_MANAGER_FALLBACK_ADDRESS`).asString() || null,
     collaterals: env.get(`${ENV_PREFIX}_COLLATERALS`).required().asArray(','),
-    fallbackCollaterals: env.get(`${ENV_PREFIX}_FALLBACK_COLLATERALS`).asArray(',') || [],
+    fallbackCollaterals,
+    fallbackWethPairs: Object.fromEntries(
+      fallbackCollaterals.map((collateralName) => [
+        collateralName,
+        env
+          .get(`${ENV_PREFIX}_${collateralName.toUpperCase()}_WETH_PAIR_ADDRESS`)
+          .required()
+          .asString(),
+      ]),
+    ),
   };
 }
 
@@ -132,6 +143,14 @@ function validateConfiguration(config: ApplicationConfig): ApplicationConfig {
         if (!chain.tokens[collateral]) {
           throw Error(
             `Collateral ${collateral} for simulated token ${tokenName} in network ${chain.name} not mentioned in tokens list`,
+          );
+        }
+      });
+
+      token.fallbackCollaterals.forEach((collateralName) => {
+        if (!token.fallbackWethPairs[collateralName]) {
+          throw new Error(
+            `Weth pair for fallback collateral ${collateralName} for stablecoin ${token.name} in network ${chain.name} not found`,
           );
         }
       });

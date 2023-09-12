@@ -1,8 +1,10 @@
 import cdpManagerAbi from './ABI/cdpManager01.json';
+import cdpManagerFallbackAbi from './ABI/cdpManager01_fallback.json';
 import vaultAbi from './ABI/vaultGcd.json';
 import { AbiItem } from 'web3-utils';
 import Web3 from 'web3';
 import Big from 'big.js';
+import { formProof } from './keydonix';
 
 declare const window: any;
 
@@ -37,18 +39,44 @@ export const getCollateral = async (
   }
 };
 
+export const joinFallback = async (
+  cdpManagerFallbackAddress: string,
+  pairAddress: string,
+  wethAddress: string,
+  userAddress: string,
+  assetAddress: string,
+  assetAmount: Big,
+  stablecoinAmount: Big,
+): Promise<string> => {
+  const web3 = new Web3(window.ethereum);
+
+  const blockNumber = await web3.eth.getBlockNumber();
+
+  const proof = await formProof(pairAddress, wethAddress, blockNumber - 100);
+
+  const contract = new web3.eth.Contract(
+    cdpManagerFallbackAbi as AbiItem[],
+    cdpManagerFallbackAddress,
+  );
+
+  let txn = await contract.methods
+    .join(assetAddress, assetAmount.toFixed(), stablecoinAmount.toFixed(), proof)
+    .send({ from: userAddress });
+  return txn.transactionHash;
+};
+
 export const join = async (
   cdpManager: string,
   userAddress: string,
   assetAddress: string,
   assetAmount: Big,
-  gcdAmount: Big,
+  stablecoinAmount: Big,
 ): Promise<string> => {
   try {
     const web3 = new Web3(window.ethereum);
     const contract = new web3.eth.Contract(cdpManagerAbi as AbiItem[], cdpManager);
     let txn = await contract.methods
-      .join(assetAddress, assetAmount.toFixed(), gcdAmount.toFixed())
+      .join(assetAddress, assetAmount.toFixed(), stablecoinAmount.toFixed())
       .send({ from: userAddress });
     return txn.transactionHash;
   } catch (e) {
@@ -57,17 +85,17 @@ export const join = async (
   }
 };
 
-export const join_Eth = async (
+export const joinEth = async (
   cdpManager: string,
   userAddress: string,
   payableAmount: Big,
-  gcdAmount: Big,
+  stablecoinAmount: Big,
 ): Promise<string> => {
   try {
     const web3 = new Web3(window.ethereum);
     const contract = new web3.eth.Contract(cdpManagerAbi as AbiItem[], cdpManager);
     let txn = await contract.methods
-      .join_Eth(gcdAmount.toFixed())
+      .join_Eth(stablecoinAmount.toFixed())
       .send({ from: userAddress, value: payableAmount });
     return txn.transactionHash;
   } catch (e) {
@@ -81,13 +109,13 @@ export const exit = async (
   userAddress: string,
   assetAddress: string,
   assetAmount: Big,
-  gcdAmount: Big,
+  stablecoinAmount: Big,
 ): Promise<string> => {
   try {
     const web3 = new Web3(window.ethereum);
     const contract = new web3.eth.Contract(cdpManagerAbi as AbiItem[], cdpManager);
     let txn = await contract.methods
-      .exit(assetAddress, assetAmount.toFixed(), gcdAmount.toFixed())
+      .exit(assetAddress, assetAmount.toFixed(), stablecoinAmount.toFixed())
       .send({ from: userAddress });
     return txn.transactionHash;
   } catch (e) {
@@ -96,21 +124,48 @@ export const exit = async (
   }
 };
 
-export const exit_Eth = async (
+export const exitEth = async (
   cdpManager: string,
   userAddress: string,
   assetAmount: Big,
-  gcdAmount: Big,
+  stablecoinAmount: Big,
 ): Promise<string> => {
   try {
     const web3 = new Web3(window.ethereum);
     const contract = new web3.eth.Contract(cdpManagerAbi as AbiItem[], cdpManager);
     let txn = await contract.methods
-      .exit_Eth(assetAmount.toFixed(), gcdAmount.toFixed())
+      .exit_Eth(assetAmount.toFixed(), stablecoinAmount.toFixed())
       .send({ from: userAddress });
     return txn.transactionHash;
   } catch (e) {
     console.log(e);
     throw new Error(e);
   }
+};
+
+export const exitFallback = async (
+  cdpManagerFallbackAddress: string,
+  pairAddress: string,
+  wethAddress: string,
+  userAddress: string,
+  assetAddress: string,
+  assetAmount: Big,
+  stablecoinAmount: Big,
+): Promise<string> => {
+  const web3 = new Web3(window.ethereum);
+
+  const blockNumber = await web3.eth.getBlockNumber();
+
+  const proof = await formProof(pairAddress, wethAddress, blockNumber - 100);
+
+  const contract = new web3.eth.Contract(
+    cdpManagerFallbackAbi as AbiItem[],
+    cdpManagerFallbackAddress,
+  );
+
+  const txn = await contract.methods
+    .exit(assetAddress, assetAmount.toFixed(), stablecoinAmount.toFixed(), proof)
+    .send({ from: userAddress });
+
+  return txn.transactionHash;
 };

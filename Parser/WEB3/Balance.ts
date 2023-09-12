@@ -3,8 +3,11 @@ import Web3 from 'web3';
 import Big from 'big.js';
 import ERC20_ABI from './ABI/erc20.json';
 import USD_ORACLE_ABI from './ABI/UsdOracle.json';
+import KEYDONIX_USD_ORACLE_ABI from './ABI/KeydonixUsdOracle.json';
 import ORACLE_REGISTRY_ABI from './ABI/OracleRegistry.json';
 import { gtonUniswapV3Oracle, wEthAndUsdcUniswapV3Oracle } from '../../config/config';
+import { SimulatedToken, Token } from '../../config/types';
+import { formProof } from './keydonix';
 
 declare const window: any;
 
@@ -26,65 +29,46 @@ export const getEthBalance = async (userAddress: string): Promise<Big> => {
 };
 
 export async function collateralToStablecoinEquivalent(
-  oracleRegistryAddress: string,
-  tokenAddress: string,
+  contracts: SimulatedToken,
+  collateralToken: Token,
+  wethAddress: string,
   amount: Big,
-): Promise<Big | undefined> {
+): Promise<Big> {
+  const isFallbackCompatible = contracts.fallbackCollaterals.includes(collateralToken.name);
+
   const Q112 = '5192296858534827628530496329220096';
 
-  try {
-    const web3 = new Web3(window.ethereum);
+  const web3 = new Web3(window.ethereum);
 
-    const oracleRegistry = new web3.eth.Contract(
-      ORACLE_REGISTRY_ABI as AbiItem[],
-      oracleRegistryAddress,
+  const oracleRegistry = new web3.eth.Contract(
+    ORACLE_REGISTRY_ABI as AbiItem[],
+    contracts.oracleRegistryAddress,
+  );
+  const tokenAddress = collateralToken.isNative ? wethAddress : collateralToken.address;
+  const oracleAddress = await oracleRegistry.methods.oracleByAsset(tokenAddress).call();
+
+  if (!collateralToken.isNative && isFallbackCompatible) {
+    const blockNumber = await web3.eth.getBlockNumber();
+
+    const proof = await formProof(
+      contracts.fallbackWethPairs[collateralToken.name],
+      wethAddress,
+      blockNumber - 100,
     );
-    const oracleAddress = await oracleRegistry.methods.oracleByAsset(tokenAddress).call();
+    const contract = new web3.eth.Contract(KEYDONIX_USD_ORACLE_ABI as AbiItem[], oracleAddress);
 
+    const collateralBalance = await contract.methods
+      .assetToUsd(tokenAddress, amount.toFixed(), proof)
+      .call();
+    return Big(collateralBalance).div(Q112);
+  } else {
     const contract = new web3.eth.Contract(USD_ORACLE_ABI as AbiItem[], oracleAddress);
 
     const collateralBalance = await contract.methods
       .assetToUsd(tokenAddress, amount.toFixed())
       .call();
     return Big(collateralBalance).div(Q112);
-  } catch (e) {
-    console.log(e);
   }
 }
-
-export const getUniswapBalanceGton = async (
-  tokenAddress: string,
-  amount: Big,
-): Promise<Big | undefined> => {
-  const Q112 = '5192296858534827628530496329220096';
-  try {
-    const web3 = new Web3(window.ethereum);
-    const contract = new web3.eth.Contract(USD_ORACLE_ABI as AbiItem[], gtonUniswapV3Oracle);
-    const collateralBalance = await contract.methods
-      .assetToUsd(tokenAddress, amount.toFixed())
-      .call();
-    return Big(collateralBalance).div(Q112);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-export const getUniswapBalanceWEthAndUsdc = async (
-  tokenAddress: string,
-  amount: Big,
-): Promise<Big | undefined> => {
-  const Q112 = '5192296858534827628530496329220096';
-
-  try {
-    const web3 = new Web3(window.ethereum);
-    const contract = new web3.eth.Contract(USD_ORACLE_ABI as AbiItem[], wEthAndUsdcUniswapV3Oracle);
-    const collateralBalance = await contract.methods
-      .assetToUsd(tokenAddress, amount.toFixed())
-      .call();
-    return Big(collateralBalance).div(Q112);
-  } catch (e) {
-    console.log(e);
-  }
-};
 
 export default balance;

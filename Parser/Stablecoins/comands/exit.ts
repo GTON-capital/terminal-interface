@@ -3,11 +3,13 @@ import { validateConnectedWallet } from '../../../State/validate';
 import { Worker } from '../../Common/worker';
 import { toWei } from '../../WEB3/API/balance';
 import balance from '../../WEB3/Balance';
-import { allowance, approve } from '../../WEB3/approve';
-import { exit, exit_Eth, getCollateral } from '../../WEB3/cdpManager';
+import { exit, exitEth, exitFallback, getCollateral } from '../../WEB3/cdpManager';
 import messages, { Prefix, UpdatingCommand } from '../../../Messages/Messages';
 import { printLink } from '../../common';
 import { ErrorCodes, ErrorHandler } from '../errors';
+import { SimulatedToken, Token } from '../../../config/types';
+import Big from 'big.js';
+import { checkAllownace } from '../../Common/utils/checkAllowance';
 
 export const ExitStablecoinWorker = (coinName: string) =>
   new Worker(async ({ lock, loading, print }, Args, [nonValidatedState], config) => {
@@ -32,11 +34,7 @@ export const ExitStablecoinWorker = (coinName: string) =>
       const stablecoinAmount = Number.parseFloat(tmpARGS[0]);
       const collateralAmount = Number.parseFloat(tmpARGS[4]);
       const collateralName = tmpARGS[5];
-      let userStablecoinBalance;
-      let stablecoinAmountInWei;
-      let collateralAmountInWei;
       let thirdTxn;
-      let userCollateralAmount;
       let userAllowanceToken;
 
       if (!stablecoinContracts.collaterals.includes(collateralName)) {
@@ -49,6 +47,12 @@ export const ExitStablecoinWorker = (coinName: string) =>
         throw new Error(`You can't withdraw 0 tokens`);
 
       const collateralToken = state.chain.tokens[collateralName];
+      const isFallabckCompatible = stablecoinContracts.fallbackCollaterals.includes(
+        collateralToken.name,
+      );
+      const managerAddress = isFallabckCompatible
+        ? stablecoinContracts.cdpManagerFallback!!
+        : stablecoinContracts.cdpManagerAddress;
 
       if (!collateralToken) {
         throw new Error(
@@ -56,94 +60,55 @@ export const ExitStablecoinWorker = (coinName: string) =>
         );
       }
 
-      userStablecoinBalance = await balance(state.address, stablecoinToken.address);
-      userCollateralAmount = collateralToken.isNative
-        ? await getCollateral(
-            stablecoinContracts.vaultAddress,
-            state.chain.nativeCurrency.wethAddress,
-            state.address,
-          )
-        : await getCollateral(
-            stablecoinContracts.vaultAddress,
-            collateralToken.address,
-            state.address,
-          );
+      const collateralTokenAddress = collateralToken.isNative
+        ? state.chain.nativeCurrency.wethAddress
+        : collateralToken.address;
 
-      stablecoinAmountInWei = toWei(stablecoinAmount);
+      const userStablecoinBalance = await balance(state.address, stablecoinToken.address);
+      const userCollateralAmount = await getCollateral(
+        stablecoinContracts.vaultAddress,
+        collateralTokenAddress,
+        state.address,
+      );
+
+      const stablecoinAmountInWei = toWei(stablecoinAmount);
       if (stablecoinAmountInWei.gt(userStablecoinBalance)) throw Error('Insufficient amount');
 
-      collateralAmountInWei = toWei(collateralAmount, collateralToken.decimals);
+      const collateralAmountInWei = toWei(collateralAmount, collateralToken.decimals);
 
       if (collateralAmountInWei.gt(userCollateralAmount))
         throw Error('Insufficient collateral amount');
 
-      const userAllowanceStablecoinAmount = await allowance(
-        state.chain.nativeCurrency.wethAddress,
+      await checkAllownace(
+        print,
+        state,
+        stablecoinToken.address,
         stablecoinContracts.vaultAddress,
+        stablecoinAmountInWei,
       );
 
-      if (stablecoinAmountInWei.gt(userAllowanceStablecoinAmount)) {
-        const firstTxn = await approve(
-          state.address,
-          state.chain.nativeCurrency.wethAddress,
-          stablecoinContracts.vaultAddress,
-          stablecoinAmountInWei,
-        );
-
-        print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-        printLink(print, messages.viewTxn, state.chain.explorerUrl + firstTxn);
-      }
-
-      if (collateralToken.isNative) {
-        userAllowanceToken = await allowance(
-          state.chain.nativeCurrency.wethAddress,
-          stablecoinContracts.cdpManagerAddress,
-        );
-      } else {
-        userAllowanceToken = await allowance(
-          collateralToken.address,
-          stablecoinContracts.cdpManagerAddress,
-        );
-      }
-
-      if (collateralAmountInWei.gt(userAllowanceToken)) {
-        const secondTxn = collateralToken.isNative
-          ? await approve(
-              state.address,
-              state.chain.nativeCurrency.wethAddress,
-              stablecoinContracts.cdpManagerAddress,
-              collateralAmountInWei,
-            )
-          : await approve(
-              state.address,
-              collateralToken.address,
-              stablecoinContracts.cdpManagerAddress,
-              collateralAmountInWei,
-            );
-
-        print([textLine({ words: [textWord({ characters: messages.approve })] })]);
-        printLink(print, messages.viewTxn, state.chain.explorerUrl + secondTxn);
-      }
-
-      thirdTxn = collateralToken.isNative
-        ? (thirdTxn = await exit_Eth(
-            stablecoinContracts.cdpManagerAddress,
+      thirdTxn = isFallabckCompatible
+        ? await exitFallbackPosition(
+            stablecoinContracts,
+            state.chain.nativeCurrency.wethAddress,
             state.address,
+            collateralToken,
             collateralAmountInWei,
             stablecoinAmountInWei,
-          ))
-        : (thirdTxn = await exit(
-            stablecoinContracts.cdpManagerAddress,
+          )
+        : await exitPosition(
+            stablecoinContracts,
             state.address,
-            collateralToken.address,
+            collateralToken,
             collateralAmountInWei,
             stablecoinAmountInWei,
-          ));
+          );
+
       print([
         textLine({
           words: [
             textWord({
-              characters: `Succesfull repay ${coinName} and withdraw $${collateralName}.`,
+              characters: `Succesfull repay ${coinName} and withdraw ${collateralName}.`,
             }),
           ],
         }),
@@ -163,9 +128,69 @@ export const ExitStablecoinWorker = (coinName: string) =>
     }
   }).setDescription({
     description: `${Prefix.PREFIX}${UpdatingCommand.REPAY} <amount> ${coinName} and withdraw <amount> <token> | [UNAUDITED]`,
-    getOptions(config, chain) {
+    getOptions(_, chain) {
       return {
         token: chain?.simulatedTokens[coinName].collaterals || [],
       };
     },
   });
+
+async function exitFallbackPosition(
+  contracts: SimulatedToken,
+  wethAddress: string,
+  senderAddress: string,
+  collateral: Token,
+  collateralAmountInWei: Big,
+  stablecoinAmountInWei: Big,
+): Promise<string> {
+  if (collateral.isNative) {
+    throw new Error(
+      `Native collateral ${collateral.name} marked as fallback compatible. Misconfiguration issue`,
+    );
+  }
+
+  if (!contracts.cdpManagerFallback) {
+    throw new Error(
+      `Fallback manager not configured for token ${collateral.name}. Misconfiguration issue`,
+    );
+  }
+
+  if (!contracts.fallbackWethPairs[collateral.name]) {
+    throw new Error(
+      `Fallback weth pair for collateral ${collateral.name} not found. Misconfiguration issue`,
+    );
+  }
+
+  return exitFallback(
+    contracts.cdpManagerFallback,
+    contracts.fallbackWethPairs[collateral.name],
+    wethAddress,
+    senderAddress,
+    collateral.address,
+    collateralAmountInWei,
+    stablecoinAmountInWei,
+  );
+}
+
+async function exitPosition(
+  contracts: SimulatedToken,
+  senderAddress: string,
+  collateral: Token,
+  collateralAmountInWei: Big,
+  stablecoinAmountInWei: Big,
+): Promise<string> {
+  return collateral.isNative
+    ? exitEth(
+        contracts.cdpManagerAddress,
+        senderAddress,
+        collateralAmountInWei,
+        stablecoinAmountInWei,
+      )
+    : exit(
+        contracts.cdpManagerAddress,
+        senderAddress,
+        collateral.address,
+        collateralAmountInWei,
+        stablecoinAmountInWei,
+      );
+}
