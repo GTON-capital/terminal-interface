@@ -53,6 +53,7 @@ function parseSimulatedToken(networkName: string, tokenName: string): SimulatedT
     oracleRegistryAddress: env.get(`${ENV_PREFIX}_ORACLE_REGISTRY_ADDRESS`).required().asString(),
     cdpManagerAddress: env.get(`${ENV_PREFIX}_CDP_MANAGER_ADDRESS`).required().asString(),
     cdpManagerFallback: env.get(`${ENV_PREFIX}_CDP_MANAGER_FALLBACK_ADDRESS`).asString() || null,
+    cdpViewer: env.get(`${ENV_PREFIX}_CDP_VIEWER_ADDRESS`).required().asString(),
     collaterals: env.get(`${ENV_PREFIX}_COLLATERALS`).required().asArray(','),
     fallbackCollaterals,
     fallbackWethPairs: Object.fromEntries(

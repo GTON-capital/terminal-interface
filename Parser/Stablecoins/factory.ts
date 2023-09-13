@@ -7,6 +7,7 @@ import { BorrowStablecoinWorker } from './comands/borrow';
 import { ExitStablecoinWorker } from './comands/exit';
 import { BridgeToL2Worker } from './comands/bridge';
 import { IWorker } from '../Common/worker';
+import { ViewCDPStablecoinWorker } from './comands/view';
 
 function operandsFromState(
   stablecoinName: string,
@@ -21,6 +22,7 @@ function operandsFromState(
 
   operands.set('borrow', BorrowStablecoinWorker(stablecoinName));
   operands.set('repay', ExitStablecoinWorker(stablecoinName));
+  operands.set('view', ViewCDPStablecoinWorker(stablecoinName));
 
   return Object.fromEntries(operands.entries());
 }

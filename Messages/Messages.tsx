@@ -21,6 +21,7 @@ export enum UpdatingCommand {
   BORROW = 'borrow',
   REPAY = 'repay',
   BRIDGE = 'bridge',
+  VIEW = 'view',
 }
 
 enum OptionalActions {

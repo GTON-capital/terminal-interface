@@ -50,6 +50,8 @@ export type SimulatedToken = {
   collaterals: Array<TokenName>;
   fallbackCollaterals: Array<TokenName>;
 
+  cdpViewer: Address;
+
   fallbackWethPairs: Record<TokenName, Address>;
 };
 

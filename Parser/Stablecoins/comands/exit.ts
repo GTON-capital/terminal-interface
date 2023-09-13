@@ -48,9 +48,6 @@ export const ExitStablecoinWorker = (coinName: string) =>
       const isFallabckCompatible = stablecoinContracts.fallbackCollaterals.includes(
         collateralToken.name,
       );
-      const managerAddress = isFallabckCompatible
-        ? stablecoinContracts.cdpManagerFallback!!
-        : stablecoinContracts.cdpManagerAddress;
 
       if (!collateralToken) {
         throw new Error(
@@ -82,7 +79,7 @@ export const ExitStablecoinWorker = (coinName: string) =>
         state,
         stablecoinToken.address,
         stablecoinContracts.vaultAddress,
-        stablecoinAmountInWei,
+        stablecoinAmountInWei.mul(2),
       );
 
       const txn = isFallabckCompatible
