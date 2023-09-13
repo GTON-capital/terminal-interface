@@ -10,7 +10,6 @@ import { ErrorCodes, ErrorHandler } from '../errors';
 import { SimulatedToken, Token } from '../../../config/types';
 import Big from 'big.js';
 import { checkAllownace } from '../../Common/utils/checkAllowance';
-import { tokenAddresses } from '../../../config/config';
 
 export const ExitStablecoinWorker = (coinName: string) =>
   new Worker(async ({ lock, loading, print }, Args, [nonValidatedState], config) => {
