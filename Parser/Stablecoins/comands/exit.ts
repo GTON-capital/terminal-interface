@@ -10,6 +10,7 @@ import { ErrorCodes, ErrorHandler } from '../errors';
 import { SimulatedToken, Token } from '../../../config/types';
 import Big from 'big.js';
 import { checkAllownace } from '../../Common/utils/checkAllowance';
+import { tokenAddresses } from '../../../config/config';
 
 export const ExitStablecoinWorker = (coinName: string) =>
   new Worker(async ({ lock, loading, print }, Args, [nonValidatedState], config) => {
@@ -48,6 +49,9 @@ export const ExitStablecoinWorker = (coinName: string) =>
       const isFallabckCompatible = stablecoinContracts.fallbackCollaterals.includes(
         collateralToken.name,
       );
+      const managerAddress = isFallabckCompatible
+        ? stablecoinContracts.cdpManagerFallback!!
+        : stablecoinContracts.cdpManagerAddress;
 
       if (!collateralToken) {
         throw new Error(
@@ -79,8 +83,18 @@ export const ExitStablecoinWorker = (coinName: string) =>
         state,
         stablecoinToken.address,
         stablecoinContracts.vaultAddress,
-        stablecoinAmountInWei.mul(2),
+        stablecoinAmountInWei,
       );
+
+      if (collateralToken.isNative) {
+        await checkAllownace(
+          print,
+          state,
+          state.chain.nativeCurrency.wethAddress,
+          managerAddress,
+          collateralAmountInWei,
+        );
+      }
 
       const txn = isFallabckCompatible
         ? await exitFallbackPosition(
