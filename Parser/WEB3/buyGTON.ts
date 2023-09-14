@@ -4,8 +4,6 @@ import axios from 'axios';
 import { gtonAddress } from '../../config/config';
 import { fromWei } from '../WEB3/API/balance';
 
-import { validate } from './validate';
-
 // swap on GTON
 
 declare const window: any;
@@ -14,8 +12,7 @@ export const checkSwapAmount = async (
   amount: Big,
   fromTokenAddress: string,
   decimals: number,
-): Promise<string> => {
-  await validate();
+): Promise<string | undefined> => {
   try {
     let status = await axios.get('https://api.1inch.io/v4.0/1/healthcheck');
     if (status) {
@@ -39,8 +36,7 @@ export const buy = async (
   amount: Big,
   userAddress: string,
   fromTokenAddress: string,
-): Promise<string> => {
-  await validate();
+): Promise<string | undefined> => {
   const web3 = new Web3(window.ethereum);
   try {
     const response = await axios.get(

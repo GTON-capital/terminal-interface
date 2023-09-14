@@ -1,13 +1,13 @@
-import { utils } from 'ethers';
+import { utils, BigNumber } from 'ethers';
 import { TerminalError } from '../../Errors/ErrorCodes';
 
 declare const window: any;
 
 const { isAddress, getAddress } = utils;
 
-const connectMetamask = async () => {
+const connectMetamask = async (): Promise<[string, number]> => {
   let accounts;
-  if (!window.ethereum || !window.ethereum!.isMetaMask) {
+  if (!window.ethereum || !window.ethereum.isMetaMask) {
     throw new TerminalError({ code: 'NO_METAMASK' });
   }
   try {
@@ -27,11 +27,12 @@ const connectMetamask = async () => {
   }
 
   const account = accounts[0];
+  const chainId: string = await window.ethereum.request({ method: 'eth_chainId' });
   if (!isAddress(account)) {
     throw new TerminalError({ code: 'GET_ADDRESS_FAILED' });
   }
 
-  return getAddress(account).toLocaleLowerCase();
+  return [getAddress(account).toLocaleLowerCase(), BigNumber.from(chainId).toNumber()];
 };
 
 export default connectMetamask;

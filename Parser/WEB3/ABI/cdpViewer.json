@@ -1,0 +1,208 @@
+[
+  {
+    "type": "constructor",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      { "type": "address", "name": "_vaultManagerParameters", "internalType": "address" },
+      { "type": "address", "name": "_oracleRegistry", "internalType": "address" },
+      { "type": "address", "name": "_vaultManagerBorrowFeeParameters", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "r",
+        "internalType": "struct CDPViewer.CollateralParameters",
+        "components": [
+          { "type": "uint128", "name": "tokenDebtLimit", "internalType": "uint128" },
+          { "type": "uint128", "name": "tokenDebt", "internalType": "uint128" },
+          { "type": "uint32", "name": "stabilityFee", "internalType": "uint32" },
+          { "type": "uint32", "name": "liquidationDiscount", "internalType": "uint32" },
+          { "type": "uint32", "name": "devaluationPeriod", "internalType": "uint32" },
+          { "type": "uint16", "name": "liquidationRatio", "internalType": "uint16" },
+          { "type": "uint16", "name": "initialCollateralRatio", "internalType": "uint16" },
+          { "type": "uint16", "name": "liquidationFee", "internalType": "uint16" },
+          { "type": "uint16", "name": "oracleType", "internalType": "uint16" },
+          { "type": "uint16", "name": "borrowFee", "internalType": "uint16" },
+          {
+            "type": "tuple",
+            "name": "cdp",
+            "internalType": "struct CDPViewer.CDP",
+            "components": [
+              { "type": "uint128", "name": "collateral", "internalType": "uint128" },
+              { "type": "uint128", "name": "debt", "internalType": "uint128" },
+              { "type": "uint256", "name": "totalDebt", "internalType": "uint256" },
+              { "type": "uint32", "name": "stabilityFee", "internalType": "uint32" },
+              { "type": "uint32", "name": "lastUpdate", "internalType": "uint32" },
+              { "type": "uint16", "name": "liquidationFee", "internalType": "uint16" },
+              { "type": "uint16", "name": "oracleType", "internalType": "uint16" }
+            ]
+          }
+        ]
+      }
+    ],
+    "name": "getCollateralParameters",
+    "inputs": [
+      { "type": "address", "name": "asset", "internalType": "address" },
+      { "type": "address", "name": "owner", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      {
+        "type": "tuple[]",
+        "name": "r",
+        "internalType": "struct CDPViewer.CollateralParameters[]",
+        "components": [
+          { "type": "uint128", "name": "tokenDebtLimit", "internalType": "uint128" },
+          { "type": "uint128", "name": "tokenDebt", "internalType": "uint128" },
+          { "type": "uint32", "name": "stabilityFee", "internalType": "uint32" },
+          { "type": "uint32", "name": "liquidationDiscount", "internalType": "uint32" },
+          { "type": "uint32", "name": "devaluationPeriod", "internalType": "uint32" },
+          { "type": "uint16", "name": "liquidationRatio", "internalType": "uint16" },
+          { "type": "uint16", "name": "initialCollateralRatio", "internalType": "uint16" },
+          { "type": "uint16", "name": "liquidationFee", "internalType": "uint16" },
+          { "type": "uint16", "name": "oracleType", "internalType": "uint16" },
+          { "type": "uint16", "name": "borrowFee", "internalType": "uint16" },
+          {
+            "type": "tuple",
+            "name": "cdp",
+            "internalType": "struct CDPViewer.CDP",
+            "components": [
+              { "type": "uint128", "name": "collateral", "internalType": "uint128" },
+              { "type": "uint128", "name": "debt", "internalType": "uint128" },
+              { "type": "uint256", "name": "totalDebt", "internalType": "uint256" },
+              { "type": "uint32", "name": "stabilityFee", "internalType": "uint32" },
+              { "type": "uint32", "name": "lastUpdate", "internalType": "uint32" },
+              { "type": "uint16", "name": "liquidationFee", "internalType": "uint16" },
+              { "type": "uint16", "name": "oracleType", "internalType": "uint16" }
+            ]
+          }
+        ]
+      }
+    ],
+    "name": "getMultiCollateralParameters",
+    "inputs": [
+      { "type": "address[]", "name": "assets", "internalType": "address[]" },
+      { "type": "address", "name": "owner", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      {
+        "type": "tuple[]",
+        "name": "r",
+        "internalType": "struct CDPViewer.TokenDetails[]",
+        "components": [
+          { "type": "address[2]", "name": "lpUnderlyings", "internalType": "address[2]" },
+          { "type": "uint128", "name": "balance", "internalType": "uint128" },
+          { "type": "uint128", "name": "totalSupply", "internalType": "uint128" },
+          { "type": "uint8", "name": "decimals", "internalType": "uint8" },
+          { "type": "address", "name": "uniswapV2Factory", "internalType": "address" },
+          { "type": "address", "name": "underlyingToken", "internalType": "address" },
+          { "type": "uint256", "name": "underlyingTokenBalance", "internalType": "uint256" },
+          { "type": "uint256", "name": "underlyingTokenTotalSupply", "internalType": "uint256" },
+          { "type": "uint8", "name": "underlyingTokenDecimals", "internalType": "uint8" },
+          {
+            "type": "address",
+            "name": "underlyingTokenUniswapV2Factory",
+            "internalType": "address"
+          },
+          {
+            "type": "address[2]",
+            "name": "underlyingTokenUnderlyings",
+            "internalType": "address[2]"
+          }
+        ]
+      }
+    ],
+    "name": "getMultiTokenDetails",
+    "inputs": [
+      { "type": "address[]", "name": "assets", "internalType": "address[]" },
+      { "type": "address", "name": "owner", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "r",
+        "internalType": "struct CDPViewer.TokenDetails",
+        "components": [
+          { "type": "address[2]", "name": "lpUnderlyings", "internalType": "address[2]" },
+          { "type": "uint128", "name": "balance", "internalType": "uint128" },
+          { "type": "uint128", "name": "totalSupply", "internalType": "uint128" },
+          { "type": "uint8", "name": "decimals", "internalType": "uint8" },
+          { "type": "address", "name": "uniswapV2Factory", "internalType": "address" },
+          { "type": "address", "name": "underlyingToken", "internalType": "address" },
+          { "type": "uint256", "name": "underlyingTokenBalance", "internalType": "uint256" },
+          { "type": "uint256", "name": "underlyingTokenTotalSupply", "internalType": "uint256" },
+          { "type": "uint8", "name": "underlyingTokenDecimals", "internalType": "uint8" },
+          {
+            "type": "address",
+            "name": "underlyingTokenUniswapV2Factory",
+            "internalType": "address"
+          },
+          {
+            "type": "address[2]",
+            "name": "underlyingTokenUnderlyings",
+            "internalType": "address[2]"
+          }
+        ]
+      }
+    ],
+    "name": "getTokenDetails",
+    "inputs": [
+      { "type": "address", "name": "asset", "internalType": "address" },
+      { "type": "address", "name": "owner", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "", "internalType": "contract IOracleRegistry" }],
+    "name": "oracleRegistry",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "", "internalType": "contract IVault" }],
+    "name": "vault",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      { "type": "address", "name": "", "internalType": "contract IVaultManagerBorrowFeeParameters" }
+    ],
+    "name": "vaultManagerBorrowFeeParameters",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      { "type": "address", "name": "", "internalType": "contract IVaultManagerParameters" }
+    ],
+    "name": "vaultManagerParameters",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "", "internalType": "contract IVaultParameters" }],
+    "name": "vaultParameters",
+    "inputs": []
+  }
+]

@@ -1,13 +1,16 @@
 import vaultManagerParametersAbi from './ABI/vaultManagerParametersAbi.json';
-import { vaultManagerParameters } from '../../config/config';
+import vaultManagerParametersBorrowFee from './ABI/vaulManagerBorrowFeeParameters.json';
+import cdpManager from './ABI/cdpManager01.json';
 import { AbiItem } from 'web3-utils';
-import { validate } from './validate';
 import Web3 from 'web3';
+import Big from 'big.js';
 
 declare const window: any;
 
-export const getInitialCollateralRatio = async (tokenAddress: string): Promise<number> => {
-  await validate();
+export const getInitialCollateralRatio = async (
+  vaultManagerParameters: string,
+  tokenAddress: string,
+): Promise<number> => {
   const web3 = new Web3(window.ethereum);
   const contract = new web3.eth.Contract(
     vaultManagerParametersAbi as AbiItem[],
@@ -19,8 +22,10 @@ export const getInitialCollateralRatio = async (tokenAddress: string): Promise<n
   return initialCollateralRation / 100;
 };
 
-export const getLiquidationRatio = async (tokenAddress: string): Promise<number> => {
-  await validate();
+export const getLiquidationRatio = async (
+  vaultManagerParameters: string,
+  tokenAddress: string,
+): Promise<number> => {
   const web3 = new Web3(window.ethereum);
   const contract = new web3.eth.Contract(
     vaultManagerParametersAbi as AbiItem[],
@@ -28,4 +33,26 @@ export const getLiquidationRatio = async (tokenAddress: string): Promise<number>
   );
   const liquidationRatio = await contract.methods.liquidationRatio(tokenAddress).call();
   return liquidationRatio / 100;
+};
+
+export const getBorrowFee = async (
+  cdpManagerAddress: string,
+  collateralAddress: string,
+  stablecoinAmount: Big,
+): Promise<Big> => {
+  const web3 = new Web3(window.ethereum);
+  const manager = new web3.eth.Contract(cdpManager as AbiItem[], cdpManagerAddress);
+
+  const parametersAddress = await manager.methods.vaultManagerBorrowFeeParameters().call();
+
+  const parameters = new web3.eth.Contract(
+    vaultManagerParametersBorrowFee as AbiItem[],
+    parametersAddress,
+  );
+
+  const borrowFee = await parameters.methods
+    .calcBorrowFeeAmount(collateralAddress, stablecoinAmount.toFixed())
+    .call();
+
+  return Big(borrowFee.toString());
 };

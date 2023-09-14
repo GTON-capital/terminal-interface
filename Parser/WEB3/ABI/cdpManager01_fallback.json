@@ -87,13 +87,6 @@
   {
     "type": "function",
     "stateMutability": "view",
-    "outputs": [{ "type": "address", "name": "", "internalType": "address payable" }],
-    "name": "WETH",
-    "inputs": []
-  },
-  {
-    "type": "function",
-    "stateMutability": "view",
     "outputs": [{ "type": "address", "name": "", "internalType": "contract ICDPRegistry" }],
     "name": "cdpRegistry",
     "inputs": []
@@ -106,7 +99,18 @@
     "inputs": [
       { "type": "address", "name": "asset", "internalType": "address" },
       { "type": "uint256", "name": "assetAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" }
+      { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -119,27 +123,18 @@
       { "type": "address", "name": "swapper", "internalType": "contract ISwapper" },
       { "type": "uint256", "name": "assetAmountToUser", "internalType": "uint256" },
       { "type": "uint256", "name": "assetAmountToSwap", "internalType": "uint256" },
-      { "type": "uint256", "name": "minSwappedUsdpAmount", "internalType": "uint256" }
-    ]
-  },
-  {
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
-    "name": "exit_Eth",
-    "inputs": [
-      { "type": "uint256", "name": "ethAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" }
-    ]
-  },
-  {
-    "type": "function",
-    "stateMutability": "nonpayable",
-    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
-    "name": "exit_Eth_targetRepayment",
-    "inputs": [
-      { "type": "uint256", "name": "ethAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "repayment", "internalType": "uint256" }
+      { "type": "uint256", "name": "minSwappedUsdpAmount", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -150,7 +145,18 @@
     "inputs": [
       { "type": "address", "name": "asset", "internalType": "address" },
       { "type": "uint256", "name": "assetAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "repayment", "internalType": "uint256" }
+      { "type": "uint256", "name": "repayment", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -160,7 +166,18 @@
     "name": "getCollateralUsdValue_q112",
     "inputs": [
       { "type": "address", "name": "asset", "internalType": "address" },
-      { "type": "address", "name": "owner", "internalType": "address" }
+      { "type": "address", "name": "owner", "internalType": "address" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -170,7 +187,18 @@
     "name": "isLiquidatablePosition",
     "inputs": [
       { "type": "address", "name": "asset", "internalType": "address" },
-      { "type": "address", "name": "owner", "internalType": "address" }
+      { "type": "address", "name": "owner", "internalType": "address" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -181,7 +209,18 @@
     "inputs": [
       { "type": "address", "name": "asset", "internalType": "address" },
       { "type": "uint256", "name": "assetAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" }
+      { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -194,15 +233,19 @@
       { "type": "address", "name": "swapper", "internalType": "contract ISwapper" },
       { "type": "uint256", "name": "assetAmount", "internalType": "uint256" },
       { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "minSwappedAssetAmount", "internalType": "uint256" }
+      { "type": "uint256", "name": "minSwappedAssetAmount", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
-  },
-  {
-    "type": "function",
-    "stateMutability": "payable",
-    "outputs": [],
-    "name": "join_Eth",
-    "inputs": [{ "type": "uint256", "name": "usdpAmount", "internalType": "uint256" }]
   },
   {
     "type": "function",
@@ -235,7 +278,18 @@
     "name": "triggerLiquidation",
     "inputs": [
       { "type": "address", "name": "asset", "internalType": "address" },
-      { "type": "address", "name": "owner", "internalType": "address" }
+      { "type": "address", "name": "owner", "internalType": "address" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -246,7 +300,18 @@
     "inputs": [
       { "type": "address", "name": "wrappedAsset", "internalType": "contract IWrappedAsset" },
       { "type": "uint256", "name": "assetAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" }
+      { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -257,7 +322,18 @@
     "inputs": [
       { "type": "address", "name": "wrappedAsset", "internalType": "contract IWrappedAsset" },
       { "type": "uint256", "name": "assetAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "repayment", "internalType": "uint256" }
+      { "type": "uint256", "name": "repayment", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -270,7 +346,18 @@
       { "type": "address", "name": "swapper", "internalType": "contract ISwapper" },
       { "type": "uint256", "name": "assetAmountToUser", "internalType": "uint256" },
       { "type": "uint256", "name": "assetAmountToSwap", "internalType": "uint256" },
-      { "type": "uint256", "name": "minSwappedUsdpAmount", "internalType": "uint256" }
+      { "type": "uint256", "name": "minSwappedUsdpAmount", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -287,7 +374,18 @@
     "name": "utilizationRatio",
     "inputs": [
       { "type": "address", "name": "asset", "internalType": "address" },
-      { "type": "address", "name": "owner", "internalType": "address" }
+      { "type": "address", "name": "owner", "internalType": "address" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -330,7 +428,18 @@
     "inputs": [
       { "type": "address", "name": "wrappedAsset", "internalType": "contract IWrappedAsset" },
       { "type": "uint256", "name": "assetAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" }
+      { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
   },
   {
@@ -343,8 +452,18 @@
       { "type": "address", "name": "swapper", "internalType": "contract ISwapper" },
       { "type": "uint256", "name": "assetAmount", "internalType": "uint256" },
       { "type": "uint256", "name": "usdpAmount", "internalType": "uint256" },
-      { "type": "uint256", "name": "minSwappedAssetAmount", "internalType": "uint256" }
+      { "type": "uint256", "name": "minSwappedAssetAmount", "internalType": "uint256" },
+      {
+        "type": "tuple",
+        "name": "proofData",
+        "internalType": "struct KeydonixOracleAbstract.ProofDataStruct",
+        "components": [
+          { "type": "bytes", "name": "block", "internalType": "bytes" },
+          { "type": "bytes", "name": "accountProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "reserveAndTimestampProofNodesRlp", "internalType": "bytes" },
+          { "type": "bytes", "name": "priceAccumulatorProofNodesRlp", "internalType": "bytes" }
+        ]
+      }
     ]
-  },
-  { "type": "receive", "stateMutability": "payable" }
+  }
 ]

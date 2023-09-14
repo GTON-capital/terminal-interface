@@ -1,13 +1,16 @@
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
-import { bridgeAddress } from '../../config/config';
 import bridgeAbi from './ABI/bridge.json';
 import tokenMap from '../WEB3/API/addToken';
 import Big from 'big.js';
 import { isTestnet } from '../../config/config';
 declare const window: any;
 
-export const bridgeGcdToL2 = async (userAddress: string, tokenAmount: Big): Promise<string> => {
+export const bridgeGcdToL2 = async (
+  userAddress: string,
+  tokenAmount: Big,
+  bridgeAddress: string,
+): Promise<string> => {
   const gcdAddressL2 = '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000';
   const depositErc20 = '2000000000000000';
   const gcNetId = isTestnet ? '50021' : '1000';
