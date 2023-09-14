@@ -16,46 +16,66 @@ export const ViewCDPStablecoinWorker = (coinName: string) =>
       loading(true);
       const tmpARGS = Args.split(' ');
 
-      if (tmpARGS.length < 6) {
+      if (tmpARGS.length < 4) {
         throw new Error('Invalid input');
       }
 
       const stablecoinContracts = state.chain.simulatedTokens[coinName];
       const stablecoinsToken = state.chain.tokens[coinName];
 
-      const collateralName = tmpARGS[5];
+      if (tmpARGS[0].toLowerCase() === 'all') {
+        const cdpDecriptions = await Promise.all(
+          stablecoinContracts.collaterals.map(async (collateralName) => {
+            const collateralToken = state.chain.tokens[collateralName];
 
-      if (!stablecoinContracts.collaterals.includes(collateralName)) {
-        const availableCollaterals = stablecoinContracts.collaterals.join(', ');
-        throw new Error(
-          `Invalid collateral name ${collateralName} available collaterals: ${availableCollaterals}`,
-        );
-      }
+            const cdpInfo = await getCdpInfo(
+              {
+                wethAddress: state.chain.nativeCurrency.wethAddress,
+                cdpViewerAddress: stablecoinContracts.cdpViewer,
+                vaultAddress: stablecoinContracts.vaultAddress,
+                vaulManagerParametersAddress: stablecoinContracts.vaultManagerParametersAddress,
+              },
+              collateralToken,
+              state.address,
+            );
 
-      const collateralToken = state.chain.tokens[collateralName];
-
-      const cdpInfo = await getCdpInfo(
-        {
-          wethAddress: state.chain.nativeCurrency.wethAddress,
-          cdpViewerAddress: stablecoinContracts.cdpViewer,
-          vaultAddress: stablecoinContracts.vaultAddress,
-          vaulManagerParametersAddress: stablecoinContracts.vaultManagerParametersAddress,
-        },
-        collateralToken,
-        state.address,
-      );
-
-      if (cdpInfo.collateral.eq(0)) {
-        print([
-          textLine({
-            words: [
-              textWord({
-                characters: `Position for collateral ${collateralName} and owner ${state.address} not found`,
-              }),
-            ],
+            return cdpInfoDescription(cdpInfo, stablecoinsToken, collateralToken);
           }),
-        ]);
+        );
+        print(
+          cdpDecriptions.map((message) =>
+            textLine({
+              words: [
+                textWord({
+                  characters: message,
+                }),
+              ],
+            }),
+          ),
+        );
       } else {
+        const collateralName = tmpARGS[5];
+
+        if (!stablecoinContracts.collaterals.includes(collateralName)) {
+          const availableCollaterals = stablecoinContracts.collaterals.join(', ');
+          throw new Error(
+            `Invalid collateral name ${collateralName} available collaterals: ${availableCollaterals}`,
+          );
+        }
+
+        const collateralToken = state.chain.tokens[collateralName];
+
+        const cdpInfo = await getCdpInfo(
+          {
+            wethAddress: state.chain.nativeCurrency.wethAddress,
+            cdpViewerAddress: stablecoinContracts.cdpViewer,
+            vaultAddress: stablecoinContracts.vaultAddress,
+            vaulManagerParametersAddress: stablecoinContracts.vaultManagerParametersAddress,
+          },
+          collateralToken,
+          state.address,
+        );
+
         const message = cdpInfoDescription(cdpInfo, stablecoinsToken, collateralToken);
         print([
           textLine({
@@ -80,7 +100,7 @@ export const ViewCDPStablecoinWorker = (coinName: string) =>
       lock(false);
     }
   }).setDescription({
-    description: `${Prefix.PREFIX}${UpdatingCommand.VIEW} my ${coinName} position with collateral <token>`,
+    description: `${Prefix.PREFIX}${UpdatingCommand.VIEW} [all] my ${coinName} position [with collateral <token>]`,
     getOptions(_, chain) {
       return {
         token: chain?.simulatedTokens[coinName].collaterals || [],
@@ -89,6 +109,9 @@ export const ViewCDPStablecoinWorker = (coinName: string) =>
   });
 
 function cdpInfoDescription(info: CDPInfo, stablecoinToken: Token, collateralToken: Token): string {
+  if (info.collateral.eq(0)) {
+    return `Position for collateral ${collateralToken.name} and owner ${info.owner} not found`;
+  }
   const liquidationMessage = info.liquidation
     ? `\n\tLiquidation in progress
         \tLiquidation block: ${info.liquidation.block}
@@ -106,7 +129,7 @@ function cdpInfoDescription(info: CDPInfo, stablecoinToken: Token, collateralTok
               }`
         }`
     : '';
-  return `CDP with collateral: ${collateralToken.name} and owner: ${info.owner}
+  return `Position with collateral: ${collateralToken.name} and owner: ${info.owner}
         collateral amount: ${info.collateral.div(Big(10).pow(collateralToken.decimals))}
         stablecoin amount: ${info.debt.div(Big(10).pow(stablecoinToken.decimals))}
         liquidation price: ${info.liquidationPrice}${liquidationMessage}`;

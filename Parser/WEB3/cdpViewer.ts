@@ -123,7 +123,10 @@ async function getCdpRegularInfo(
 async function getCdpLiqidationInfo(
   web3: Web3,
   vaultAddress: string,
-  info: CDPRegularInfo,
+  info: Pick<
+    CDPRegularInfo,
+    'asset' | 'owner' | 'liquidationBlock' | 'devaluationPeriod' | 'debtWithPenalty' | 'collateral'
+  >,
   blockNumber: number,
 ): Promise<LiquidationInfo> {
   const vault = new web3.eth.Contract(vaultAbi as AbiItem[], vaultAddress);
