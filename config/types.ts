@@ -52,6 +52,8 @@ export type SimulatedToken = {
 
   cdpViewer: Address;
 
+  liquidationAuctionAddress: string;
+
   fallbackWethPairs: Record<TokenName, Address>;
 };
 

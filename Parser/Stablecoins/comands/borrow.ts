@@ -20,6 +20,7 @@ import messages, { Prefix, UpdatingCommand } from '../../../Messages/Messages';
 import { ErrorCodes, ErrorHandler } from '../errors';
 import { SimulatedToken, Token } from '../../../config/types';
 import { checkAllownace } from '../../Common/utils/checkAllowance';
+import { formTxLink } from '../../Common/utils/explorer';
 
 export const BorrowStablecoinWorker = (coinName: string) =>
   new Worker(async ({ lock, loading, print }, Args, [nonValidatedState], config) => {
@@ -165,7 +166,7 @@ export const BorrowStablecoinWorker = (coinName: string) =>
             calculatedStablecoinAmountInWei,
           );
       print([textLine({ words: [textWord({ characters: `Succesfull borrowed ${coinName}.` })] })]);
-      printLink(print, messages.viewTxn, state.chain.explorerUrl + txn);
+      printLink(print, messages.viewTxn, formTxLink(state.chain.explorerUrl, txn));
 
       loading(false);
       lock(false);

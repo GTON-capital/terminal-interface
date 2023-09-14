@@ -1,0 +1,80 @@
+[
+  {
+    "type": "constructor",
+    "stateMutability": "nonpayable",
+    "inputs": [
+      { "type": "address", "name": "_vaultManagerParameters", "internalType": "address" },
+      { "type": "address", "name": "_cdpRegistry", "internalType": "address" },
+      { "type": "address", "name": "_assetsBooleanParameters", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "Buyout",
+    "inputs": [
+      { "type": "address", "name": "asset", "internalType": "address", "indexed": true },
+      { "type": "address", "name": "owner", "internalType": "address", "indexed": true },
+      { "type": "address", "name": "buyer", "internalType": "address", "indexed": true },
+      { "type": "uint256", "name": "amount", "internalType": "uint256", "indexed": false },
+      { "type": "uint256", "name": "price", "internalType": "uint256", "indexed": false },
+      { "type": "uint256", "name": "penalty", "internalType": "uint256", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "DENOMINATOR_1E2",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "WRAPPED_TO_UNDERLYING_ORACLE_TYPE",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      { "type": "address", "name": "", "internalType": "contract IAssetsBooleanParameters" }
+    ],
+    "name": "assetsBooleanParameters",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "outputs": [],
+    "name": "buyout",
+    "inputs": [
+      { "type": "address", "name": "asset", "internalType": "address" },
+      { "type": "address", "name": "owner", "internalType": "address" }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "", "internalType": "contract ICDPRegistry" }],
+    "name": "cdpRegistry",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "address", "name": "", "internalType": "contract IVault" }],
+    "name": "vault",
+    "inputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      { "type": "address", "name": "", "internalType": "contract IVaultManagerParameters" }
+    ],
+    "name": "vaultManagerParameters",
+    "inputs": []
+  }
+]
