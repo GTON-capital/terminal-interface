@@ -39,6 +39,7 @@ export const ViewCDPStablecoinWorker = (coinName: string) =>
           wethAddress: state.chain.nativeCurrency.wethAddress,
           cdpViewerAddress: stablecoinContracts.cdpViewer,
           vaultAddress: stablecoinContracts.vaultAddress,
+          vaulManagerParametersAddress: stablecoinContracts.vaultManagerParametersAddress,
         },
         collateralToken,
         state.address,
@@ -49,7 +50,7 @@ export const ViewCDPStablecoinWorker = (coinName: string) =>
           textLine({
             words: [
               textWord({
-                characters: `CDP for collateral ${collateralName} and owner ${state.address} not found`,
+                characters: `Position for collateral ${collateralName} and owner ${state.address} not found`,
               }),
             ],
           }),
@@ -79,7 +80,7 @@ export const ViewCDPStablecoinWorker = (coinName: string) =>
       lock(false);
     }
   }).setDescription({
-    description: `${Prefix.PREFIX}${UpdatingCommand.VIEW} my ${coinName} cdp with collateral <token>`,
+    description: `${Prefix.PREFIX}${UpdatingCommand.VIEW} my ${coinName} position with collateral <token>`,
     getOptions(_, chain) {
       return {
         token: chain?.simulatedTokens[coinName].collaterals || [],
@@ -107,7 +108,6 @@ function cdpInfoDescription(info: CDPInfo, stablecoinToken: Token, collateralTok
     : '';
   return `CDP with collateral: ${collateralToken.name} and owner: ${info.owner}
         collateral amount: ${info.collateral.div(Big(10).pow(collateralToken.decimals))}
-        stablecoin amount: ${info.debt.div(
-          Big(10).pow(stablecoinToken.decimals),
-        )}${liquidationMessage}`;
+        stablecoin amount: ${info.debt.div(Big(10).pow(stablecoinToken.decimals))}
+        liquidation price: ${info.liquidationPrice}${liquidationMessage}`;
 }

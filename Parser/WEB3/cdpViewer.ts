@@ -6,6 +6,8 @@ import vaultAbi from './ABI/vaultGcd.json';
 
 import { Token } from '../../config/types';
 import { AbiItem } from 'web3-utils';
+import { getLiquidationRatio } from './vaultManager';
+import { getLiquidationPrice } from './cdpManager';
 
 type LiquidationInfo = {
   block: number;
@@ -19,6 +21,7 @@ export type CDPInfo = {
   owner: string;
   collateral: Big;
   debt: Big;
+  liquidationPrice: Big;
   liquidation?: LiquidationInfo;
 };
 
@@ -37,6 +40,7 @@ export async function getCdpInfo(
     wethAddress: string;
     cdpViewerAddress: string;
     vaultAddress: string;
+    vaulManagerParametersAddress: string;
   },
   asset: Token,
   owner: string,
@@ -50,6 +54,7 @@ export async function getCdpInfo(
     contracts.wethAddress,
     contracts.cdpViewerAddress,
     contracts.vaultAddress,
+    contracts.vaulManagerParametersAddress,
   );
 
   if (regularInfo.liquidationBlock > 0) {
@@ -80,6 +85,7 @@ async function getCdpRegularInfo(
   wethAddress: string,
   cdpViewerAddress: string,
   vaultAddress: string,
+  vaulManagerParametersAddress: string,
 ): Promise<CDPRegularInfo> {
   const tokenAddress = asset.isNative ? wethAddress : asset.address;
 
@@ -95,14 +101,22 @@ async function getCdpRegularInfo(
 
   const liquidationBlock = await vault.methods.liquidationBlock(tokenAddress, owner).call();
 
+  const liquidationRatio = await getLiquidationRatio(vaulManagerParametersAddress, tokenAddress);
+
+  const debt = Big(response.cdp.debt.toString());
+  const collateral = Big(response.cdp.collateral.toString());
+
   return {
     asset: tokenAddress,
     owner,
-    collateral: Big(response.cdp.collateral.toString()),
-    debt: Big(response.cdp.debt.toString()),
+    collateral,
+    debt,
     devaluationPeriod: Number.parseInt(response.devaluationPeriod.toString()),
     debtWithPenalty,
     liquidationBlock: Number.parseInt(liquidationBlock.toString()),
+    liquidationPrice: collateral.eq(0)
+      ? Big(0)
+      : await getLiquidationPrice(debt, collateral, liquidationRatio),
   };
 }
 
