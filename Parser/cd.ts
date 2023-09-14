@@ -16,7 +16,7 @@ type ChangeDirectoryResult = {
 export function cd(project: string, state: TerminalState): ChangeDirectoryResult {
   const dirs = getDirs(state);
 
-  const dir = dirs.find((dir) => dir.path === project);
+  const dir = dirs.find((dir) => dir.path === project || '/' + dir.path === project);
 
   if (!dir) {
     return {
